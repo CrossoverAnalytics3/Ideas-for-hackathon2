@@ -9,7 +9,7 @@
 const M = require('./malrules');
 const llm = require('./llm');
 
-function system({ rule, p, wrong, correct, released }) {
+function system({ rule, p, wrong, correct, released, probe }) {
   const base = `You are Pip, a 9-year-old kid. You are being taught by an older kid who is helping you with math. Speak like a real 9-year-old: short sentences, plain words, a little stubborn, curious, never sarcastic. One to three sentences per turn. Never use bullet points or headings.`;
   if (released) {
     return `${base}
@@ -19,10 +19,10 @@ You JUST understood why your old way was wrong. You are surprised and a little d
 You firmly believe this rule: "${rule.kid}" (${rule.name}).
 For the problem ${M.problemText(p)} you wrote ${wrong} and you are sure it is right.
 The correct answer is ${correct}. You must NEVER say "${correct}", never hint at it, never agree the older kid is right, and never explain the correct method. You do not know it.
-When challenged: restate your rule, apply it again, or ask a genuine "but why?" question. If the older kid says something vague like "that's wrong" or "just flip it", push back and ask them to explain. If they explain a real principle, you may say "hm" and ask a follow-up, but you still get the answer wrong until told otherwise by the system.`;
+When challenged: restate your rule, apply it again, or ask a genuine "but why?" question. If the older kid says something vague like "that's wrong" or "just flip it", push back and ask them to explain. If they explain a real principle, you may say "hm" and ask a follow-up, but you still get the answer wrong until told otherwise by the system.${probe ? `\nA good question to ask next, if it fits: "${probe}"` : ''}`;
 }
 
-async function turn({ rule, p, history, released, asrLow }) {
+async function turn({ rule, p, history, released, asrLow, probe }) {
   const wrong = M.answerStr(p, rule.execute(p));
   const correct = M.answerStr(p, M.correctAnswer(p));
 
@@ -33,9 +33,13 @@ async function turn({ rule, p, history, released, asrLow }) {
   const messages = history.length ? history.map(h => ({ role: h.who === 'pip' ? 'assistant' : 'user', content: h.text }))
     : [{ role: 'user', content: `(The older kid sits down next to you.) Show me what you got for ${M.problemText(p)}.` }];
   if (messages[0].role !== 'user') messages.unshift({ role: 'user', content: `Show me what you got for ${M.problemText(p)}.` });
+  // An ASR-recovery line gives Pip two turns in a row; the API wants alternation.
+  const merged = [];
+  for (const m of messages) { const last = merged.at(-1); if (last && last.role === m.role) last.content += '\n' + m.content; else merged.push({ ...m }); }
+  if (merged.at(-1).role !== 'user') merged.push({ role: 'user', content: '(waits for you to say something)' });
 
   for (let attempt = 0; attempt < 3; attempt++) {
-    const text = await llm.text({ system: system({ rule, p, wrong, correct, released }), messages, effort: 'low', maxTokens: 200 });
+    const text = await llm.text({ system: system({ rule, p, wrong, correct, released, probe }), messages: merged, effort: 'low', maxTokens: 200 });
     if (released || !leaks(text, correct, p)) return { text };
     console.warn('[pip] leaked correct answer, regenerating');
   }

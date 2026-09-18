@@ -7,7 +7,8 @@
     "start": "node server.js",
     "dev": "MOCK=1 node server.js",
     "test": "node --test test/malrules.test.js",
-    "smoke": "node test/smoke.js"
+    "smoke": "node test/smoke.js",
+    "dryrun": "node test/dryrun-live.js"
   },
   "keywords": [],
   "author": "",

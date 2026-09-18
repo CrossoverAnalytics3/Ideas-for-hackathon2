@@ -174,7 +174,7 @@ app.post('/api/session/:id/teach/turn', async (req, res) => {
     line = { text: "I still don't get it. That's okay. Can we ask your tutor on Thursday?" };
   } else {
     try {
-      line = await pip.turn({ rule, p: t.p, history: [...t.history, { who: 'learner', text: `(system: not convinced yet. If useful, ask something like: ${verdict.next_probe})` }].filter(h => !h.text.startsWith('(system') || llm.live()), released: false });
+      line = await pip.turn({ rule, p: t.p, history: t.history, released: false, probe: verdict.next_probe });
       if (!llm.live() && verdict.next_probe) line = { text: verdict.next_probe };
     } catch (e) { line = { text: verdict.next_probe || rule.defense(t.p) }; }
   }

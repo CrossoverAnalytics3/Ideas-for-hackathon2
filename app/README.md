@@ -72,6 +72,7 @@ test/                unit tests (node --test) and a headless end-to-end smoke te
 ```bash
 npm test             # engine: every malrule generates problems its own verifier catches
 npm run smoke        # headless Chromium walks photo -> drill -> teach -> brief in mock mode
+npm run dryrun       # drives the live code paths against a stubbed client: request shapes, role alternation, leak guard
 ```
 
 The smoke test removes speech recognition from the page so the typed fallback appears; it
