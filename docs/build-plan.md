@@ -11,8 +11,9 @@ They will not stress-test your edge cases.
 - Auth, accounts, databases. Everything in memory or a JSON file.
 - Mobile. Web only.
 - The literacy and language libraries. Mention them on a slide, build fractions.
-- Kid speech recognition tuned for 8-year-olds. Use browser Web Speech API or Whisper and
-  demo with a clear speaker. Note the Amira-grade ASR problem as known future work.
+- Child-tuned speech recognition. Use an off-the-shelf streaming ASR and demo with a clear
+  speaker. Name the 4-8x child WER gap in the video as known work, and show Pip's in-character
+  recovery line handling it.
 - Any parent dashboard beyond a single rendered card.
 
 ## Hours 0-2: the malrule engine
@@ -45,7 +46,7 @@ release rubric. The rubric is what the judge model scores against.
 **Test it standalone before touching any UI.** Feed it 20 fresh problems and confirm the
 wrong answers are the wrong answers a real kid produces.
 
-## Hours 2-5: the two-model loop
+## Hours 2-4: the two-model loop
 
 Two calls, clearly separated. Keep them separate in the code, because you're going to show
 this architecture on screen.
@@ -74,46 +75,99 @@ Cap it at 4 turns. If the kid can't get there, Pip says "I still don't get it, c
 your tutor?" and the session flags for the tutor brief. **Build that path.** Refusing to
 hand out a fake win is the most honest thing in the product and worth 10 seconds of video.
 
-## Hours 5-8: the UI
+## Hours 4-7: voice, which is now the whole interface
 
-One page. Pip on the left as a simple animated SVG. Chat transcript in the middle.
+Speech-to-speech realtime APIs are tempting and wrong for this. They put the answer back
+inside the model, which breaks the belief pin, and they hide the word timings you need for
+the fluency signal. Keep the pipeline in pieces.
+
+```
+mic ──► streaming ASR (word-level timestamps) ──► transcript + timing
+                                                        │
+                            ┌───────────────────────────┴──────────┐
+                            ▼                                      ▼
+                   judge model (content)              fluency extractor (delivery)
+                            └───────────────┬──────────────────────┘
+                                            ▼
+                                   state machine ──► Pip's line ──► TTS ──► speaker
+```
+
+**Pick an ASR with word-level timestamps.** Non-negotiable. Onset latency and pause
+durations are the fluency signal, and a plain transcript throws them away. Deepgram or
+Whisper with `word_timestamps` both work.
+
+**Fluency extractor is 40 lines, not an ML problem.** From the timestamps:
+
+```python
+onset_ms    = first_word.start - prompt_end          # retrieval difficulty
+filler_rate = count(["um","uh","er","like"]) / words
+hedge_rate  = count(["i think","maybe","kinda","i guess","probably"]) / words
+long_pauses = [g for g in gaps(words) if g > 800]    # planning stalls
+restarts    = count_self_repairs(transcript)
+```
+
+Bucket it fluent/hesitant with thresholds you pick by hand. Anything fancier is not a
+12-hour problem, and the quadrant reads the same on video either way.
+
+**TTS needs a child voice.** An adult-sounding tutee breaks the frame instantly. Spend
+15 minutes picking the voice. It matters more than it sounds like it does.
+
+**Build the "say that again" path early.** Low ASR confidence, Pip asks in character. It's
+three lines of code and it's the thing that keeps the demo alive when the recognizer
+mangles a word on camera.
+
+**Push to talk.** Always-on listening will pick up a sibling and ruin a take.
+
+## Hours 7-9: the UI
+
+One page. Pip on the left as a simple animated SVG. Live transcript in the middle.
 Push-to-talk button at the bottom.
 
 Three states on Pip's face: confused, thinking, got it. Do not build a character rig.
 Three SVGs and a CSS transition reads fine on video.
 
-Above the chat, a live "belief state" strip showing `holding: frac_add_across` in red,
-flipping to green on release. That's the visual proof that you pinned the belief rather
-than crossing your fingers on a prompt. Nobody else's demo will have this.
+Above the transcript, a live "belief state" strip showing `holding: frac_add_across` in
+red, flipping to green on release. That's the visual proof that you pinned the belief
+rather than crossing your fingers on a prompt. Nobody else's demo will have this.
 
-## Hours 8-9: the two artifacts
+Under the transcript, a second strip for the fluency read: onset time, pause count, hedge
+count, ticking up live as the kid speaks. Two strips, two signals, and the whole
+architecture is legible from a screenshot.
+
+## Hours 9-10: the two artifacts
 
 **Parent card.** Static render: kid's name, the misconception, the date they first got it
-wrong, the date they taught it, an explanation-quality score, and a pull quote from the
-transcript. One HTML card. Ten minutes of work, and it's the slide that connects your demo
-to Nerdy's churn problem.
+wrong, the date they taught it, an explanation-quality score, and **a play button on the
+40-second audio clip of their kid explaining it.** One HTML card. The audio is what makes
+this an object a parent forwards to a grandparent, and it's the slide that connects your
+demo to Nerdy's churn problem.
 
-**Tutor brief.** Three bullets. "Maya taught frac_add_across successfully on Sept 18.
-Explanation quality 3/3, used a magnitude argument. Still shaky: why common denominators
-work. Suggested opener: ..."
+**Tutor brief.** Three bullets, and the fluency read is the part a tutor can't get
+anywhere else. "Maya taught frac_add_across successfully on Sept 18. Explanation quality
+3/3, used a magnitude argument. **Delivery hesitant: 3.1s onset, four hedges. Correct but
+fragile.** Still shaky on why common denominators work. Suggested opener: ..."
 
-## Hours 9-11: the video
+## Hours 10-11:30: the video
 
 2 minutes 40 seconds. Rehearse it twice, record once.
 
 | Time | Beat |
 |---|---|
-| 0:00-0:20 | Nerdy's number: memberships down 5%, the 167 hours between sessions. State the problem, not the product. |
-| 0:20-1:10 | Live demo. Maya teaching Pip. Let Pip resist once. Let the silence sit. |
-| 1:10-1:40 | The architecture diagram. Say the sycophancy problem out loud, cite that 66% to 40% drop, then show the executable malrule and the belief strip. |
-| 1:40-2:05 | The refusal path. Pip not getting it, and the flag going to the tutor. |
-| 2:05-2:30 | Parent card and tutor brief. Name the retention mechanic. |
-| 2:30-2:40 | Same engine, three malrule libraries, three subjects. One slide. |
+| 0:00-0:25 | Nerdy's number: memberships down 5%. Then the real hook. "A tutoring session is 60 minutes of talking. Then the kid goes home and taps a screen in silence for a week." State the problem, not the product. |
+| 0:25-1:10 | Live demo, audio up. Maya teaching Pip out loud. Let Pip resist once. Let the silence sit. |
+| 1:10-1:35 | The architecture diagram. Say the sycophancy problem out loud, cite the 66% to 40% drop, show the executable malrule and the belief strip flipping. |
+| 1:35-2:00 | The quadrant. Play two clips of the same correct answer, one fluent, one hesitant, and show them landing in different boxes. This is the "why voice" proof and it needs no explanation. |
+| 2:00-2:15 | The refusal path. Pip not getting it, the flag going to the tutor. |
+| 2:15-2:35 | Parent card with the audio clip playing, and the tutor brief. Name the retention mechanic. |
+| 2:35-2:45 | Same engine, three malrule libraries, three subjects. One slide. |
 
 Record the demo screen capture first, separately, so a flaky API call doesn't cost you a
 whole take. Voiceover after.
 
-## Hours 11-12: submit
+**Record in a quiet room and use a real microphone.** The product is about audio. Bad audio
+in the demo undercuts the entire argument, and judges will feel it before they can name it.
+
+## Hours 11:30-12: submit
 
 README at the repo root explaining the mechanic in 200 words. Deploy anywhere that gives a
 public URL. Submit early, since the rules say entries are reviewed as they arrive.
@@ -123,5 +177,9 @@ public URL. Submit early, since the rules say entries are reviewed as they arriv
 1. **Pip caves.** If the model breaks character on the first push, the demo is dead. This
    is exactly why the answer comes from code and the release comes from a separate judge.
    Test the stubbornness before you build anything pretty.
-2. **Voice latency.** 4 seconds of dead air on video feels like a minute. If round-trip is
-   slow, cut to text input for the recording and mention voice as shipped-but-trimmed.
+2. **Voice latency.** 4 seconds of dead air on video feels like a minute. Stream in both
+   directions and budget under 1.5s from end-of-speech to Pip's first syllable. If you
+   can't hit it, cut the dead air in the edit rather than cutting voice, because voice is
+   the argument now.
+3. **ASR mangling the demo take.** Build Pip's in-character "say that again" line before you
+   build anything pretty, and it becomes a feature on camera rather than a retake.

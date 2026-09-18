@@ -116,6 +116,56 @@ that.
 model never picks an answer, so it can't cave. The ignorance is narrow and stable because
 it's a function. And the release condition is a separate scored judgment rather than a vibe.
 
+## Why it has to be spoken
+
+**The production effect.** MacLeod, Gopie, Hourihan, Neary and Ozubko (2010), reviewed in
+MacLeod & Bodner, *The Production Effect in Memory*, Current Directions in Psychological
+Science (2017). Reading words aloud rather than silently improves later recognition memory
+by **10-20%**, comparable in size to the generation effect. Production makes items
+distinctive at encoding, which helps retrieval later. Articulation is doing work before you
+get to any of the harder effects.
+
+**Disfluency indexes confidence, in children specifically.** *Do Young Children Use Verbal
+Disfluency as a Cue to Their Own Confidence?* (PMC11883146). Children produced **more
+fillers, more hedges and longer speech onsets on incorrect trials and on low-confidence
+trials**, and verbal disfluency predicted both answer accuracy and the children's own
+confidence reports. Related: filled pauses co-occur with discourse-novel and hard-to-retrieve
+words, and inserting filled pauses lowers listeners' perceived confidence in the speaker,
+most strongly mid-utterance.
+
+This is the empirical basis for scoring delivery alongside content, and for the
+correct-but-hesitant "fragile" state that no answer box can detect.
+
+**Math talk has classroom evidence.** Number Talks and Accountable Talk / talk moves are
+built on students explaining reasoning aloud. Students' participation in classroom math
+conversations predicts achievement; teachers' encouragement and follow-up on productive
+talk increased engagement, which fed through to learning; and achievement improved in units
+where teachers deliberately used talk moves versus primarily direct instruction. Standard
+elementary practice, and it vanishes the moment a kid picks up a tablet.
+
+**The honest caveat on think-aloud.** Verbalizing while solving adds cognitive load and can
+slow or degrade performance, notably for speakers still building language fluency. So
+teach-aloud belongs in the spaced-review slot, days after the kid learned the material,
+rather than during hard novel problem solving. This is a design constraint the literature
+hands you.
+
+## Children's ASR: the real risk
+
+Children's speech recognition error rates run **4 to 8 times worse than adult speech**
+(other sources put it at 2-5x), and get worse the younger the child. Causes are
+physiological and developmental: vocal tract growth shifting formant frequencies, unstable
+pronunciation, higher acoustic variability, plus dialectal variation.
+
+Recent progress is real. A tuned Whisper reached **9.2% WER on the MyST child speech
+corpus**, a 38% relative reduction and the lowest reported at the time. A 2026 children's
+ASR competition saw top entrants cut the best existing child-speech model's error rate by
+more than half, converging on fine-tuned Qwen3-ASR-1.7B. Fine-tuned Whisper-medium hit
+5.54% WER on clean JASMIN data and 70.37% on noisy DART data, which is the honest range.
+
+**Design answer:** the tutee persona absorbs the errors. A confused 9-year-old asking "wait,
+say that again?" is in character and pedagogically useful. A tutor persona doing the same
+thing reads as broken software.
+
 ## Competitive read
 
 | Product | Owns | Missing |
@@ -125,13 +175,19 @@ it's a function. And the release condition is a separate scored judgment rather 
 | Khanmigo | Price and reach, $15/student/year, cross-subject | No human tutor, kid is always the one being taught |
 | MATHia (Carnegie Learning) | Serious math cognitive tutor | School sale, no consumer daily loop |
 | Prodigy | Elementary math engagement | Game loop weakly coupled to the math |
+| Synthesis Tutor | Voice-first Socratic math, ages 5-11, $119/yr family | AI is the expert, child is the student; no human tutor, no signal handoff |
 | Duolingo | Habit and retention mechanics | Facts and phrases, not reasoning or explanation |
 
 K-12 AI tutor market is roughly $2.75B in 2026.
 
+Synthesis is the closest thing and the one a judge will name. It proves voice-first
+elementary math works as a product, which is helpful. It keeps the AI in the expert chair,
+so the child never has to produce an explanation for an audience, and there's no human
+tutor on the other end to hand a signal to.
+
 Nobody in that table has both a live human expert and a record of what this specific kid
 got wrong with that expert. Nerdy does. No standalone commercial product is running the
-teach-back loop at all, which the teachable-agent literature confirms.
+teach-back loop, which the teachable-agent literature confirms.
 
 ## Sources
 
@@ -150,3 +206,13 @@ teach-back loop at all, which the teachable-agent literature confirms.
 - [Teach AI How to Code: LLMs as Teachable Agents, CHI 2024](https://dl.acm.org/doi/10.1145/3613904.3642349)
 - [Exploring the Impact of an LLM-Powered Teachable Agent, arXiv 2504.00636](https://arxiv.org/pdf/2504.00636)
 - [Best AI Reading Tutors for Kids 2026, Luca](https://luca.ai/blog/best-ai-reading-tutors)
+- [MacLeod & Bodner, The Production Effect in Memory (2017)](https://journals.sagepub.com/doi/10.1177/0963721417691356)
+- [MacLeod et al., The Production Effect: Delineation of a Phenomenon (2010)](https://uwaterloo.ca/memory-attention-cognition-lab/sites/default/files/uploads/files/jep10.pdf)
+- [Do Young Children Use Verbal Disfluency as a Cue to Their Own Confidence?](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11883146/)
+- [Corley & Stewart, Hesitation Disfluencies in Spontaneous Speech: The Meaning of um (2008)](https://compass.onlinelibrary.wiley.com/doi/10.1111/j.1749-818X.2008.00068.x)
+- [Voice assistant technology continues to underperform on children's speech, JASA Express Letters](https://pubs.aip.org/asa/jel/article/5/3/035201/3338215/Voice-assistant-technology-continues-to)
+- [ASR Tuned for Child Speech in the Classroom, ICASSP 2024](https://www.colorado.edu/research/ai-institute/sites/default/files/attached-files/childasr_icassp24_camera-ready_0.pdf)
+- [Closing the Child Speech Recognition Gap, The Learning Agency](https://the-learning-agency.com/guides-resources/closing-the-child-speech-recognition-gap-evidence-limitations-and-paths-forward/)
+- [On Top of Pasketti: Children's ASR Challenge, DrivenData](https://www.drivendata.org/competitions/group/childrens-asr-competition/)
+- [Synthesis Tutor](https://www.synthesis.com/tutor)
+- [Promoting rich discussions in mathematics classrooms, Teaching and Teacher Education](https://www.sciencedirect.com/science/article/abs/pii/S0742051X22000026)

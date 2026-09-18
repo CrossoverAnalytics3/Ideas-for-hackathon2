@@ -1,6 +1,6 @@
 # Understudy
 
-**Kids don't learn it until they can teach it. So make them teach it, to an AI that's stuck on their own old mistake.**
+**Kids don't learn it until they can say it out loud. So make them teach it, out loud, to an AI that's stuck on their own old mistake.**
 
 Submission concept for the [Nerdy AI Hackathon Challenge](https://hackathon.nerdy.com/).
 Fits prompt 1 (elementary math), and the same engine runs prompts 2 and 3.
@@ -12,7 +12,8 @@ Fits prompt 1 (elementary math), and the same engine runs prompts 2 and 3.
 Understudy takes the specific wrong rule a kid used last Tuesday, pins it inside an AI
 character, and three days later asks the kid to teach that character out of it.
 
-The kid talks. The character stays wrong until the explanation is actually right.
+Out loud. There's no answer box anywhere in the product. The character stays wrong until
+the spoken explanation is actually right.
 
 ---
 
@@ -30,6 +31,11 @@ brilliant for 60 minutes. Then there are 167 hours where nothing happens, the ki
 the parent sees no evidence, and in month 4 they cancel.
 
 A Study Plan is a to-do list. To-do lists don't hold a 10-year-old.
+
+And there's a second gap underneath it that nobody talks about. **The session is 60 minutes
+of talking.** The tutor explains, the kid answers back, both of them think out loud at each
+other. Then the week starts and every tool the kid touches is silent tapping. The channel
+changes, so the practice doesn't transfer. Understudy keeps it spoken end to end.
 
 Understudy is a daily loop built from the one asset nobody else has: **the record of what
 this specific kid got wrong, in a real session, with a real human who caught it.** Khanmigo
@@ -64,19 +70,49 @@ Two weeks earlier, Maya wrote 2/5 on her tutor's whiteboard.
 2. **Wait.** The item goes into a spacing queue keyed to forgetting, not to the calendar.
 3. **Spawn the Understudy.** Days later a character appears holding that exact malrule, on
    a problem the kid has never seen. Same bug, new clothes.
-4. **The kid teaches, out loud.** Voice in, free-form. Multiple choice can't express an
-   explanation, so there isn't any.
+4. **The kid teaches, out loud.** Voice in, free-form, and it's the only input there is.
+   Reading words aloud instead of silently improves recall by 10-20% on its own (the
+   production effect). Producing an explanation for a listener who will push back does far
+   more than that.
 5. **The Understudy resists, honestly.** It reapplies the malrule. It asks why. It gets it
    wrong a second time in a way the malrule predicts. Telling it "just flip the second one"
    does nothing, because procedure-parroting isn't understanding.
 6. **It only breaks when the explanation names the principle.** A separate judge scores the
    kid's reasoning and decides whether to release the belief.
-7. **The teaching is the artifact.** Parent gets a 40-second clip of their kid explaining
+7. **Score how it was said, not only what was said.** Pauses, "um"s, hedges, restarts,
+   uptalk. Children produce more fillers, more hedges and longer speech onsets on incorrect
+   and low-confidence trials, and that disfluency predicts both accuracy and their own
+   confidence. So we grade delivery alongside content.
+8. **The teaching is the artifact.** Parent gets a 40-second clip of their kid explaining
    fractions. Tutor gets a pre-session brief: "Maya holds fraction addition solidly now.
    Still can't explain why common denominators work. Start there."
 
 That last step is the retention fix. Churn happens when a parent can't tell if the money is
 doing anything. Here they watch their kid teach.
+
+## The quadrant that justifies the microphone
+
+Correctness alone gives you two states. Correctness crossed with delivery gives you four.
+
+```
+                    FLUENT                        HESITANT
+            ┌───────────────────────┬───────────────────────────┐
+            │  MASTERED             │  FRAGILE                  │
+   CORRECT  │  space it far out     │  looks like mastery on    │
+            │                       │  any quiz. it isn't.      │
+            │                       │  re-queue in 2 days.      │
+            ├───────────────────────┼───────────────────────────┤
+            │  CONFIDENTLY WRONG    │  HONESTLY STUCK           │
+     WRONG  │  entrenched malrule.  │  normal. just teach it.   │
+            │  flag the tutor now.  │                           │
+            └───────────────────────┴───────────────────────────┘
+```
+
+Top right is the whole argument. A kid who's correct but hesitant passes every assessment
+on the market, then fails the unit test three weeks later. A text field can't see that
+state. A microphone can.
+
+Full design in [`docs/voice-layer.md`](docs/voice-layer.md).
 
 ## The hard part, which is also the pitch
 
@@ -128,6 +164,20 @@ models, one piece of code, no drift.
 Show that diagram in the demo video and every engineer on the panel knows you understood
 the actual problem.
 
+## The second hard part, and the trick that dissolves it
+
+Children's speech recognition runs **4 to 8 times worse** than adult speech, worse the
+younger the child. Tuned models have closed a lot of it (9.2% WER on the MyST child corpus,
+a 38% relative gain), and a tenth of the words still come back wrong.
+
+Every voice learning product pays for that with broken immersion. This one doesn't, because
+**Pip is a confused 9-year-old.** When the recognizer garbles something, Pip says "wait,
+say that again, I didn't get it." A tutor persona asking you to repeat yourself feels like
+a bug. A younger kid asking feels like a conversation, and re-explaining is exactly what
+you wanted anyway.
+
+The persona absorbs the error rate and converts it into a second rep.
+
 ## Why a kid does this voluntarily
 
 Chase, Chin, Oppezzo and Schwartz (2009) ran it. Students teaching a digital agent put in
@@ -141,6 +191,19 @@ instead.
 
 There's a bonus that matters commercially: **you cannot cheat at teaching.** There's no
 answer to photograph. Chegg's business died on that distinction.
+
+## On Synthesis Tutor, before a judge brings it up
+
+Synthesis Tutor is voice-first AI math for ages 5-11, Socratic, kids speak their reasoning
+aloud, $119/yr per family, well reviewed. Voice-first elementary math already exists.
+
+The role is reversed here. Synthesis puts the AI in the expert chair and uses voice to
+assess the child. Understudy puts the child in the expert chair, where speaking is the only
+way the task can happen at all, because teaching someone silently isn't a thing.
+
+Two things it structurally can't match: the malrule comes from a real session with a real
+human tutor, and the fluency signal goes back to that human before the next one. Synthesis
+has no tutors. Nerdy has 40,000+.
 
 ## Why the existing teachable-agent attempts flopped
 
@@ -177,5 +240,8 @@ Nothing here needs schools, which matters, since Nerdy just exited that business
 
 ## Status
 
-Idea and spec. Build plan in [`docs/build-plan.md`](docs/build-plan.md), evidence and
-sources in [`docs/research.md`](docs/research.md).
+Idea and spec.
+
+- [`docs/voice-layer.md`](docs/voice-layer.md) the speech design, the fluency signal, the ASR strategy
+- [`docs/build-plan.md`](docs/build-plan.md) 12-hour scope and demo-video shot list
+- [`docs/research.md`](docs/research.md) evidence, numbers and sources
