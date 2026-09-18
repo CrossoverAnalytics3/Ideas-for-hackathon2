@@ -1,6 +1,6 @@
 # Understudy (app)
 
-**Two ways to run it.** The game has three rounds: Pip's way on the worksheet problem, your way (explain your strategy until he's convinced), then a fresh problem alone with hints counted. A Compare screen scores the session against an LLM-generated practice plan on parent prep, child-led reasoning and the fresh-problem result.
+**Two ways to run it.** Built for Nerdy's Prompt 01 (foundational arithmetic) on the K-5 math-difficulties research (see `../docs/prompt-01-numeracy.md`). Flash round for subitizing on a ten-frame, timed. Then a three-round game seeded by the worksheet problem: Pip's way (the column bug), your way (base-ten blocks on screen plus spoken explanation, judged from both), then a fresh problem alone with a CRA hint ladder: picture first, blocks second, every step counted. A Compare screen scores the session against an LLM-generated practice plan on parent prep, child-led reasoning and the fresh-problem result.
 
  `hosted.html` is the whole product in one file with no server: open it
 anywhere, or publish it as a claude.ai artifact where Pip and the judge run on the viewer's own

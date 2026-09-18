@@ -131,6 +131,25 @@ table{width:100%;border-collapse:collapse;font-size:13.5px} td,th{text-align:lef
 .score>div{background:var(--paper);padding:12px 14px;font-size:13.5px} .score .h{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);background:color-mix(in srgb,var(--ink) 4%,transparent)}
 .score .k{font-weight:600} .score b.n{font-family:"Bricolage Grotesque",serif;font-size:22px;display:block;line-height:1.1} .score .us{background:var(--teal-soft)}
 @media(max-width:560px){.score{grid-template-columns:1fr} .score .h{display:none}}
+/* column arithmetic, blocks, flash */
+.col{display:inline-grid;grid-template-columns:auto;justify-items:end;font-size:clamp(28px,5.4vw,40px);line-height:1.25;letter-spacing:.12em;padding:4px 14px 0 8px}
+.col .opch{display:inline-block;width:1.1em;text-align:left;letter-spacing:0}
+.col .ln{width:100%;border-top:3px solid var(--pencil);margin:2px 0 4px}
+.col .ans{padding-right:0}
+.blocks{grid-column:1/-1;background:var(--paper);border-radius:12px;padding:14px 16px;display:none;flex-direction:column;gap:10px} .blocks.on{display:flex}
+.bhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.btray{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-end;min-height:96px;padding:8px;background:color-mix(in srgb,var(--ink) 4%,transparent);border-radius:10px}
+.rod{width:18px;height:88px;border-radius:4px;background:var(--teal);cursor:pointer;position:relative;box-shadow:inset 0 0 0 1.5px rgba(0,0,0,.18);background-image:repeating-linear-gradient(transparent 0 7.8px,rgba(0,0,0,.22) 7.8px 8.8px)}
+.cube{width:16px;height:16px;border-radius:3px;background:var(--pip);cursor:pointer;box-shadow:inset 0 0 0 1.5px rgba(0,0,0,.18)}
+.cubes{display:grid;grid-template-columns:repeat(5,16px);gap:4px;align-content:end}
+.rod.taken,.cube.taken{opacity:.22;filter:grayscale(1);text-decoration:line-through}
+.rod:focus-visible,.cube:focus-visible{outline:2px solid var(--hot);outline-offset:2px}
+.bcount{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--ink-2)} .bcount b{font-family:"Bricolage Grotesque",serif;font-size:26px;color:var(--ink);margin-right:6px}
+.tenframe{display:grid;grid-template-columns:repeat(5,56px);grid-template-rows:repeat(2,56px);gap:6px;padding:8px;background:var(--paper);border-radius:12px;box-shadow:var(--shadow);width:max-content;max-width:100%}
+.tenframe i{border:2px solid color-mix(in srgb,var(--ink) 25%,transparent);border-radius:8px;display:grid;place-items:center} .tenframe i.dot::after{content:"";width:34px;height:34px;border-radius:50%;background:var(--teal)}
+.tenframe.hid i.dot::after{opacity:0} .tenframe i.part2.dot::after{background:var(--pip)}
+@media(max-width:400px){.tenframe{grid-template-columns:repeat(5,44px);grid-template-rows:repeat(2,44px)} .tenframe i.dot::after{width:26px;height:26px}}
+.fstat{display:flex;gap:16px;flex-wrap:wrap} .fstat div{display:flex;flex-direction:column} .fstat b{font-family:"Bricolage Grotesque",serif;font-size:26px;line-height:1} .fstat span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
 /* pip rig */
 .pipsvg{width:100%;height:100%;overflow:visible;display:block} .pipsvg .pipbody{transform-origin:75px 150px;animation:pipbob 3.4s ease-in-out infinite}
 @keyframes pipbob{0%,100%{transform:translateY(0) scaleY(1)}50%{transform:translateY(-4px) scaleY(1.012)}}
@@ -143,7 +162,7 @@ table{width:100%;border-collapse:collapse;font-size:13.5px} td,th{text-align:lef
   <nav>
     <a class="brand" href="#intake">Understudy</a>
     <button class="tab on" data-go="intake">Photo</button>
-    <button class="tab" data-go="drill" disabled>Warm up</button>
+    <button class="tab" data-go="drill" disabled>Flash</button>
     <button class="tab" data-go="teach" disabled>Teach</button>
     <button class="tab" data-go="brief" disabled>Brief</button>
     <button class="tab" data-go="compare" disabled>Compare</button>
@@ -155,10 +174,10 @@ table{width:100%;border-collapse:collapse;font-size:13.5px} td,th{text-align:lef
     <div style="display:flex;flex-direction:column;gap:10px">
       <span class="eyebrow">Start here</span>
       <h1>Photograph the graded worksheet.</h1>
-      <p class="dim">The red pen is already on it. Understudy reads the rule behind each mistake, then gives your kid an AI understudy, Pip, who's stuck on exactly that rule. They teach him out of it, out loud.</p>
+      <p class="dim">The red pen is already on it. Understudy reads the rule behind each mistake, then gives your kid an AI understudy, Pip, who's stuck on exactly that rule. They show him with blocks and talk him out of it. Then a fresh one, alone, with the supports counted.</p>
     </div>
     <div class="loop">
-      <div><b>PHOTO</b><span>graded work</span></div><div><b>DIAGNOSE</b><span>which malrule?</span></div><div><b>DRILL</b><span>while it's fresh</span></div><div><b>TEACH</b><span>talk Pip out of it</span></div><div><b>BRIEF</b><span>parent + tutor</span></div>
+      <div><b>PHOTO</b><span>graded work</span></div><div><b>DIAGNOSE</b><span>which malrule?</span></div><div><b>FLASH</b><span>see it, don't count</span></div><div><b>TEACH</b><span>talk Pip out of it</span></div><div><b>BRIEF</b><span>parent + tutor</span></div>
     </div>
     <div class="card">
       <div class="row"><label for="learner" class="small dim">Learner's first name</label><input type="text" id="learner" value="Maya" style="width:160px"></div>
@@ -183,16 +202,18 @@ table{width:100%;border-collapse:collapse;font-size:13.5px} td,th{text-align:lef
 
   <!-- ================= DRILL ================= -->
   <section class="screen" id="s-drill">
-    <div><span class="eyebrow" id="drillEyebrow">Warm up</span><h1>Three quick ones. Say the answer.</h1><p class="dim small">Same rule, fresh numbers, while the correction is still warm. Teaching Pip comes after, from memory.</p></div>
-    <div class="paper" style="gap:14px">
-      <div class="row" style="justify-content:space-between"><div class="dots" id="dots"><i></i><i></i><i></i></div><span class="hint" id="drillHint"></span></div>
-      <div class="q"><span id="dText"></span><span>=</span><span class="heard" id="dHeard">…</span></div>
-      <div class="voicerow">
-        <button class="ptt" id="dPtt"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="2" width="6" height="11" rx="3" fill="currentColor" stroke="none"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg><span id="dPttLabel">Hold to answer</span></button>
-        <form class="typed" id="dTyped" style="flex:1;min-width:220px"><input type="text" id="dText2" placeholder="or type it: 5/6, five sixths"><button class="btn ghost" type="submit">Answer</button></form>
+    <div><span class="eyebrow">Flash · subitizing</span><h1>See it. Don't count it.</h1><p class="dim small">A ten-frame flashes for one second. Say how many. Then say how you saw it ("five and three"). Speed and accuracy are recorded; the patterns grow as you get them.</p></div>
+    <div class="card" style="align-items:flex-start">
+      <div class="row" style="justify-content:space-between;width:100%"><div class="dots" id="dots"><i></i><i></i><i></i><i></i><i></i></div><span class="hint" id="drillHint">Press start.</span></div>
+      <div class="tenframe hid" id="frame"></div>
+      <div class="voicerow" style="width:100%">
+        <button class="btn" id="fStart">Start</button>
+        <button class="ptt" id="dPtt" disabled><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="2" width="6" height="11" rx="3" fill="currentColor" stroke="none"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg><span id="dPttLabel">Hold to say it</span></button>
+        <form class="typed" id="dTyped" style="flex:1;min-width:200px"><input type="text" id="dText2" placeholder="or type: 8, or 'five and three'" disabled><button class="btn ghost" type="submit" id="dTypedBtn" disabled>Say it</button></form>
       </div>
       <div class="row"><span id="dFb" class="small"></span></div>
-      <div class="done" id="dDone"><button class="btn" data-go="teach">Now teach Pip</button></div>
+      <div class="fstat" id="fStat" hidden><div><b id="fCorrect">0/5</b><span>seen</span></div><div><b id="fRt">–</b><span>avg seconds</span></div><div><b id="fMax">–</b><span>biggest pattern</span></div></div>
+      <div class="done" id="dDone"><button class="btn" data-go="teach">Now the game</button></div>
     </div>
   </section>
 
@@ -207,7 +228,7 @@ table{width:100%;border-collapse:collapse;font-size:13.5px} td,th{text-align:lef
         <div class="paper">
           <div class="paperhead"><span>Pip's working</span><span id="stamp"></span></div>
           <div class="work">
-            <div class="sum"><span id="ptext"></span><span>=</span><span class="ans" id="ans"><span id="wrong"></span><i class="strike" id="strike"></i></span></div>
+            <div class="sum" id="sumwrap"></div>
             <div class="note" id="note1"></div><div class="note" id="note2"></div>
           </div>
           <span class="chip hot tag" id="tag">Pip is sure</span>
@@ -230,6 +251,11 @@ table{width:100%;border-collapse:collapse;font-size:13.5px} td,th{text-align:lef
           <div class="xs dim" id="quad"></div>
         </div>
       </div>
+      <div class="blocks" id="blocks">
+        <div class="bhead"><span class="eyebrow" id="bTitle">Show him with blocks</span><span class="bcount"><b id="bCount">0</b><span id="bGoal"></span></span><span style="flex:1"></span><button class="btn ghost" id="bTrade">Trade a ten for 10 ones</button><button class="btn ghost" id="bBundle" hidden>Bundle 10 ones into a ten</button></div>
+        <div class="btray" id="btray"></div>
+        <p class="hint" id="bHint">Tap a block to take it away. Tap again to put it back. Explain what you're doing while you do it.</p>
+      </div>
       <div class="voicebar">
         <div class="voicerow">
           <button class="ptt" id="ptt" disabled><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="2" width="6" height="11" rx="3" fill="currentColor" stroke="none"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg><span id="pttLabel">Hold to talk</span></button>
@@ -246,7 +272,7 @@ table{width:100%;border-collapse:collapse;font-size:13.5px} td,th{text-align:lef
         <div class="hintbox" id="xHintText"></div>
         <div class="voicerow">
           <button class="ptt" id="xPtt"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="2" width="6" height="11" rx="3" fill="currentColor" stroke="none"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg><span id="xPttLabel">Hold to answer</span></button>
-          <form class="typed" id="xTyped" style="flex:1;min-width:200px"><input type="text" id="xTypedText" placeholder="or type it: 5/6, five sixths"><button class="btn ghost" type="submit">Answer</button></form>
+          <form class="typed" id="xTyped" style="flex:1;min-width:200px"><input type="text" id="xTypedText" placeholder="or type it: 16, sixteen"><button class="btn ghost" type="submit">Answer</button></form>
           <button class="btn ghost" id="xHintBtn">Need a hint?</button>
         </div>
         <div class="row"><span class="small" id="xFb"></span></div>
@@ -292,15 +318,44 @@ const E = (() => {
   const rng = seed => { let s = seed >>> 0 || 1; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; };
   const pick = (r, a) => a[Math.floor(r() * a.length)];
   const OPS = { add: '+', sub: '−', mul: '×', div: '÷' };
-  const problemText = p => p.op === 'compare' ? `Which is bigger: ${p.x} or ${p.y}?` : `${p.a}/${p.b} ${OPS[p.op]} ${p.c}/${p.d}`;
+  const problemText = p => p.op === 'compare' ? `Which is bigger: ${p.x} or ${p.y}?` : p.op === 'sub2' ? `${p.a} − ${p.b}` : p.op === 'add2' ? `${p.a} + ${p.b}` : `${p.a}/${p.b} ${OPS[p.op]} ${p.c}/${p.d}`;
+  const isCol = p => p.op === 'sub2' || p.op === 'add2';
   const fracVal = s => { const [n, d] = s.split('/').map(Number); return n / d; };
   function correctAnswer(p) { const { a, b, c, d } = p; switch (p.op) {
+    case 'sub2': return a - b; case 'add2': return a + b;
     case 'add': return reduce(a * d + c * b, b * d); case 'sub': return reduce(a * d - c * b, b * d);
     case 'mul': return reduce(a * c, b * d); case 'div': return reduce(a * d, b * c);
     case 'compare': return p.kind === 'decimal' ? (parseFloat(p.x) > parseFloat(p.y) ? p.x : p.y) : (fracVal(p.x) > fracVal(p.y) ? p.x : p.y); } }
   function genFrac(r, op) { const dens = [2, 3, 4, 5, 6, 8, 10, 12]; let b = pick(r, dens), d = pick(r, dens); while (d === b) d = pick(r, dens);
     let a = 1 + Math.floor(r() * (b - 1)), c = 1 + Math.floor(r() * (d - 1)); if (op === 'sub' && a / b < c / d) [a, b, c, d] = [c, d, a, b]; return { op, a, b, c, d }; }
+  const dig = n => [Math.floor(n / 10) % 10, n % 10];
+  function genSub2(r) { let a, b; do { a = 31 + Math.floor(r() * 58); b = 12 + Math.floor(r() * (a - 20)); } while (dig(a)[1] >= dig(b)[1] || b >= a || dig(b)[1] === 0); return { op: 'sub2', a, b }; }
+  function genAdd2(r) { let a, b; do { a = 13 + Math.floor(r() * 66); b = 13 + Math.floor(r() * 66); } while (dig(a)[1] + dig(b)[1] < 10 || a + b >= 100); return { op: 'add2', a, b }; }
   const MALRULES = [
+    { id: 'sub_smaller_from_larger', domain: 'numeracy', name: 'Subtracts the smaller digit from the larger in each column', kid: 'You always take the little number away from the big number. Bottom from top or top from bottom, whichever works.',
+      notes: { partial: '↑ only 3 ones, can\'t take 7', released: 'wait… trade a ten, then there are 13 ones' },
+      applies: p => p.op === 'sub2' && dig(p.a)[1] < dig(p.b)[1], execute: p => { const [ta, oa] = dig(p.a), [tb, ob] = dig(p.b); return Math.abs(ta - tb) * 10 + Math.abs(oa - ob); },
+      defense: p => `${dig(p.b)[1]} take away ${dig(p.a)[1]} is ${dig(p.b)[1] - dig(p.a)[1]}. You can't take a big number from a little one, so you flip it. Everyone knows that.`,
+      rubric: ['says you cannot take the bigger ones digit from the smaller one, so you need more ones', 'explains trading (regrouping) one ten for ten ones, and that the ten is still there, just in a different form', 'OR checks the answer by adding back or counting the blocks'],
+      generate: genSub2, opener: 'put 43 in blocks on the table and ask them to take away 27. Let the blocks force the trade, then ask them to write what they did.' },
+    { id: 'sub_borrow_no_decrement', domain: 'numeracy', name: 'Trades a ten but never reduces the tens digit', kid: 'When the ones are too small you borrow a ten. The tens stay the same, you just borrowed.',
+      notes: { partial: '↑ the ten came from somewhere', released: 'wait… I gave away a ten, so there are fewer tens' },
+      applies: p => p.op === 'sub2' && dig(p.a)[1] < dig(p.b)[1], execute: p => { const [ta, oa] = dig(p.a), [tb, ob] = dig(p.b); return (ta - tb) * 10 + (oa + 10 - ob); },
+      defense: p => `I borrowed a ten so the ones are ${dig(p.a)[1] + 10}. The tens are still ${dig(p.a)[0]}, I only borrowed. So ${dig(p.a)[0]} minus ${dig(p.b)[0]} is ${dig(p.a)[0] - dig(p.b)[0]}.`,
+      rubric: ['says the traded ten has to come out of the tens column, so the tens digit goes down by one', 'explains that the total amount does not change when you trade, it is just rearranged', 'OR checks the answer by adding back or with the blocks'],
+      generate: genSub2, opener: 'have them physically move one rod out of the tens pile and break it. Ask how many rods are left in the pile before they subtract.' },
+    { id: 'add_drop_carry', domain: 'numeracy', name: 'Adds the ones, writes the digit, drops the carry', kid: 'Add the ones, write the last number. Add the tens, write that. Done.',
+      notes: { partial: '↑ 13 ones is a ten and 3 ones', released: 'wait… the ten from the ones has to go in the tens' },
+      applies: p => p.op === 'add2' && dig(p.a)[1] + dig(p.b)[1] >= 10, execute: p => { const [ta, oa] = dig(p.a), [tb, ob] = dig(p.b); return (ta + tb) * 10 + (oa + ob) % 10; },
+      defense: p => `${dig(p.a)[1]} plus ${dig(p.b)[1]} is ${dig(p.a)[1] + dig(p.b)[1]}, so I write ${(dig(p.a)[1] + dig(p.b)[1]) % 10}. ${dig(p.a)[0]} plus ${dig(p.b)[0]} is ${dig(p.a)[0] + dig(p.b)[0]}. That's just how columns work.`,
+      rubric: ['says that ten or more ones make a new ten', 'explains that the new ten belongs in the tens column and gets added there', 'OR checks the answer with the blocks or by estimating (for example: 38 + 25 has to be more than 60)'],
+      generate: genAdd2, opener: 'build both numbers in blocks, push the ones together, and ask what to do with 13 loose cubes.' },
+    { id: 'add_write_both_digits', domain: 'numeracy', name: 'Writes the whole ones sum in the ones place', kid: 'Add the ones and write it all down. Then add the tens and write that in front.',
+      notes: { partial: '↑ 13 ones is a ten and 3 ones', released: 'wait… only one digit fits in the ones place' },
+      applies: p => p.op === 'add2' && dig(p.a)[1] + dig(p.b)[1] >= 10, execute: p => Number(String(dig(p.a)[0] + dig(p.b)[0]) + String(dig(p.a)[1] + dig(p.b)[1])),
+      defense: p => `${dig(p.a)[1]} plus ${dig(p.b)[1]} is ${dig(p.a)[1] + dig(p.b)[1]}, and ${dig(p.a)[0]} plus ${dig(p.b)[0]} is ${dig(p.a)[0] + dig(p.b)[0]}. Write them next to each other. Why would you leave part of it out?`,
+      rubric: ['says only one digit fits in the ones place, so ten ones become a ten', 'explains that the new ten is added in the tens column', 'OR checks the answer by estimating or with the blocks (the answer cannot be in the hundreds)'],
+      generate: genAdd2, opener: 'ask them to say the answer out loud. Five hundred and thirteen for 38 + 25 usually collapses on its own; then build it.' },
     { id: 'frac_add_across', name: 'Adds numerators and denominators separately', kid: 'You add the tops and you add the bottoms.',
       notes: { partial: '↑ bottom = how big the pieces are', released: "wait… that's smaller than what I started with" },
       applies: p => p.op === 'add', execute: p => frac(p.a + p.c, p.b + p.d),
@@ -345,15 +400,16 @@ const E = (() => {
       generate: r => ({ op: 'compare', kind: 'decimal', x: `0.${pick(r, [5, 6, 7, 8, 9])}`, y: `0.${pick(r, [12, 25, 35, 45])}` }), opener: 'use money: 70 cents versus 45 cents.' },
   ];
   const byId = Object.fromEntries(MALRULES.map(m => [m.id, m]));
-  const answerStr = (p, a) => p.op === 'compare' ? String(a) : fracStr(a);
-  function candidates(p) { const right = correctAnswer(p); return MALRULES.filter(m => m.applies(p)).map(m => { const out = m.execute(p); return { id: m.id, name: m.name, wrong: answerStr(p, out), raw: out }; }).filter(c => p.op === 'compare' ? c.wrong !== right : !fracEq(c.raw, right)); }
+  const answerStr = (p, a) => (p.op === 'compare' || isCol(p)) ? String(a) : fracStr(a);
+  function candidates(p) { const right = correctAnswer(p); return MALRULES.filter(m => m.applies(p)).map(m => { const out = m.execute(p); return { id: m.id, name: m.name, wrong: answerStr(p, out), raw: out }; }).filter(c => (p.op === 'compare' || isCol(p)) ? String(c.wrong) !== String(right) : !fracEq(c.raw, right)); }
   function normalizeWritten(s) { if (s == null) return null; const t = String(s).replace(/\s+/g, '').replace(/[⁄∕]/g, '/'); let m = t.match(/^(-?\d+)\/(\d+)$/); if (m) return { kind: 'frac', n: +m[1], d: +m[2] }; if (/^-?\d*\.\d+$/.test(t) || /^-?\d+$/.test(t)) return { kind: 'num', v: t }; return { kind: 'text', v: t }; }
-  function matchWritten(p, written) { const w = normalizeWritten(written); if (!w) return []; return candidates(p).filter(c => { if (p.op === 'compare') return w.kind !== 'frac' ? String(c.wrong) === w.v : fracStr(w) === c.wrong; if (w.kind !== 'frac') return false; return (c.raw.n === w.n && c.raw.d === w.d) || fracEq(c.raw, w); }); }
+  function matchWritten(p, written) { const w = normalizeWritten(written); if (!w) return []; return candidates(p).filter(c => { if (isCol(p)) return w.kind === 'num' && String(Number(w.v)) === String(c.wrong); if (p.op === 'compare') return w.kind !== 'frac' ? String(c.wrong) === w.v : fracStr(w) === c.wrong; if (w.kind !== 'frac') return false; return (c.raw.n === w.n && c.raw.d === w.d) || fracEq(c.raw, w); }); }
   function parseProblem(text) { const t = String(text).replace(/[×x*]/g, '×').replace(/[−–]/g, '-').trim();
     let m = t.match(/(\d+)\s*\/\s*(\d+)\s*([+\-×÷])\s*(\d+)\s*\/\s*(\d+)/); if (m) return { op: { '+': 'add', '-': 'sub', '×': 'mul', '÷': 'div' }[m[3]], a: +m[1], b: +m[2], c: +m[4], d: +m[5] };
+    m = t.match(/^(\d{1,2})\s*([+\-])\s*(\d{1,2})\s*=?\s*$/); if (m && !t.includes('/')) return { op: m[2] === '+' ? 'add2' : 'sub2', a: +m[1], b: +m[3] };
     m = t.match(/(\d+\/\d+)\D+(\d+\/\d+)/); if (m && /bigger|larger|greater|compare|>/i.test(t)) return { op: 'compare', kind: 'fraction', x: m[1], y: m[2] };
     m = t.match(/(\d*\.\d+)\D+(\d*\.\d+)/); if (m) return { op: 'compare', kind: 'decimal', x: m[1], y: m[2] }; return null; }
-  return { MALRULES, byId, rng, candidates, matchWritten, parseProblem, problemText, correctAnswer, answerStr, reduce, normalizeWritten };
+  return { MALRULES, byId, rng, candidates, matchWritten, parseProblem, problemText, correctAnswer, answerStr, reduce, normalizeWritten, isCol, dig };
 })();
 
 /* fluency */
@@ -372,6 +428,16 @@ const FL = (() => {
 /* keyword judge (scripted mode + safety net) */
 function keywordJudge(rule, learnerTurns) {
   const all = learnerTurns.join(' ').toLowerCase(), met = [];
+  if (rule.domain === 'numeracy') {
+    const c1 = /can'?t take|cannot take|not enough ones|only (have |got )?\d+ ones|too small|(bigger|big) (one|number).*(from|away).*(smaller|little)|ten or more|more than (nine|9)|only one (digit|number) fits|makes a (new )?ten|that'?s a ten and/;
+    const c2 = /trade|borrow|regroup|break (a|the|one) ten|ten ones|swap|carry|goes? (in|to) the tens|(one|1) less ten|tens? (go|goes) down|still (the same|there|worth)|same amount|just (moved|rearranged)/;
+    const c3 = /add (it |them )?back|check|count(ed)? (them|the blocks|it)|has to be (more|less|bigger|smaller) than|can'?t be (in the )?hundreds|about \d+|left over|plus \d+ (is|makes|gets)/;
+    if (c1.test(all)) met.push(1); if (c2.test(all)) met.push(2); if (c3.test(all)) met.push(3);
+    const released = (met.includes(1) && met.includes(2)) || (met.includes(2) && met.includes(3));
+    return { criteria_met: met, released, quality: released ? (met.length === 3 ? 3 : 2) : (met.length ? 1 : 0),
+      next_probe: released ? '' : met.includes(2) ? "Okay you traded one. But why? What's wrong with just taking the little one away?" : met.includes(1) ? "So there aren't enough ones. Then what do you do?" : "But why is it wrong? I did the columns.",
+      reason: released ? 'Named the regrouping principle.' : met.length ? 'Partial: one piece named.' : 'No explanation yet.' };
+  }
   const principle = /(size|big|small)\b.*\b(piece|part|slice)|(piece|part|slice)s?\b.*\b(size|big|small)|how many (pieces|parts)|cut into|tenths|place value|first digit|digit after/;
   const sameSize = /same size|same kind|equal (pieces|parts)|common denominator.*because|match(ing)? (pieces|bottoms)|both.*same bottom|line (them )?up|add a zero/;
   const magnitude = /(more|bigger|less|smaller) than (a )?half|smaller than (what|the one) (i|you) started|can'?t be (right|smaller)|should be (bigger|more)|less than (one|1) of|cents|money|(bigger|smaller) slice|fit inside|how many .* fit/;
@@ -384,7 +450,7 @@ function keywordJudge(rule, learnerTurns) {
 }
 function scriptedPip({ rule, p, wrong, history, released, probe }) {
   const k = history.filter(h => h.who === 'learner').length;
-  if (released) return "…oh. Oh, that's weird. So my way gives the wrong size. Okay so how do I make the pieces the same size?";
+  if (released) return `…oh. Oh, that's weird. ${rule.notes.released.replace(/^wait…\s*/, '').replace(/^\w/, c => c.toUpperCase())}. So what do I do next time?`;
   if (k === 0) return `${rule.kid} So I got ${wrong}. How would you do it?`;
   if (k === 1) return rule.defense(p);
   if (probe) return probe;
@@ -466,8 +532,8 @@ function verify({ item, p, cands, codeMatch, modelPick }) {
 }
 function mockDiagnosis() {
   return { mode: 'mock', problems: [
-    { problem_text: '1/2 + 1/3', written_answer: '2/5', marked_wrong: true }, { problem_text: '3/4 - 1/2', written_answer: '1/4', marked_wrong: false },
-    { problem_text: '1/4 + 1/2', written_answer: '2/4', marked_wrong: true }, { problem_text: 'Which is bigger: 0.7 or 0.45?', written_answer: '0.45', marked_wrong: true },
+    { problem_text: '43 - 27', written_answer: '24', marked_wrong: true }, { problem_text: '56 - 14', written_answer: '42', marked_wrong: false },
+    { problem_text: '38 + 25', written_answer: '53', marked_wrong: true }, { problem_text: '62 - 58', written_answer: '14', marked_wrong: true },
   ].map(item => { const p = E.parseProblem(item.problem_text); if (!p) return { ...item, status: 'unparsed' }; return verify({ item, p, cands: E.candidates(p), codeMatch: E.matchWritten(p, item.written_answer), modelPick: null }); }) };
 }
 
@@ -527,7 +593,7 @@ let toastT; function toast(msg) { $('status').textContent = msg; $('hint').textC
 
 const S = { learner: 'Maya', diagnosis: null, queue: [], qi: 0, history: [] };
 (function seedHistory() { const d = n => new Date(Date.now() - n * 864e5).toISOString(); S.history = [
-  { malrule: 'frac_bigger_denom_bigger', firstWrong: d(31), cleared: d(24), quality: 3 }, { malrule: 'frac_sub_across', firstWrong: d(19), cleared: d(11), quality: 2 }]; })();
+  { malrule: 'add_drop_carry', firstWrong: d(31), cleared: d(24), quality: 3 }, { malrule: 'frac_bigger_denom_bigger', firstWrong: d(19), cleared: d(11), quality: 2 }]; })();
 
 function go(name) { document.querySelectorAll('.screen').forEach(s => s.classList.toggle('on', s.id === 's-' + name)); document.querySelectorAll('nav .tab').forEach(b => b.classList.toggle('on', b.dataset.go === name)); location.hash = name; window.scrollTo({ top: 0 });
   if (name === 'drill') startDrill(); if (name === 'teach') startTeach(); if (name === 'brief') renderBrief(); if (name === 'compare') renderCompare(); }
@@ -536,12 +602,12 @@ function enableTabs() { document.querySelectorAll('nav .tab').forEach(b => { if 
 function setRound(n) { $('rounds').querySelectorAll('span').forEach((el, i) => { el.className = i + 1 < n ? 'fin' : i + 1 === n ? 'on' : ''; }); }
 
 /* ---- intake ---- */
-const SAMPLE_SVG = `<svg viewBox="0 0 640 400" xmlns="http://www.w3.org/2000/svg" style="background:#fdfcf7;border-radius:8px"><rect width="640" height="400" fill="#fdfcf7"/><text x="48" y="58" font-family="Georgia,serif" font-size="22" font-weight="700" fill="#222">Fractions &amp; decimals — Quiz 4</text><text x="48" y="84" font-family="Georgia,serif" font-size="13" fill="#555">Name: Maya</text><text x="500" y="84" font-family="Georgia,serif" font-size="13" fill="#555">Grade 5 · Sept 4</text><g transform="rotate(-12 560 150)"><ellipse cx="560" cy="150" rx="46" ry="30" fill="none" stroke="#d22" stroke-width="3"/><text x="560" y="160" text-anchor="middle" font-family="Arial" font-size="26" font-weight="700" fill="#d22">1 / 4</text></g><g font-family="Georgia,serif" font-size="24" fill="#222"><text x="60" y="160">1.  1/2 + 1/3 =</text><text x="60" y="215">2.  3/4 − 1/2 =</text><text x="60" y="270">3.  1/4 + 1/2 =</text><text x="60" y="325">4.  Which is bigger: 0.7 or 0.45?</text></g><g font-family="'Shantell Sans','Comic Sans MS',cursive" font-size="26" fill="#2b3a8f"><text x="248" y="160" transform="rotate(-2 248 160)">2/5</text><text x="248" y="215" transform="rotate(1 248 215)">1/4</text><text x="248" y="270" transform="rotate(-1.5 248 270)">2/4</text><text x="455" y="325" transform="rotate(1 455 325)">0.45</text></g><g font-family="Arial" font-size="32" font-weight="700"><text x="420" y="162" fill="#d22" transform="rotate(8 420 162)">✗</text><text x="420" y="217" fill="#2a8a3a" transform="rotate(-6 420 217)">✓</text><text x="420" y="272" fill="#d22" transform="rotate(8 420 272)">✗</text><text x="560" y="327" fill="#d22" transform="rotate(8 560 327)">✗</text></g><text x="48" y="378" font-family="Arial" font-size="14" fill="#d22" transform="rotate(-1 48 378)">Maya — remember the bottoms have to match! See me.</text></svg>`;
+const SAMPLE_SVG = `<svg viewBox="0 0 640 400" xmlns="http://www.w3.org/2000/svg" style="background:#fdfcf7;border-radius:8px"><rect width="640" height="400" fill="#fdfcf7"/><text x="48" y="58" font-family="Georgia,serif" font-size="22" font-weight="700" fill="#222">Two-digit adding and taking away — Quiz 3</text><text x="48" y="84" font-family="Georgia,serif" font-size="13" fill="#555">Name: Maya</text><text x="500" y="84" font-family="Georgia,serif" font-size="13" fill="#555">Grade 2 · Sept 4</text><g transform="rotate(-12 560 150)"><ellipse cx="560" cy="150" rx="46" ry="30" fill="none" stroke="#d22" stroke-width="3"/><text x="560" y="160" text-anchor="middle" font-family="Arial" font-size="26" font-weight="700" fill="#d22">1 / 4</text></g><g font-family="Georgia,serif" font-size="24" fill="#222"><text x="60" y="160">1.  43 − 27 =</text><text x="60" y="215">2.  56 − 14 =</text><text x="60" y="270">3.  38 + 25 =</text><text x="60" y="325">4.  62 − 58 =</text></g><g font-family="'Shantell Sans','Comic Sans MS',cursive" font-size="26" fill="#2b3a8f"><text x="228" y="160" transform="rotate(-2 228 160)">24</text><text x="228" y="215" transform="rotate(1 228 215)">42</text><text x="228" y="270" transform="rotate(-1.5 228 270)">53</text><text x="228" y="325" transform="rotate(1 228 325)">14</text></g><g font-family="Arial" font-size="32" font-weight="700"><text x="420" y="162" fill="#d22" transform="rotate(8 420 162)">✗</text><text x="420" y="217" fill="#2a8a3a" transform="rotate(-6 420 217)">✓</text><text x="420" y="272" fill="#d22" transform="rotate(8 420 272)">✗</text><text x="420" y="327" fill="#d22" transform="rotate(8 420 327)">✗</text></g><text x="48" y="378" font-family="Arial" font-size="14" fill="#d22" transform="rotate(-1 48 378)">Maya — remember to trade a ten when you don't have enough ones! See me.</text></svg>`;
 let photoFile = null;
 $('photo').addEventListener('change', () => { photoFile = $('photo').files[0]; if (!photoFile) return; const u = URL.createObjectURL(photoFile); $('preview').innerHTML = `<img src="${u}" alt="">`; $('preview').hidden = false; $('drop').classList.add('has'); $('dropText').textContent = photoFile.name; });
 $('drop').addEventListener('dragover', e => e.preventDefault()); $('drop').addEventListener('drop', e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) { const dt = new DataTransfer(); dt.items.add(f); $('photo').files = dt.files; $('photo').dispatchEvent(new Event('change')); } });
 $('go').addEventListener('click', () => runIntake(photoFile));
-$('sampleBtn').addEventListener('click', () => { photoFile = null; $('preview').innerHTML = SAMPLE_SVG; $('preview').hidden = false; $('drop').classList.add('has'); $('dropText').textContent = 'Sample worksheet · Quiz 4'; runIntake(null); });
+$('sampleBtn').addEventListener('click', () => { photoFile = null; $('preview').innerHTML = SAMPLE_SVG; $('preview').hidden = false; $('drop').classList.add('has'); $('dropText').textContent = 'Sample worksheet · Grade 2, Quiz 3'; runIntake(null); });
 async function runIntake(file) {
   S.t0 = performance.now(); S.gameStart = null;
   S.learner = $('learner').value.trim() || 'Maya'; $('go').disabled = $('sampleBtn').disabled = true;
@@ -559,7 +625,7 @@ function renderResults() {
   const d = S.diagnosis; $('results').hidden = false; $('modeNote').textContent = d.mode === 'live' ? 'read by Claude, verified in code' : 'pre-read sample';
   $('list').innerHTML = d.problems.map((p, i) => { const qi = S.queue.findIndex(q => q.malrule === p.malrule); let chip, meta = '', actions = '';
     if (p.status === 'correct') chip = '<span class="chip ok">Correct</span>';
-    else if (p.status === 'verified') { chip = '<span class="chip hot">Wrong · verified</span>'; meta = `<span class="mono small">${esc(p.malrule)}</span><span class="small dim">${esc(p.name)}</span>`; actions = `<button class="btn ghost" data-q="${qi}" data-go2="drill">Warm up</button><button class="btn" data-q="${qi}" data-go2="teach">Turn it into a game</button>`; }
+    else if (p.status === 'verified') { chip = '<span class="chip hot">Wrong · verified</span>'; meta = `<span class="mono small">${esc(p.malrule)}</span><span class="small dim">${esc(p.name)}</span>`; actions = `<button class="btn ghost" data-q="${qi}" data-go2="drill">Flash first</button><button class="btn" data-q="${qi}" data-go2="teach">Turn it into a game</button>`; }
     else if (p.status === 'unverified') { chip = '<span class="chip warn">Wrong · unverified</span>'; meta = `<span class="small dim">${esc(p.note || '')}</span><form class="row" data-i="${i}"><input type="text" placeholder="What did they write? e.g. 2/5" style="width:190px"><button class="btn ghost" type="submit">Confirm</button></form>`; }
     else if (p.status === 'ambiguous') { chip = '<span class="chip warn">Wrong · two rules fit</span>'; meta = `<span class="small dim">Could be ${p.options.join(' or ')}.</span>`; }
     else chip = '<span class="chip mute">Could not read</span>';
@@ -574,25 +640,58 @@ function renderResults() {
 /* ---- drill ---- */
 const ONES = { zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15, sixteen: 16, seventeen: 17, eighteen: 18, nineteen: 19, twenty: 20, a: 1, an: 1 };
 const DENOMS = { half: 2, halves: 2, third: 3, thirds: 3, quarter: 4, quarters: 4, fourth: 4, fourths: 4, fifth: 5, fifths: 5, sixth: 6, sixths: 6, seventh: 7, sevenths: 7, eighth: 8, eighths: 8, ninth: 9, ninths: 9, tenth: 10, tenths: 10, twelfth: 12, twelfths: 12, fifteenth: 15, fifteenths: 15, sixteenth: 16, sixteenths: 16, twentieth: 20, twentieths: 20 };
+const TENS = { twenty: 20, thirty: 30, forty: 40, fifty: 50, sixty: 60, seventy: 70, eighty: 80, ninety: 90 };
+function spokenToInt(s) { s = s.toLowerCase().replace(/[,.!?]/g, ' ').replace(/-/g, ' ').trim(); let m = s.match(/(\d{1,3})/); if (m) return +m[1];
+  const w = s.split(/\s+/); let n = null; for (let i = 0; i < w.length; i++) { if (w[i] === 'hundred' && n != null) { n *= 100; continue; } if (TENS[w[i]] != null) { n = (n || 0) + TENS[w[i]]; if (ONES[w[i + 1]] != null && ONES[w[i + 1]] < 10) { n += ONES[w[i + 1]]; i++; } } else if (ONES[w[i]] != null && w[i] !== 'a' && w[i] !== 'an') n = (n || 0) + ONES[w[i]]; } return n; }
 function spokenToAnswer(spoken, p) { let s = spoken.toLowerCase().replace(/[,.!?]+$/, '').replace(/-/g, '').trim();
+  if (E.isCol(p)) { const n = spokenToInt(s); return n == null ? null : String(n); }
   if (p.op === 'compare') { for (const o of [p.x, p.y]) { if (s.includes(o) || s.includes(o.replace('/', ' over '))) return o; const [n, d] = o.split('/'); if (d && Object.entries(DENOMS).some(([k, v]) => v === +d && s.includes(k))) return o; } const dec = s.match(/point (\w+)(?: (\w+))?/); if (dec) { const cand = '0.' + [dec[1], dec[2]].filter(Boolean).map(w => ONES[w] ?? w).join(''); if ([p.x, p.y].includes(cand)) return cand; } return null; }
   let m = s.match(/(\d+)\s*(?:\/|over|out of)\s*(\d+)/); if (m) return `${m[1]}/${m[2]}`; m = s.match(/(\w+)\s+(?:over|out of)\s+(\w+)/); if (m && ONES[m[1]] != null && ONES[m[2]] != null) return `${ONES[m[1]]}/${ONES[m[2]]}`;
   m = s.match(/(\w+)\s+(\w+)$/); if (m && ONES[m[1]] != null && DENOMS[m[2]] != null) return `${ONES[m[1]]}/${DENOMS[m[2]]}`; m = s.match(/^(\d+)$/); if (m) return `${m[1]}/1`; return null; }
-function sameAnswer(p, heard, target) { if (p.op === 'compare') return heard === target; const a = E.normalizeWritten(heard), b = E.normalizeWritten(target); if (!a || !b || a.kind !== 'frac' || b.kind !== 'frac') return false; const ra = E.reduce(a.n, a.d), rb = E.reduce(b.n, b.d); return ra.n === rb.n && ra.d === rb.d; }
+function sameAnswer(p, heard, target) { if (E.isCol(p)) return String(Number(heard)) === String(target); if (p.op === 'compare') return heard === target; const a = E.normalizeWritten(heard), b = E.normalizeWritten(target); if (!a || !b || a.kind !== 'frac' || b.kind !== 'frac') return false; const ra = E.reduce(a.n, a.d), rb = E.reduce(b.n, b.d); return ra.n === rb.n && ra.d === rb.d; }
+/* ---- flash: subitizing on a ten-frame, timed ---- */
 let D = null;
-function startDrill() { const q = S.queue[S.qi]; if (!q) { go('intake'); return; } const rule = E.byId[q.malrule]; const r = E.rng(Date.now() & 0xffff); const problems = [];
-  while (problems.length < 3) { const p = rule.generate(r); if (JSON.stringify(p) !== JSON.stringify(q.source) && !problems.some(x => JSON.stringify(x.p) === JSON.stringify(p))) problems.push({ p, correct: E.answerStr(p, E.correctAnswer(p)), trap: E.answerStr(p, rule.execute(p)) }); }
-  D = { problems, i: 0 }; q.drill = D; $('drillEyebrow').textContent = 'Warm up · ' + rule.id; $('dDone').classList.remove('on'); $('dPtt').disabled = !SR; $('dots').querySelectorAll('i').forEach(el => el.className = ''); showDrill(); }
-function showDrill() { const pr = D.problems[D.i]; $('dText').innerHTML = math(E.problemText(pr.p)); $('dHeard').textContent = '…'; $('dFb').textContent = ''; $('dots').querySelectorAll('i').forEach((el, k) => el.classList.toggle('cur', k === D.i)); $('drillHint').textContent = `${D.i + 1} of 3`; }
-function drillAnswer(spoken) { const pr = D.problems[D.i]; const heard = spokenToAnswer(spoken || '', pr.p); $('dHeard').textContent = spoken || '…'; const dot = $('dots').querySelectorAll('i')[D.i];
-  if (heard == null) { $('dFb').innerHTML = '<span class="chip warn">Didn\'t catch a number</span> <span class="dim">try "five sixths" or "5 over 6"</span>'; return; }
-  if (sameAnswer(pr.p, heard, pr.correct)) { dot.classList.add('ok'); $('dFb').innerHTML = '<span class="chip ok">Right</span>'; }
-  else if (sameAnswer(pr.p, heard, pr.trap)) { dot.classList.add('no'); $('dFb').innerHTML = `<span class="chip hot">The old rule again</span> <span class="dim">answer is ${math(pr.correct)}</span>`; }
-  else { dot.classList.add('no'); $('dFb').innerHTML = `<span class="chip warn">Not quite</span> <span class="dim">answer is ${math(pr.correct)}</span>`; }
-  D.i++; if (D.i >= 3) { S.queue[S.qi].status = 'drilled'; $('dPtt').disabled = true; $('dDone').classList.add('on'); $('drillHint').textContent = 'Warm-up done.'; return; } setTimeout(showDrill, 1400); }
-bindPTT($('dPtt'), $('dPttLabel'), { onStart: Object.assign(() => {}, { interim: t => { $('dHeard').textContent = t; } }), onStop: r => drillAnswer(r.transcript) });
-$('dTyped').addEventListener('submit', e => { e.preventDefault(); const t = $('dText2').value.trim(); if (t && D && D.i < 3) { $('dText2').value = ''; drillAnswer(t); } });
+const FLASH_SETS = [3, 5, 6, 8, 9];
+function frameHtml(n, part) { let h = ''; for (let i = 0; i < 10; i++) { const on = i < n; const second = part != null && i >= part && on; h += `<i class="${on ? 'dot' : ''}${second ? ' part2' : ''}"></i>`; } return h; }
+function startDrill() { D = { i: 0, results: [], shownAt: 0, stage: 'idle' }; $('dots').querySelectorAll('i').forEach(el => el.className = ''); $('frame').className = 'tenframe hid'; $('frame').innerHTML = frameHtml(0); $('dFb').textContent = ''; $('fStat').hidden = true; $('dDone').classList.remove('on'); $('drillHint').textContent = 'Press start. Watch the frame.'; $('fStart').disabled = false; $('dPtt').disabled = true; $('dText2').disabled = true; $('dTypedBtn').disabled = true; }
+$('fStart').addEventListener('click', () => { if (!D || D.stage !== 'idle') return; flashNext(); });
+function flashNext() { const n = FLASH_SETS[D.i]; D.stage = 'show'; $('fStart').disabled = true; $('dots').querySelectorAll('i').forEach((el, k) => el.classList.toggle('cur', k === D.i)); $('drillHint').textContent = `${D.i + 1} of ${FLASH_SETS.length} · watch`; $('dFb').textContent = '';
+  $('frame').innerHTML = frameHtml(n); $('frame').className = 'tenframe';
+  setTimeout(() => { $('frame').className = 'tenframe hid'; D.shownAt = performance.now(); D.stage = 'answer'; $('drillHint').textContent = 'How many? Say it.'; $('dPtt').disabled = !SR; $('dText2').disabled = false; $('dTypedBtn').disabled = false; $('dText2').focus(); }, 1000); }
+function flashAnswer(spoken) { if (!D || D.stage !== 'answer') return; const n = FLASH_SETS[D.i], said = spokenToInt(spoken || ''); const rt = (performance.now() - D.shownAt) / 1000; if (said == null) { $('dFb').innerHTML = '<span class="chip warn">Didn\'t catch a number</span>'; return; }
+  const ok = said === n; const parts = (spoken.match(/(\w+)\s+and\s+(\w+)/) || []).slice(1); D.results.push({ n, said, ok, rt: +rt.toFixed(1), parts: parts.length ? parts.join(' and ') : null });
+  const dot = $('dots').querySelectorAll('i')[D.i]; dot.classList.add(ok ? 'ok' : 'no'); const p5 = n > 5 ? 5 : null; $('frame').innerHTML = frameHtml(n, p5); $('frame').className = 'tenframe';
+  $('dFb').innerHTML = ok ? `<span class="chip ok">${n}</span> <span class="dim">${rt.toFixed(1)} s${n > 5 ? '. See it as 5 and ' + (n - 5) + '.' : '.'}</span>` : `<span class="chip hot">It was ${n}</span> <span class="dim">you said ${said}. ${n > 5 ? 'Try seeing the full row of 5 first.' : ''}</span>`;
+  D.stage = 'fb'; $('dPtt').disabled = true; $('dText2').disabled = true; $('dTypedBtn').disabled = true; D.i++;
+  if (D.i >= FLASH_SETS.length) { const okN = D.results.filter(r => r.ok).length, avg = (D.results.reduce((a, r) => a + r.rt, 0) / D.results.length).toFixed(1), max = Math.max(0, ...D.results.filter(r => r.ok).map(r => r.n));
+    S.flash = { correct: okN, total: D.results.length, avgRt: +avg, maxSeen: max, results: D.results }; $('fCorrect').textContent = `${okN}/${D.results.length}`; $('fRt').textContent = avg; $('fMax').textContent = max || '–'; $('fStat').hidden = false; $('drillHint').textContent = 'Flash done.'; $('dDone').classList.add('on'); D.stage = 'done'; return; }
+  setTimeout(() => { D.stage = 'idle'; flashNext(); }, 1600); }
+bindPTT($('dPtt'), $('dPttLabel'), { onStart: Object.assign(() => {}, { interim: () => {} }), onStop: r => flashAnswer(r.transcript) });
+$('dTyped').addEventListener('submit', e => { e.preventDefault(); const t = $('dText2').value.trim(); if (t) { $('dText2').value = ''; flashAnswer(t); } });
 
+/* ---- base-ten blocks: the concrete stage ---- */
+const B = { on: false, tens: 0, ones: 0, taken: new Set(), traded: 0, bundled: 0, mode: 'sub', target: 0, doneOnce: false };
+function blocksStart(p, { onTrade, onDone } = {}) { B.on = true; B.taken = new Set(); B.traded = 0; B.bundled = 0; B.doneOnce = false; B.cb = { onTrade, onDone };
+  if (p.op === 'sub2') { B.mode = 'sub'; B.tens = E.dig(p.a)[0]; B.ones = E.dig(p.a)[1]; B.target = p.a - p.b; $('bTitle').textContent = `Show him: ${p.a} take away ${p.b}`; $('bGoal').textContent = `left · take away ${p.b}`; $('bTrade').hidden = false; $('bBundle').hidden = true; }
+  else { B.mode = 'add'; B.tens = E.dig(p.a)[0] + E.dig(p.b)[0]; B.ones = E.dig(p.a)[1] + E.dig(p.b)[1]; B.target = p.a + p.b; $('bTitle').textContent = `Show him: ${p.a} and ${p.b} together`; $('bGoal').textContent = 'altogether · bundle the ones'; $('bTrade').hidden = true; $('bBundle').hidden = false; }
+  $('blocks').classList.add('on'); blocksRender(); }
+function blocksValue() { let v = 0; for (let i = 0; i < B.tens; i++) if (!B.taken.has('t' + i)) v += 10; for (let i = 0; i < B.ones; i++) if (!B.taken.has('o' + i)) v += 1; return v; }
+function blocksRender() { const tray = $('btray'); let h = ''; for (let i = 0; i < B.tens; i++) h += `<div class="rod ${B.taken.has('t' + i) ? 'taken' : ''}" data-id="t${i}" tabindex="0" role="button" aria-label="ten"></div>`;
+  h += '<div class="cubes">'; for (let i = 0; i < B.ones; i++) h += `<div class="cube ${B.taken.has('o' + i) ? 'taken' : ''}" data-id="o${i}" tabindex="0" role="button" aria-label="one"></div>`; h += '</div>'; tray.innerHTML = h;
+  const v = blocksValue(); $('bCount').textContent = v; const untakenOnes = [...Array(B.ones).keys()].filter(i => !B.taken.has('o' + i)).length;
+  $('bBundle').disabled = untakenOnes < 10; $('bTrade').disabled = ![...Array(B.tens).keys()].some(i => !B.taken.has('t' + i));
+  const done = B.mode === 'sub' ? v === B.target : (untakenOnes < 10 && B.bundled > 0 && v === B.target);
+  if (done && !B.doneOnce) { B.doneOnce = true; $('bHint').textContent = B.mode === 'sub' ? `${v} left. That's the answer, and you had to trade to get there.` : `${v} altogether, with the ones bundled. That's what the carry means.`; B.cb?.onDone?.(); }
+  else if (!done) $('bHint').textContent = B.mode === 'sub' ? (B.traded ? `You traded. Now take away ${E.dig(B.target + (B.origB || 0))[0]} tens and the ones. Say what you're doing.` : 'Tap a block to take it away. Not enough ones? There\'s a button for that. Explain while you do it.') : 'Too many loose ones for the ones place. Bundle ten of them. Explain why.'; }
+$('btray').addEventListener('click', e => { const el = e.target.closest('[data-id]'); if (!el || !B.on) return; const id = el.dataset.id; if (B.taken.has(id)) B.taken.delete(id); else B.taken.add(id); blocksRender(); });
+$('btray').addEventListener('keydown', e => { if (e.key === ' ' || e.key === 'Enter') { const el = e.target.closest('[data-id]'); if (el) { e.preventDefault(); el.click(); } } });
+$('bTrade').addEventListener('click', () => { if (!B.on) return; const i = [...Array(B.tens).keys()].find(i => !B.taken.has('t' + i)); if (i == null) return; B.taken.add('t' + i); B.ones += 10; B.traded++; blocksRender(); B.cb?.onTrade?.(B.traded); });
+$('bBundle').addEventListener('click', () => { if (!B.on) return; let n = 0; for (let i = 0; i < B.ones && n < 10; i++) if (!B.taken.has('o' + i)) { B.taken.add('o' + i); n++; } if (n < 10) return; B.tens += 1; B.bundled++; blocksRender(); B.cb?.onTrade?.(B.bundled); });
+function blocksEvidence() { if (!B.on) return null; const v = blocksValue(); return { value: v, target: B.target, correct: B.doneOnce, traded: B.traded, bundled: B.bundled }; }
+function renderWork(p, wrong) { if (E.isCol(p)) return `<div class="col"><div>${p.a}</div><div><span class="opch">${p.op === 'sub2' ? '−' : '+'}</span>${p.b}</div><div class="ln"></div><div class="ans" id="ans"><span id="wrong">${wrong}</span><i class="strike" id="strike"></i></div></div>`;
+  return `<span id="ptext">${math(E.problemText(p))}</span><span>=</span><span class="ans" id="ans"><span id="wrong">${math(wrong)}</span><i class="strike" id="strike"></i></span>`; }
+
+function lastMet() { const l = [...T.history].reverse().find(h => h.judge); return l ? l.judge.criteria_met : []; }
 /* ---- teach ---- */
 const pip = mountPip($('pip'));
 const T = { rule: null, p: null, wrong: '', correct: '', history: [], learnerTurns: 0, released: false, over: false, busy: false, listening: false, pipEndedAt: null };
@@ -603,19 +702,22 @@ const MAX_TURNS = 4;
     for (let x = 0; x <= w; x += 3) { const env = Math.sin((x / w) * Math.PI); const n = Math.sin(x * .055 + phase) * .6 + Math.sin(x * .021 - phase * 1.4) * .4; const y = mid + n * amp * env * (h * .36); x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
     ctx.stroke(); ctx.globalAlpha = 1; phase += T.listening ? .26 : .05; amp += ((T.listening ? 1 : .06) - amp) * .12; } requestAnimationFrame(draw); })(); })();
 function addTurn(who, text, fl) { const d = document.createElement('div'); d.className = 'turn ' + who; d.innerHTML = `<div class="who">${who === 'pip' ? 'Pip' : 'You'}</div><div><div class="utt">${esc(text)}</div>${fl ? `<div class="fl">${fl.onsetS}s onset · ${fl.fillers} fillers · ${fl.hedges} hedges · ${fl.longPauses} pauses · ${fl.verdict}</div>` : ''}</div>`; $('transcript').appendChild(d); return d; }
-function setCrit(met) { $('meter').querySelectorAll('i').forEach((el, i) => el.classList.toggle('on', met.includes(i + 1))); $('crit').innerHTML = T.rule.rubric.map((c, i) => `<li><span class="t ${met.includes(i + 1) ? 'y' : ''}">${met.includes(i + 1) ? '✓' : '○'}</span><span>${esc(c)}</span></li>`).join(''); }
+function setCrit(met) { const col = T.p && E.isCol(T.p), blk = col && (B.doneOnce || S.queue[S.qi]?.blocks?.correct);
+  $('meter').innerHTML = (col ? '<i class="' + (blk ? 'on' : '') + '"></i>' : '') + T.rule.rubric.map((c, i) => `<i class="${met.includes(i + 1) ? 'on' : ''}"></i>`).join('');
+  $('crit').innerHTML = (col ? `<li><span class="t ${blk ? 'y' : ''}">${blk ? '✓' : '○'}</span><span>shows it with the blocks and lands on the right count</span></li>` : '') + T.rule.rubric.map((c, i) => `<li><span class="t ${met.includes(i + 1) ? 'y' : ''}">${met.includes(i + 1) ? '✓' : '○'}</span><span>${esc(c)}</span></li>`).join(''); }
 function setMetric(id, v, hot) { const el = $(id); el.querySelector('.v').textContent = v; el.classList.toggle('hot', !!hot); }
 async function pipSays(text, expr, after) { T.busy = true; $('bubble').classList.remove('thinking'); $('bubble').textContent = text; addTurn('pip', text); if (expr) pip.set(expr);
   await speak(text, { onStart: () => pip.talking(true), onEnd: () => pip.talking(false) }); if (after) pip.set(after); T.pipEndedAt = performance.now(); T.busy = false; if (!T.over) { $('ptt').disabled = !SR; $('typedBtn').disabled = false; } }
 async function startTeach() { const q = S.queue[S.qi]; if (!q) { go('intake'); return; } const rule = E.byId[q.malrule]; const p = q.source; setRound(1); $('transfer').classList.remove('on'); $('meter').querySelectorAll('i').forEach(i => i.className = ''); X.active = false;
   Object.assign(T, { rule, p, wrong: E.answerStr(p, rule.execute(p)), correct: E.answerStr(p, E.correctAnswer(p)), history: [], learnerTurns: 0, released: false, over: false, busy: true, pipEndedAt: null }); q.teach = T;
-  $('transcript').innerHTML = ''; $('ptext').innerHTML = math(E.problemText(p)); $('wrong').innerHTML = math(T.wrong); $('stamp').textContent = fmt(new Date().toISOString()); $('ruleId').textContent = rule.id; $('ruleEn').textContent = rule.name + '. Executable, so he can\'t be argued out of it by pushback.'; $('tEyebrow').textContent = 'Teach Pip · ' + rule.id;
+  $('transcript').innerHTML = ''; $('sumwrap').innerHTML = renderWork(p, T.wrong); $('stamp').textContent = fmt(new Date().toISOString()); $('ruleId').textContent = rule.id; $('ruleEn').textContent = rule.name + '. Executable, so he can\'t be argued out of it by pushback.'; $('tEyebrow').textContent = 'Teach Pip · ' + rule.id;
   $('beliefChip').textContent = 'Held'; $('beliefChip').className = 'chip hot'; $('fluChip').textContent = 'Waiting'; $('fluChip').className = 'chip neu'; ['m-onset', 'm-fill', 'm-hedge', 'm-pause'].forEach(id => setMetric(id, '–', false)); $('quad').textContent = '';
-  $('note1').className = 'note'; $('note2').className = 'note'; $('strike').className = 'strike'; $('ans').className = 'ans'; $('tag').textContent = 'Pip is sure'; $('tag').className = 'chip hot tag'; $('done').classList.remove('on'); $('liveTx').textContent = ''; setCrit([]);
+  $('note1').className = 'note'; $('note2').className = 'note'; $('tag').textContent = 'Pip is sure'; B.on = false; $('blocks').classList.remove('on');
+  if (E.isCol(p)) blocksStart(p, { onTrade: async n => { if (n === 1 && !T.busy && !T.over) { const line = p.op === 'sub2' ? "Wait, why'd you break that ten up?" : 'Why are you squishing those together?'; T.history.push({ who: 'pip', text: line }); await pipSays(line, 'confused', 'listen'); } }, onDone: () => { if (!T.over) { setCrit(lastMet()); $('note1').textContent = T.rule.notes.partial; $('note1').classList.add('on'); $('hint').textContent = 'The blocks say ' + B.target + '. Now tell him WHY, in words.'; } } }); $('tag').className = 'chip hot tag'; $('done').classList.remove('on'); $('liveTx').textContent = ''; setCrit([]);
   $('bubble').classList.add('thinking'); $('bubble').textContent = live() ? 'Pip is thinking…' : '…'; $('ptt').disabled = true; $('typedBtn').disabled = true;
   let opening; if (live()) { try { opening = await aiPip({ rule, p, wrong: T.wrong, correct: T.correct, history: [], released: false }); } catch (e) { aiFail(e, "Pip's opening"); } }
   if (!opening) opening = scriptedPip({ rule, p, wrong: T.wrong, history: [], released: false });
-  T.history.push({ who: 'pip', text: opening }); if (!S.gameStart) S.gameStart = performance.now(); await pipSays(opening, 'proud'); setRound(2); $('hint').textContent = SR ? 'Round 2: hold the button and explain YOUR way, or type it.' : 'Round 2: no speech recognition in this browser (Chrome has it). Type your way.'; }
+  T.history.push({ who: 'pip', text: opening }); if (!S.gameStart) S.gameStart = performance.now(); await pipSays(opening, 'proud'); setRound(2); $('hint').textContent = (E.isCol(p) ? 'Round 2: show him with the blocks and ' : 'Round 2: ') + (SR ? 'hold the button to explain YOUR way, or type it.' : 'type your way (Chrome can hear you).'); }
 async function learnerTurn({ transcript, onsetMs, gapsMs, durationMs, asrConfidence }) {
   if (T.busy || T.over) return; T.busy = true; $('ptt').disabled = true; $('typedBtn').disabled = true; $('liveTx').textContent = transcript || '';
   if (!transcript.trim() || asrConfidence < 0.45) { const line = ["Wait, say that again? I didn't catch it.", 'Huh? Say that one more time.', "I didn't get that. Can you say it again?"][Math.floor(Math.random() * 3)]; T.history.push({ who: 'pip', text: line }); await pipSays(line, 'huh', 'listen'); $('hint').textContent = 'The recognizer missed that. A confused 9-year-old asking again stays in character.'; return; }
@@ -624,14 +726,15 @@ async function learnerTurn({ transcript, onsetMs, gapsMs, durationMs, asrConfide
   $('bubble').classList.add('thinking'); $('bubble').textContent = live() ? 'Judging…' : '…'; pip.set('think'); $('hint').textContent = 'Judging the explanation…';
   const learnerTurns = T.history.filter(h => h.who === 'learner').map(h => h.text); let v;
   if (live()) { try { v = await aiJudge({ rule: T.rule, learnerTurns }); } catch (e) { aiFail(e, 'the judge'); } } if (!v) v = keywordJudge(T.rule, learnerTurns);
-  T.history.at(-1).judge = v; setCrit(v.criteria_met);
+  const ev = blocksEvidence(); if (ev?.correct && !v.released && v.criteria_met.length >= 1) { v.released = true; v.quality = Math.max(v.quality, 2); v.reason = (v.reason || '') + ' Blocks showed the correct result.'; }
+  if (ev) v.blocks = ev; T.history.at(-1).judge = v; setCrit(v.criteria_met);
   const q = S.queue[S.qi]; let line;
-  if (v.released) { T.released = T.over = true; q.status = 'cleared'; q.cleared = new Date().toISOString(); q.quality = v.quality; q.quadrant = FL.quadrant(true, fl.verdict); q.reason = v.reason;
+  if (v.released) { T.released = T.over = true; q.status = 'cleared'; q.cleared = new Date().toISOString(); q.quality = v.quality; q.quadrant = FL.quadrant(true, fl.verdict); q.reason = v.reason; q.blocks = ev; B.on = false;
     $('beliefChip').textContent = 'Released'; $('beliefChip').className = 'chip ok'; $('ruleEn').textContent = 'Pin released by the judge, not by pushback.'; $('note2').textContent = T.rule.notes.released; $('note2').classList.add('on'); $('strike').classList.add('on'); $('ans').classList.add('struck'); $('tag').textContent = 'Pip got it'; $('tag').className = 'chip ok tag'; $('quad').textContent = `${q.quadrant.label}: ${q.quadrant.action}`;
     if (live()) { try { line = await aiPip({ rule: T.rule, p: T.p, wrong: T.wrong, correct: T.correct, history: T.history, released: true }); } catch (e) { aiFail(e, 'Pip'); } } if (!line) line = scriptedPip({ rule: T.rule, p: T.p, wrong: T.wrong, history: T.history, released: true });
     T.history.push({ who: 'pip', text: line }); await pipSays(line, 'dawn', 'got'); $('hint').textContent = `He's dropped that rule for good. Explanation quality ${v.quality}/3.`; $('ptt').disabled = true; $('typedBtn').disabled = true; startTransfer(); return; }
   if (v.criteria_met.length) { $('note1').textContent = T.rule.notes.partial; $('note1').classList.add('on'); $('tag').textContent = 'Pip is thinking'; }
-  if (T.learnerTurns >= MAX_TURNS) { T.over = true; q.status = 'stuck'; q.quadrant = FL.quadrant(false, fl.verdict); q.reason = v.reason; $('tag').textContent = 'Still stuck'; $('tag').className = 'chip warn tag'; $('quad').textContent = `${q.quadrant.label}: ${q.quadrant.action}`;
+  if (T.learnerTurns >= MAX_TURNS) { T.over = true; q.status = 'stuck'; q.blocks = ev; B.on = false; q.quadrant = FL.quadrant(false, fl.verdict); q.reason = v.reason; $('tag').textContent = 'Still stuck'; $('tag').className = 'chip warn tag'; $('quad').textContent = `${q.quadrant.label}: ${q.quadrant.action}`;
     line = "I still don't get it. That's okay. Can we ask your tutor on Thursday?"; T.history.push({ who: 'pip', text: line }); await pipSays(line, 'sad', 'sad'); $('hint').textContent = 'No fake win. This goes to the tutor as a flag.'; $('ptt').disabled = true; $('typedBtn').disabled = true; startTransfer(); return; }
   if (live()) { try { line = await aiPip({ rule: T.rule, p: T.p, wrong: T.wrong, correct: T.correct, history: T.history, released: false, probe: v.next_probe }); } catch (e) { aiFail(e, 'Pip'); } } if (!line) line = scriptedPip({ rule: T.rule, p: T.p, wrong: T.wrong, history: T.history, released: false, probe: v.next_probe });
   T.history.push({ who: 'pip', text: line }); await pipSays(line, 'doubt', 'listen'); $('hint').textContent = `Not convinced yet (${T.learnerTurns} of ${MAX_TURNS}). Give him the reason, not just the rule.`; }
@@ -640,17 +743,18 @@ $('typed').addEventListener('submit', e => { e.preventDefault(); const t = $('ty
 
 /* ---- round 3: transfer check, fresh problem, hints counted ---- */
 const X = { active: false, p: null, correct: '', trap: '', hints: 0, attempts: 0, done: false };
-function hintsFor(rule, p) { const h1 = rule.notes.partial.replace(/^↑\s*/, ''); let h2;
+function picture(p) { const d = n => '▮'.repeat(E.dig(n)[0]) + ' ' + '▪'.repeat(E.dig(n)[1]); return p.op === 'sub2' ? `${d(p.a)}   take away   ${d(p.b)}` : `${d(p.a)}   and   ${d(p.b)}`; }
+function hintsFor(rule, p) { if (E.isCol(p)) return [`Picture it: ${picture(p)}`, 'Blocks: open them below and do it by hand.']; const h1 = rule.notes.partial.replace(/^↑\s*/, ''); let h2;
   switch (rule.id) { case 'frac_add_across': case 'frac_sub_across': case 'frac_add_keep_larger_denom': h2 = `Rewrite both with the same bottom first. ${p.b} and ${p.d} both go into ${p.b * p.d / gcd2(p.b, p.d)}.`; break;
     case 'frac_mul_cross': h2 = 'Top times top, bottom times bottom.'; break; case 'frac_div_straight': h2 = 'Flip the second one, then multiply straight across.'; break;
     case 'frac_bigger_denom_bigger': h2 = 'Picture one pizza cut into each. Which slice is bigger?'; break; default: h2 = 'Line them up: add a zero so both have two digits after the point.'; }
   return [h1, h2]; }
 function gcd2(a, b) { while (b) [a, b] = [b, a % b]; return a; }
 async function startTransfer() { const q = S.queue[S.qi], rule = T.rule; const r = E.rng((Date.now() & 0xffff) + 31); let p = rule.generate(r); while (JSON.stringify(p) === JSON.stringify(q.source)) p = rule.generate(r);
-  Object.assign(X, { active: true, p, correct: E.answerStr(p, E.correctAnswer(p)), trap: E.answerStr(p, rule.execute(p)), hints: 0, attempts: 0, done: false, hintList: hintsFor(rule, p) });
-  setRound(3); $('xText').innerHTML = math(E.problemText(p)); $('xHeard').textContent = '…'; $('xHintText').textContent = ''; $('xFb').textContent = ''; $('xHintBtn').disabled = false; $('xHintBtn').textContent = 'Need a hint?'; $('xPtt').disabled = !SR; $('transfer').classList.add('on');
+  Object.assign(X, { active: true, p, correct: E.answerStr(p, E.correctAnswer(p)), trap: E.answerStr(p, rule.execute(p)), hints: 0, attempts: 0, done: false, hintList: hintsFor(rule, p) }); B.on = false; $('blocks').classList.remove('on');
+  setRound(3); $('xText').innerHTML = E.isCol(p) ? `${p.a} ${p.op === 'sub2' ? '−' : '+'} ${p.b}` : math(E.problemText(p)); $('xHeard').textContent = '…'; $('xHintText').textContent = ''; $('xFb').textContent = ''; $('xHintBtn').disabled = false; $('xHintBtn').textContent = 'Need a hint?'; $('xPtt').disabled = !SR; $('transfer').classList.add('on');
   const line = q.status === 'cleared' ? "Okay, your turn. Try this one on your own. I won't help." : "Okay, try this one anyway. I'll keep quiet."; T.history.push({ who: 'pip', text: line }); await pipSays(line, 'listen', 'listen'); $('ptt').disabled = true; $('typedBtn').disabled = true; $('transfer').scrollIntoView({ behavior: 'smooth', block: 'center' }); }
-$('xHintBtn').addEventListener('click', () => { if (!X.active || X.done) return; if (X.hints < X.hintList.length) { X.hints++; $('xHintText').textContent = `Hint ${X.hints}: ${X.hintList[X.hints - 1]}`; $('xHintBtn').textContent = X.hints < X.hintList.length ? 'Another hint?' : 'No more hints'; if (X.hints >= X.hintList.length) $('xHintBtn').disabled = true; } });
+$('xHintBtn').addEventListener('click', () => { if (!X.active || X.done) return; if (X.hints < X.hintList.length) { X.hints++; $('xHintText').textContent = `Hint ${X.hints}: ${X.hintList[X.hints - 1]}`; if (X.hints === 2 && E.isCol(X.p)) { blocksStart(X.p, {}); $('blocks').scrollIntoView({ behavior: 'smooth', block: 'center' }); } $('xHintBtn').textContent = X.hints < X.hintList.length ? 'Another hint?' : 'No more hints'; if (X.hints >= X.hintList.length) $('xHintBtn').disabled = true; } });
 function transferAnswer(spoken) { if (!X.active || X.done) return; const heard = spokenToAnswer(spoken || '', X.p); $('xHeard').textContent = spoken || '…';
   if (heard == null) { $('xFb').innerHTML = '<span class="chip warn">Didn\'t catch a number</span> <span class="dim">try "five sixths" or "5 over 6"</span>'; return; }
   X.attempts++; const q = S.queue[S.qi]; const correct = sameAnswer(X.p, heard, X.correct), trap = sameAnswer(X.p, heard, X.trap);
@@ -658,7 +762,7 @@ function transferAnswer(spoken) { if (!X.active || X.done) return; const heard =
   else if (X.attempts >= 2) { X.done = true; $('xFb').innerHTML = `<span class="chip ${trap ? 'hot' : 'warn'}">${trap ? 'The old rule again' : 'Not yet'}</span> <span class="dim">answer is ${math(X.correct)}</span>`; }
   else { $('xFb').innerHTML = `<span class="chip ${trap ? 'hot' : 'warn'}">${trap ? 'That\'s the old rule' : 'Not quite'}</span> <span class="dim">one more try. A hint is allowed, it just gets counted.</span>`; return; }
   q.transfer = { problem: E.problemText(X.p), heard, correct, trap, hints: X.hints, attempts: X.attempts }; X.active = false; $('xPtt').disabled = true; $('xHintBtn').disabled = true;
-  $('xHint').textContent = correct ? (X.hints === 0 ? 'Unaided. That\'s the number that matters.' : 'Got there with help. Counted.') : 'Goes to the tutor as a flag.';
+  $('xHint').textContent = correct ? (X.hints === 0 ? 'Abstract, unaided. That\'s the top of the ladder.' : X.hints === 1 ? 'Needed the picture. One step down the ladder, counted.' : 'Needed the blocks. Counted.') : 'Goes to the tutor as a flag.'; B.on = false;
   const line = correct ? (X.hints === 0 ? "You didn't even need a hint. Show-off." : 'You got it. I still need help with those.') : "Hm. Same thing I do. Let's ask your tutor."; T.history.push({ who: 'pip', text: line }); pipSays(line, correct ? 'got' : 'sad', correct ? 'proud' : 'sad').then(() => { $('ptt').disabled = true; $('typedBtn').disabled = true; $('done').classList.add('on'); }); }
 bindPTT($('xPtt'), $('xPttLabel'), { onStart: Object.assign(() => {}, { interim: t => { $('xHeard').textContent = t; } }), onStop: r => transferAnswer(r.transcript) });
 $('xTyped').addEventListener('submit', e => { e.preventDefault(); const t = $('xTypedText').value.trim(); if (t) { $('xTypedText').value = ''; transferAnswer(t); } });
@@ -667,22 +771,21 @@ $('xTyped').addEventListener('submit', e => { e.preventDefault(); const t = $('x
 const SCRIPTED_PLAN = `Here's a one-week practice plan for Maya based on the quiz.
 
 What went wrong
-Maya is adding fractions by adding the numerators and the denominators (1/2 + 1/3 = 2/5). She also kept the larger denominator on 1/4 + 1/2, and compared decimals by length. All three point to the same gap: understanding what the denominator means.
+Maya subtracts the smaller digit from the larger in each column (43 − 27 = 24) instead of regrouping, and drops the carry when adding (38 + 25 = 53). Both point to the same gap: what a ten is and how it moves between columns.
 
-Day 1 (15 min): Review with Maya that the denominator tells how many equal parts the whole is cut into. Draw two identical rectangles, shade 1/2 of one and 1/3 of the other. Ask which is bigger and why.
-Day 2 (15 min): Explain common denominators. Show that 1/2 = 3/6 and 1/3 = 2/6, so 1/2 + 1/3 = 5/6. Practice: 1/2 + 1/4, 1/3 + 1/6, 2/5 + 1/10.
-Day 3 (15 min): Unlike denominators. Practice: 1/3 + 1/4, 2/3 + 1/5, 3/4 - 1/3, 5/6 - 1/2. Check each answer together.
-Day 4 (10 min): Decimals. Line up 0.7 and 0.45 by writing 0.70 and 0.45. Practice comparing: 0.5 vs 0.35, 0.9 vs 0.81, 0.3 vs 0.27.
-Day 5 (15 min): Mixed review of 8 problems. Aim for 6 of 8 correct.
+Day 1 (15 min): Use coins or blocks to build 43 as 4 tens and 3 ones. Ask Maya to take away 7 ones. When she can't, show how to trade one ten for ten ones. Do 43 − 27, 52 − 18 together.
+Day 2 (15 min): Written subtraction with regrouping. Practice: 61 − 29, 45 − 17, 73 − 46, 90 − 34. Have Maya say "trade a ten" out loud each time.
+Day 3 (15 min): Addition with carrying. Build 38 and 25 with blocks, combine the ones, bundle ten. Practice: 47 + 35, 29 + 56, 64 + 18.
+Day 4 (10 min): Mixed set of 6. Check each by adding back or estimating.
+Day 5 (15 min): Quiz of 8 problems. Aim for 6 of 8.
 
 Tips for parents
 - Ask Maya to explain her steps before you say whether the answer is right.
-- Use pizza or chocolate bars as concrete models.
-- Keep sessions short and stop on a success.
-- If she reverts to adding denominators, go back to the drawing from Day 1.
+- Keep the blocks on the table for the whole week.
+- Stop on a success.
 
 Answer key
-Day 2: 3/4, 1/2, 1/2. Day 3: 7/12, 13/15, 5/12, 1/3. Day 4: 0.5, 0.9, 0.3.`;
+Day 2: 32, 28, 27, 56. Day 3: 82, 85, 82.`;
 let planCache = null;
 async function renderCompare() {
   const q = S.queue.find(x => x.teach) || S.queue[S.qi] || S.queue[0]; const rule = q ? E.byId[q.malrule] : null;
@@ -696,10 +799,11 @@ async function renderCompare() {
   const t = q?.teach, lt = t ? t.history.filter(h => h.who === 'learner') : [], pt = t ? t.history.filter(h => h.who === 'pip') : [];
   const childWords = lt.reduce((n, h) => n + h.text.trim().split(/\s+/).length, 0), pipWords = pt.reduce((n, h) => n + h.text.trim().split(/\s+/).length, 0);
   const prepS = S.gameStart && S.t0 ? Math.round((S.gameStart - S.t0) / 1000) : null; const xr = q?.transfer;
-  const rows = [
+  const fl2 = S.flash; const rows = [
+    ['Number sense (subitizing)', `<b class="n">not measured</b>nothing in a plan can time recognition.`, fl2 ? `<b class="n">${fl2.correct}/${fl2.total}</b>seen without counting, ${fl2.avgRt}s average, biggest ${fl2.maxSeen}.` : `<b class="n">—</b>play Flash to measure it.`],
     ['Parent preparation', `<b class="n">~${readMin + runMin} min</b>read ${readMin} min, then run and grade 5 sessions (est.)`, `<b class="n">${prepS != null ? prepS + ' s' : '—'}</b>photograph, hand over the phone. Measured this session.`],
-    ['Child-led reasoning', `<b class="n">0 words</b>the child reads the explanation and writes answers. Nothing to explain to.`, `<b class="n">${childWords} words</b>spoken by the child in ${lt.length} explanation turn${lt.length === 1 ? '' : 's'} vs ${pipWords} by Pip${q?.quality != null ? `. Explanation quality ${q.quality}/3` : ''}.`],
-    ['Fresh problem, less help', `<b class="n">not measured</b>nobody hears the reasoning; a right answer can be copied from the key.`, xr ? `<b class="n">${xr.correct ? 'correct' : 'not yet'}</b>${xr.hints} hint${xr.hints === 1 ? '' : 's'}, ${xr.attempts} attempt${xr.attempts === 1 ? '' : 's'}, on ${xr.problem}${xr.trap ? '. Fell back to the old rule.' : ''}` : `<b class="n">—</b>finish Round 3 to measure it.`],
+    ['Child-led reasoning', `<b class="n">0 words</b>the child reads the explanation and writes answers. Nothing to explain to.`, `<b class="n">${childWords} words</b>spoken by the child in ${lt.length} explanation turn${lt.length === 1 ? '' : 's'} vs ${pipWords} by Pip${q?.quality != null ? `. Explanation quality ${q.quality}/3` : ''}${q?.blocks ? (q.blocks.correct ? '. Showed it correctly with blocks.' : '.') : ''}.`],
+    ['Fresh problem, less help', `<b class="n">not measured</b>nobody hears the reasoning; a right answer can be copied from the key.`, xr ? `<b class="n">${xr.correct ? 'correct' : 'not yet'}</b>${xr.hints === 0 ? 'abstract, no support' : xr.hints === 1 ? 'needed the picture' : 'needed the blocks'}, ${xr.attempts} attempt${xr.attempts === 1 ? '' : 's'}, on ${xr.problem}${xr.trap ? '. Fell back to the old rule.' : ''}` : `<b class="n">—</b>finish Round 3 to measure it.`],
   ];
   $('score').innerHTML = `<div class="h"></div><div class="h">Practice plan</div><div class="h">Understudy</div>` + rows.map(r => `<div class="k">${r[0]}</div><div>${r[1]}</div><div class="us">${r[2]}</div>`).join('');
 }
@@ -715,8 +819,9 @@ function renderBrief() { const q = S.queue.find(x => x.teach) || S.queue[S.qi] |
     <div class="kv"><div><span class="k">First got it wrong</span><span class="v">${fmt(q.firstWrong)}</span></div><div><span class="k">Taught it back</span><span class="v">${q.cleared ? fmt(q.cleared) : '—'}</span></div><div><span class="k">Rule</span><span class="v">${esc(q.malrule)}</span></div></div>`;
   const b1 = q.status === 'cleared' ? `${S.learner} taught ${q.malrule} successfully on ${fmt(q.cleared)}. Explanation quality ${q.quality}/3. ${q.reason || ''}` : q.status === 'stuck' ? `${S.learner} could not explain ${q.malrule} after ${MAX_TURNS} attempts. Pip flagged it. Start here.` : `${S.learner} has ${q.malrule} open from the ${fmt(q.firstWrong)} worksheet. Not yet taught back.`;
   const b2 = hes.length ? `Delivery hesitant on ${hes.length} of ${lt.length} attempts: ${hes.map(h => `${h.fluency.onsetS}s onset, ${h.fluency.hedges} hedge${h.fluency.hedges === 1 ? '' : 's'}`).join('; ')}. ${q.status === 'cleared' ? 'Got there, and it cost tries. Treat as recent, not solid.' : ''}` : lt.length ? `Delivery fluent throughout (${lt.map(h => h.fluency.onsetS + 's').join(', ')} onset). Reads as solid.` : 'No spoken attempts yet.';
-  const xr = q.transfer; const b3 = xr ? `Fresh problem (${xr.problem}), on their own: ${xr.correct ? 'correct' : 'wrong'} with ${xr.hints} hint${xr.hints === 1 ? '' : 's'} in ${xr.attempts} attempt${xr.attempts === 1 ? '' : 's'}${xr.trap ? ', and fell back to the old rule' : ''}.` : 'Fresh problem not attempted yet.';
-  $('tutorCard').innerHTML = `<h3>For the tutor, before Thursday</h3><ul class="bullets"><li>${esc(b1)}</li><li>${hes.length ? '<mark>' + esc(b2) + '</mark>' : esc(b2)}</li><li>${esc(b3)}</li><li>Suggested opener: ${esc(rule.opener)}</li></ul>${q.quadrant ? `<div class="quadbox"><b>${esc(q.quadrant.label)}</b> · ${esc(q.quadrant.action)}</div>` : ''}<p class="xs dim">This is the handoff. Synthesis, Khanmigo and Amira have nobody to hand it to. Nerdy has 40,000+ tutors.</p>`;
+  const xr = q.transfer; const b3 = xr ? `Fresh problem (${xr.problem}), on their own: ${xr.correct ? 'correct' : 'wrong'} ${xr.hints === 0 ? 'at the abstract level with no support' : xr.hints === 1 ? 'after seeing the picture' : 'after opening the blocks'}, ${xr.attempts} attempt${xr.attempts === 1 ? '' : 's'}${xr.trap ? ', and fell back to the old rule' : ''}.` : 'Fresh problem not attempted yet.';
+  const b0 = S.flash ? `Flash: ${S.flash.correct}/${S.flash.total} patterns seen without counting, ${S.flash.avgRt}s average${S.flash.correct < S.flash.total ? '. Still counting one by one above ' + (S.flash.maxSeen || 3) + '.' : '.'}` : null;
+  $('tutorCard').innerHTML = `<h3>For the tutor, before Thursday</h3><ul class="bullets"><li>${esc(b1)}${q.blocks ? (q.blocks.correct ? ' Showed it correctly with the blocks (traded ' + (q.blocks.traded || q.blocks.bundled) + ').' : ' Did not get the blocks to the right count.') : ''}</li><li>${hes.length ? '<mark>' + esc(b2) + '</mark>' : esc(b2)}</li><li>${esc(b3)}</li>${b0 ? `<li>${esc(b0)}</li>` : ''}<li>Suggested opener: ${esc(rule.opener)}</li></ul>${q.quadrant ? `<div class="quadbox"><b>${esc(q.quadrant.label)}</b> · ${esc(q.quadrant.action)}</div>` : ''}<p class="xs dim">This is the handoff. Synthesis, Khanmigo and Amira have nobody to hand it to. Nerdy has 40,000+ tutors.</p>`;
   $('rows').innerHTML = S.history.map(h => `<tr><td class="mono">${esc(h.malrule)}</td><td>${fmt(h.firstWrong)}</td><td>${fmt(h.cleared)}</td><td>${h.quality}/3</td><td><span class="chip ok">cleared</span></td></tr>`).join('') +
     S.queue.map(x => `<tr><td class="mono">${esc(x.malrule)}</td><td>${fmt(x.firstWrong)}</td><td>${x.cleared ? fmt(x.cleared) : '—'}</td><td>${x.quality != null ? x.quality + '/3' : '—'}</td><td><span class="chip ${x.status === 'cleared' ? 'ok' : x.status === 'stuck' ? 'warn' : 'neu'}">${x.status}</span></td></tr>`).join(''); }
 

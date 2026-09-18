@@ -13,14 +13,21 @@ const { chromium } = require('playwright');
   console.log('rows', await page.locator('.result').count(), '| mode chip:', await page.locator('#modeChip').innerText());
   await page.screenshot({ path: '/tmp/shots/h1.png', fullPage: true });
   await page.click('.result button[data-go2="drill"]'); await page.waitForSelector('#s-drill.on');
-  for (let i = 0; i < 3; i++) { await page.fill('#dText2', 'five over six'); await page.click('#dTyped button'); await page.waitForTimeout(1600); }
-  console.log('drill done:', await page.locator('#dDone').evaluate(e => e.classList.contains('on')));
+  await page.click('#fStart');
+  for (let i = 0; i < 5; i++) { await page.waitForFunction(() => D && D.stage === 'answer', null, { timeout: 5000 }); const n = await page.evaluate(() => FLASH_SETS[D.i]); await page.fill('#dText2', i === 2 ? 'five and one' : String(n)); await page.click('#dTypedBtn'); await page.waitForTimeout(100); }
+  await page.waitForSelector('#dDone.on'); console.log('flash:', await page.locator('#fCorrect').innerText(), 'avg', await page.locator('#fRt').innerText());
   await page.click('#dDone button'); await page.waitForSelector('#s-teach.on');
   await page.waitForFunction(() => !document.getElementById('typedBtn').disabled);
+  console.log('paper:', (await page.locator('#sumwrap').innerText()).replace(/\s+/g, ' '), '| blocks on:', await page.locator('#blocks.on').count());
   const say = async t => { await page.fill('#typedText', t); await page.click('#typedBtn'); await page.waitForFunction(() => !document.getElementById('bubble').classList.contains('thinking')); await page.waitForTimeout(400); };
-  await say("That's wrong."); await say('um I think the bottom is like how big the pieces are I guess');
+  await say("That's wrong.");
+  await page.click('#bTrade'); await page.waitForFunction(() => !T.busy); console.log('after trade count:', await page.locator('#bCount').innerText(), '| pip said:', (await page.locator('#bubble').innerText()).slice(0, 40));
+  await page.evaluate(() => { const ids = [...document.querySelectorAll('#btray .rod:not(.taken)')].slice(0, 2).map(e => e.dataset.id).concat([...document.querySelectorAll('#btray .cube:not(.taken)')].slice(0, 7).map(e => e.dataset.id)); ids.forEach(id => document.querySelector(`[data-id="${id}"]`).click()); });
+  console.log('blocks count:', await page.locator('#bCount').innerText(), '| done:', await page.evaluate(() => B.doneOnce));
+  await say('um I think you cant take 7 from 3 I guess');
   console.log('fluency:', await page.locator('#fluChip').innerText());
-  await say('Half a pizza plus a third is more than half but your answer is smaller than a half so it cant be right');
+  if (!(await page.evaluate(() => T.over))) await say('So you trade a ten for ten ones. The ten is still there, its just ten little ones now, and then you have 13 ones and you can take 7 away.');
+  else console.log('released on blocks + one verbal criterion');
   console.log('belief:', await page.locator('#beliefChip').innerText());
   await page.waitForSelector('#transfer.on'); console.log('round 3 shown, problem:', await page.locator('#xText').innerText());
   await page.click('#xHintBtn'); console.log('hint 1:', (await page.locator('#xHintText').innerText()).slice(0, 50));
