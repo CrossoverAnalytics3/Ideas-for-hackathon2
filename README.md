@@ -9,11 +9,21 @@ Fits prompt 1 (elementary math), and the same engine runs prompts 2 and 3.
 
 ## The one-sentence version
 
-Understudy takes the specific wrong rule a kid used last Tuesday, pins it inside an AI
-character, and three days later asks the kid to teach that character out of it.
+A parent photographs the graded worksheet. Understudy reads the wrong *rule* behind the wrong
+answer, pins it inside an AI character, and three days later asks the kid to teach that
+character out of it.
 
 Out loud. There's no answer box anywhere in the product. The character stays wrong until
 the spoken explanation is actually right.
+
+```
+  PHOTO ──► DIAGNOSE ──► DRILL ──(3 days)──► TEACH ──► tutor brief · parent clip
+  graded     which        practice            talk Pip
+  homework   malrule?     while fresh         out of it
+```
+
+The red pen is ground truth, sitting on a kitchen table in every house in the country, and
+right now it goes in the recycling. Full design in [`docs/intake.md`](docs/intake.md).
 
 ---
 
@@ -63,6 +73,9 @@ Two weeks earlier, Maya wrote 2/5 on her tutor's whiteboard.
 
 ## The mechanic, precisely
 
+0. **Start from work that already exists.** A parent photographs the returned quiz. No
+   placement test, no empty profile, no waiting for a tutor session to mine. The first
+   session is personalized before the learner has done anything.
 1. **Catch the malrule.** Brown and Burton showed in 1978 that most wrong answers are
    consistent procedures with one broken step. A kid writing 1/2 + 1/3 = 2/5 is running
    whole-number addition on fractions, correctly, on the wrong object. We tag which broken
@@ -164,7 +177,27 @@ models, one piece of code, no drift.
 Show that diagram in the demo video and every engineer on the panel knows you understood
 the actual problem.
 
-## The second hard part, and the trick that dissolves it
+## Reading the mistake is harder than reading the page
+
+Vision models grade handwritten math well and read it badly. In a 2026 evaluation, **87% of
+the best model's errors were transcription failures** rather than wrong judgment. Worse,
+*When VLMs "Fix" Students* (arXiv 2604.22774) documents **over-correction**: the model
+silently repairs a student's error while transcribing it, because it's trained to output
+correct mathematics. Show it `1/2 + 1/3 = 2/5` and it may hand back `5/6`.
+
+The one thing this product needs, reading a child's mistake faithfully, is the documented
+failure mode of the tool that reads it. Same sycophancy as the tutee, at the other end of the
+pipe.
+
+Same fix. Ask a closed question instead of an open one: which of these 101 malrules, applied
+to this problem, produces what's on the page? Then verify in code by running each candidate
+and checking which one makes those digits. **The malrule library is an error-correcting code
+for the OCR.**
+
+One deterministic library constrains the model at the input and at the output. That's the
+system story.
+
+## The third hard part, and the trick that dissolves it
 
 Children's speech recognition runs **4 to 8 times worse** than adult speech, worse the
 younger the child. Tuned models have closed a lot of it (9.2% WER on the MyST child corpus,
@@ -258,6 +291,7 @@ Nothing here needs schools, which matters, since Nerdy just exited that business
 
 Idea and spec.
 
+- [`docs/intake.md`](docs/intake.md) the photo on-ramp, the over-correction risk, and what already ships
 - [`docs/learner-problems.md`](docs/learner-problems.md) what's actually going wrong for learners, and what it validates or breaks
 - [`docs/voice-layer.md`](docs/voice-layer.md) the speech design, the fluency signal, the ASR strategy
 - [`docs/build-plan.md`](docs/build-plan.md) 12-hour scope and demo-video shot list

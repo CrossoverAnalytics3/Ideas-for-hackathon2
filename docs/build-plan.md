@@ -18,6 +18,9 @@ They will not stress-test your edge cases.
 
 ## Hours 0-2: the malrule engine
 
+The library now does double duty: it makes Pip stubborn *and* it error-corrects the vision
+model at intake. Build it first for both reasons.
+
 This is the part that wins, so build it first and build it in plain Python or TypeScript.
 
 ```python
@@ -46,7 +49,29 @@ release rubric. The rubric is what the judge model scores against.
 **Test it standalone before touching any UI.** Feed it 20 fresh problems and confirm the
 wrong answers are the wrong answers a real kid produces.
 
-## Hours 2-4: the two-model loop
+## Hours 2-3: photo intake
+
+90 minutes, and it buys the best 20 seconds of the demo video: a real crumpled worksheet with
+real red pen, held up to a real camera. A physical object on screen beats every slide anyone
+else will show.
+
+Scope it hard. **One photo, hardcoded fallback ready.** A single vision call, constrained:
+
+```
+"Here is a graded math problem and the student's written answer.
+ Candidates: [frac_add_across → 2/5, frac_add_cross → 5/6, ...]
+ Which candidate matches what is written? Return the id, or 'none'."
+```
+
+Closed set, not free transcription. Then verify: run each candidate malrule and check which
+produces the digits. One match means high confidence. No match means probable over-correction,
+so ask the parent to confirm rather than guessing.
+
+**Shoot the photo yourself in good light.** Write the worksheet by hand, mark it in red, and
+take the picture before you write any code, so you're developing against the real image.
+Keep a hardcoded result path so a failed API call on camera doesn't kill the take.
+
+## Hours 3-5: the two-model loop
 
 Two calls, clearly separated. Keep them separate in the code, because you're going to show
 this architecture on screen.
@@ -75,7 +100,7 @@ Cap it at 4 turns. If the kid can't get there, Pip says "I still don't get it, c
 your tutor?" and the session flags for the tutor brief. **Build that path.** Refusing to
 hand out a fake win is the most honest thing in the product and worth 10 seconds of video.
 
-## Hours 4-7: voice, which is now the whole interface
+## Hours 5-7: voice, which is now the whole interface
 
 Speech-to-speech realtime APIs are tempting and wrong for this. They put the answer back
 inside the model, which breaks the belief pin, and they hide the word timings you need for
@@ -158,13 +183,14 @@ fragile.** Still shaky on why common denominators work. Suggested opener: ..."
 
 | Time | Beat |
 |---|---|
-| 0:00-0:25 | Open on the finding, not on us: a 2026 study found the plain AI chatbot produced the highest perceived understanding and the lowest actual learning of four designs. Then the hook. "A tutoring session is 60 minutes of talking. Then the kid goes home and taps a screen in silence for a week." |
-| 0:25-1:10 | Live demo, audio up. Maya teaching Pip out loud. Let Pip resist once. Let the silence sit. |
-| 1:10-1:35 | The architecture diagram. Say the sycophancy problem out loud, cite the 66% to 40% drop, show the executable malrule and the belief strip flipping. |
-| 1:35-2:00 | The quadrant. Play two clips of the same correct answer, one fluent, one hesitant, and show them landing in different boxes. This is the "why voice" proof and it needs no explanation. |
-| 2:00-2:15 | The refusal path. Pip not getting it, the flag going to the tutor. |
-| 2:15-2:35 | Parent card with the audio clip playing, and the tutor brief. Name the retention mechanic. |
-| 2:35-2:45 | Same engine, three malrule libraries, three subjects. One slide. |
+| 0:00-0:20 | Hold up a real graded worksheet, red pen and all. "Every house has a pile of these. They go in the recycling." Photograph it on camera; the app names the rule behind the mistake. Physical object, no slide. |
+| 0:20-0:35 | The finding: a 2026 study found the plain AI chatbot produced the highest perceived understanding and the lowest actual learning of four designs. Then the hook. "A session is 60 minutes of talking. Then the kid taps a screen in silence for a week." |
+| 0:35-1:15 | Live demo, audio up. Maya teaching Pip out loud. Let Pip resist once. Let the silence sit. |
+| 1:15-1:40 | The architecture diagram. Say the sycophancy problem out loud, cite the 66% to 40% drop, show the executable malrule and the belief strip flipping. Then the payoff line: the same library error-corrects the vision model at intake. One idea, both ends. |
+| 1:40-2:05 | The quadrant. Play two clips of the same correct answer, one fluent, one hesitant, and show them landing in different boxes. This is the "why voice" proof and it needs no explanation. |
+| 2:05-2:18 | The refusal path. Pip not getting it, the flag going to the tutor. |
+| 2:18-2:38 | Parent card with the audio clip playing, and the tutor brief. Name the retention mechanic. |
+| 2:38-2:50 | Same engine, three malrule libraries, three subjects. One slide. |
 
 Record the demo screen capture first, separately, so a flaky API call doesn't cost you a
 whole take. Voiceover after.
@@ -188,3 +214,6 @@ public URL. Submit early, since the rules say entries are reviewed as they arriv
    the argument now.
 3. **ASR mangling the demo take.** Build Pip's in-character "say that again" line before you
    build anything pretty, and it becomes a feature on camera rather than a retake.
+4. **The vision model over-correcting your worksheet.** It's the documented failure and it
+   will happen. Constrain to the candidate set, verify against the executable rules, and keep
+   a hardcoded result behind the camera path for the recording.
