@@ -89,6 +89,22 @@ Cross it with correctness and you get four states, not two:
 assessment on the market and then fails the unit test three weeks later. No answer box can
 see that state. A microphone can.
 
+### The confound, and the fix that makes it better
+
+Absolute thresholds break on anxious kids. Math anxiety affects roughly 17% of students
+across 63 education systems, and in a study of nearly 1,800 elementary and middle schoolers,
+**77% of the math-anxious students were normal-to-high achievers.** A slow, hedging delivery
+from one of them means nerves, not a gap. Scoring that as "fragile" re-queues work they
+already own, which is the fastest way to make an anxious child hate the product.
+
+So fluency is scored **against the learner's own baseline, never a global cutoff.** Every kid
+builds a personal speaking profile in their first week. A kid who's always slow reads as
+fluent at their own normal. The signal we want is the delta, and a per-learner baseline is
+the more honest measurement anyway.
+
+Name this in the demo. Showing you found the confound and handled it reads far better than a
+grid that pretends to be clean.
+
 Show that grid in the demo video next to a real waveform with the pauses marked. That is
 the single clearest argument for why this has to be spoken, and it takes 15 seconds.
 

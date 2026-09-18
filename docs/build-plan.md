@@ -109,6 +109,11 @@ restarts    = count_self_repairs(transcript)
 Bucket it fluent/hesitant with thresholds you pick by hand. Anything fancier is not a
 12-hour problem, and the quadrant reads the same on video either way.
 
+**Say the baseline caveat out loud instead of building it.** Absolute thresholds mislabel
+anxious kids, 77% of whom are normal-to-high achievers. The product scores fluency against
+each learner's own profile; the demo can't, because there's no week of history. One sentence
+in the video covers it and reads as rigour rather than a gap.
+
 **TTS needs a child voice.** An adult-sounding tutee breaks the frame instantly. Spend
 15 minutes picking the voice. It matters more than it sounds like it does.
 
@@ -153,7 +158,7 @@ fragile.** Still shaky on why common denominators work. Suggested opener: ..."
 
 | Time | Beat |
 |---|---|
-| 0:00-0:25 | Nerdy's number: memberships down 5%. Then the real hook. "A tutoring session is 60 minutes of talking. Then the kid goes home and taps a screen in silence for a week." State the problem, not the product. |
+| 0:00-0:25 | Open on the finding, not on us: a 2026 study found the plain AI chatbot produced the highest perceived understanding and the lowest actual learning of four designs. Then the hook. "A tutoring session is 60 minutes of talking. Then the kid goes home and taps a screen in silence for a week." |
 | 0:25-1:10 | Live demo, audio up. Maya teaching Pip out loud. Let Pip resist once. Let the silence sit. |
 | 1:10-1:35 | The architecture diagram. Say the sycophancy problem out loud, cite the 66% to 40% drop, show the executable malrule and the belief strip flipping. |
 | 1:35-2:00 | The quadrant. Play two clips of the same correct answer, one fluent, one hesitant, and show them landing in different boxes. This is the "why voice" proof and it needs no explanation. |

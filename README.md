@@ -192,6 +192,22 @@ instead.
 There's a bonus that matters commercially: **you cannot cheat at teaching.** There's no
 answer to photograph. Chegg's business died on that distinction.
 
+## The citation that reframes the whole submission
+
+*Confidence Without Competence in AI-Assisted Knowledge Work* (arXiv 2604.09444, 2026)
+tested four interaction designs with 85 participants. The plain single-agent chatbot
+baseline produced **the highest perceived understanding and the lowest objective learning of
+any condition tested.**
+
+A companion study of 12,650 real student messages found the same thing from the usage side:
+educators build conversational tutors for learning dialogue, students paste the assignment in
+and take the answer, and 59% of a whole semester's interactions land in one exam week.
+
+Most submissions this weekend will be a chat tutor with a mascot. There is now a 2026 paper
+measuring that design as the worst of four. Understudy inverts it: the learner is the expert,
+and the AI has no answer to hand over. Full evidence in
+[`docs/learner-problems.md`](docs/learner-problems.md).
+
 ## On Synthesis Tutor, before a judge brings it up
 
 Synthesis Tutor is voice-first AI math for ages 5-11, Socratic, kids speak their reasoning
@@ -242,6 +258,7 @@ Nothing here needs schools, which matters, since Nerdy just exited that business
 
 Idea and spec.
 
+- [`docs/learner-problems.md`](docs/learner-problems.md) what's actually going wrong for learners, and what it validates or breaks
 - [`docs/voice-layer.md`](docs/voice-layer.md) the speech design, the fluency signal, the ASR strategy
 - [`docs/build-plan.md`](docs/build-plan.md) 12-hour scope and demo-video shot list
 - [`docs/research.md`](docs/research.md) evidence, numbers and sources
