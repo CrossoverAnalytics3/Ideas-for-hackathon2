@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>Understudy</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&family=Shantell+Sans:wght@400;600&display=swap">
@@ -117,6 +118,19 @@ mark{background:var(--warn-soft);color:var(--warn);padding:0 3px;border-radius:2
 table{width:100%;border-collapse:collapse;font-size:13.5px} td,th{text-align:left;padding:8px 6px;border-bottom:1px solid color-mix(in srgb,var(--ink) 10%,transparent)} th{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 .tablewrap{overflow-x:auto}
 .quadbox{background:var(--teal-soft);border-radius:10px;padding:12px 14px;font-size:13.5px} .quadbox b{font-family:"IBM Plex Mono",monospace;letter-spacing:.06em;text-transform:uppercase;font-size:12px}
+/* rounds + transfer + compare */
+.rounds{display:flex;gap:6px;flex-wrap:wrap} .rounds span{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:5px 10px;border-radius:20px;background:color-mix(in srgb,var(--ink) 7%,transparent);color:var(--muted)}
+.rounds span.on{background:var(--teal);color:var(--btn-text)} .rounds span.fin{background:var(--good-soft);color:var(--good)}
+.meter{display:flex;gap:4px;height:8px} .meter i{flex:1;border-radius:4px;background:color-mix(in srgb,var(--ink) 10%,transparent);transition:background .4s} .meter i.on{background:var(--good)}
+.transfer{grid-column:1/-1;background:var(--paper);border-radius:12px;padding:16px 18px;display:none;flex-direction:column;gap:12px;background-image:repeating-linear-gradient(var(--paper) 0 30px,var(--paper-line) 30px 31px)} .transfer.on{display:flex}
+.transfer .q{font-size:clamp(28px,5vw,40px);display:flex;align-items:center;gap:12px;line-height:1.9}
+.hintbox{font-family:"Shantell Sans",cursive;color:var(--pencil);font-size:16px;min-height:22px}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:16px} @media(max-width:760px){.cmp{grid-template-columns:1fr}}
+.plan{font-size:13.5px;line-height:1.55;color:var(--ink-2);white-space:pre-wrap;max-height:340px;overflow:auto;padding:12px;border-radius:8px;background:color-mix(in srgb,var(--ink) 4%,transparent)}
+.score{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:1px;background:color-mix(in srgb,var(--ink) 12%,transparent);border-radius:10px;overflow:hidden}
+.score>div{background:var(--paper);padding:12px 14px;font-size:13.5px} .score .h{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);background:color-mix(in srgb,var(--ink) 4%,transparent)}
+.score .k{font-weight:600} .score b.n{font-family:"Bricolage Grotesque",serif;font-size:22px;display:block;line-height:1.1} .score .us{background:var(--teal-soft)}
+@media(max-width:560px){.score{grid-template-columns:1fr} .score .h{display:none}}
 /* pip rig */
 .pipsvg{width:100%;height:100%;overflow:visible;display:block} .pipsvg .pipbody{transform-origin:75px 150px;animation:pipbob 3.4s ease-in-out infinite}
 @keyframes pipbob{0%,100%{transform:translateY(0) scaleY(1)}50%{transform:translateY(-4px) scaleY(1.012)}}
@@ -132,6 +146,7 @@ table{width:100%;border-collapse:collapse;font-size:13.5px} td,th{text-align:lef
     <button class="tab" data-go="drill" disabled>Warm up</button>
     <button class="tab" data-go="teach" disabled>Teach</button>
     <button class="tab" data-go="brief" disabled>Brief</button>
+    <button class="tab" data-go="compare" disabled>Compare</button>
     <button class="mode mock" id="modeChip" title="Click to switch between Claude and scripted mode">scripted</button>
   </nav>
 
@@ -183,7 +198,8 @@ table{width:100%;border-collapse:collapse;font-size:13.5px} td,th{text-align:lef
 
   <!-- ================= TEACH ================= -->
   <section class="screen" id="s-teach">
-    <div><span class="eyebrow" id="tEyebrow">Teach Pip</span><h1>Pip got one wrong. Talk him out of it.</h1><p class="dim small">Hold the button and say why, or type it. He stays wrong until the explanation is actually right.</p></div>
+    <div style="display:flex;flex-direction:column;gap:10px"><span class="eyebrow" id="tEyebrow">The game</span><h1>One wrong answer. Now it's a game.</h1><p class="dim small" id="tSub">Pip got the same one wrong, and he still thinks he's right. Explain your way. He stays wrong until the reasoning holds. Then a fresh one, on your own.</p>
+      <div class="rounds" id="rounds"><span class="on">Round 1 · Pip's way</span><span>Round 2 · Your way</span><span>Round 3 · Fresh one, no help</span></div></div>
     <div class="app">
       <div class="pipside"><div class="piprig" id="pip"></div><div class="pipname"><b>Pip</b>age 9 · your understudy</div></div>
       <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
@@ -201,7 +217,7 @@ table{width:100%;border-collapse:collapse;font-size:13.5px} td,th{text-align:lef
         <div class="strip">
           <div class="striphead"><span class="striplabel">Belief state · Pip</span><span class="chip hot" id="beliefChip">Held</span></div>
           <div class="mono" id="ruleId" style="font-size:14px;font-weight:600"></div><div class="xs dim" id="ruleEn"></div>
-          <ul class="crit" id="crit"></ul>
+          <div class="meter" id="meter"><i></i><i></i><i></i></div><ul class="crit" id="crit"></ul>
         </div>
         <div class="strip">
           <div class="striphead"><span class="striplabel">Fluency · learner</span><span class="chip neu" id="fluChip">Waiting</span></div>
@@ -222,7 +238,18 @@ table{width:100%;border-collapse:collapse;font-size:13.5px} td,th{text-align:lef
         </div>
         <form class="typed" id="typed"><input type="text" id="typedText" placeholder="or type what you'd say to him"><button class="btn ghost" type="submit" id="typedBtn">Say it</button></form>
         <div class="live-tx" id="liveTx"></div>
-        <div class="done" id="done"><button class="btn" data-go="brief">See what the parent and tutor get</button><button class="btn ghost" data-go="intake">Another worksheet</button></div>
+        <div class="done" id="done"><button class="btn" data-go="compare">Compare with a practice plan</button><button class="btn ghost" data-go="brief">Parent + tutor brief</button></div>
+      </div>
+      <div class="transfer" id="transfer">
+        <div class="row" style="justify-content:space-between"><span class="eyebrow">Round 3 · a fresh one, on your own</span><span class="hint" id="xHint">Say the answer. Hints are counted.</span></div>
+        <div class="q"><span id="xText"></span><span>=</span><span class="heard work" id="xHeard">…</span></div>
+        <div class="hintbox" id="xHintText"></div>
+        <div class="voicerow">
+          <button class="ptt" id="xPtt"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="2" width="6" height="11" rx="3" fill="currentColor" stroke="none"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg><span id="xPttLabel">Hold to answer</span></button>
+          <form class="typed" id="xTyped" style="flex:1;min-width:200px"><input type="text" id="xTypedText" placeholder="or type it: 5/6, five sixths"><button class="btn ghost" type="submit">Answer</button></form>
+          <button class="btn ghost" id="xHintBtn">Need a hint?</button>
+        </div>
+        <div class="row"><span class="small" id="xFb"></span></div>
       </div>
     </div>
     <div class="card"><span class="eyebrow">Transcript</span><div class="transcript" id="transcript"></div></div>
@@ -235,6 +262,18 @@ table{width:100%;border-collapse:collapse;font-size:13.5px} td,th{text-align:lef
     <div class="card"><div class="row" style="justify-content:space-between"><h2>Misconceptions, over time</h2><span class="hint">The progression is Pip. No points.</span></div>
       <div class="tablewrap"><table><thead><tr><th>Rule</th><th>First wrong</th><th>Taught back</th><th>Quality</th><th>Status</th></tr></thead><tbody id="rows"></tbody></table></div></div>
     <div class="row"><button class="btn ghost" data-go="intake">Start another worksheet</button></div>
+  </section>
+
+  <!-- ================= COMPARE ================= -->
+  <section class="screen" id="s-compare">
+    <div><span class="eyebrow">The comparison that matters</span><h1>Against a good practice plan.</h1><p class="dim small">A parent with this worksheet can ask any AI for a plan. Here's one, next to what just happened, scored on three things: how much the parent has to do, how much reasoning the child produces, and how they do on a fresh problem with less help.</p></div>
+    <div class="cmp">
+      <div class="card"><div class="row" style="justify-content:space-between"><h3>A practice plan</h3><span class="chip mute" id="planChip">generated</span></div><div class="plan" id="planText">…</div><p class="xs dim" id="planNote"></p></div>
+      <div class="card"><div class="row" style="justify-content:space-between"><h3>Understudy, this session</h3><span class="chip neu">measured</span></div>
+        <div class="score" id="score"></div>
+        <p class="xs dim">One session, one child, so it's a demonstration of the instrument rather than a study. The plan side is a real generation when Claude is available, and a typical example otherwise. What the plan can't do is hear the child.</p></div>
+    </div>
+    <div class="row"><button class="btn" data-go="brief">Parent + tutor brief</button><button class="btn ghost" data-go="intake">Another worksheet</button></div>
   </section>
 
   <p class="xs dim">Understudy · concept and code at github.com/CrossoverAnalytics3/Ideas-for-hackathon2. Pip and the judge run on your own Claude when you allow it; otherwise everything is scripted.</p>
@@ -346,7 +385,7 @@ function keywordJudge(rule, learnerTurns) {
 function scriptedPip({ rule, p, wrong, history, released, probe }) {
   const k = history.filter(h => h.who === 'learner').length;
   if (released) return "…oh. Oh, that's weird. So my way gives the wrong size. Okay so how do I make the pieces the same size?";
-  if (k === 0) return `${rule.kid} So I got ${wrong}.`;
+  if (k === 0) return `${rule.kid} So I got ${wrong}. How would you do it?`;
   if (k === 1) return rule.defense(p);
   if (probe) return probe;
   return "Hm. I don't get it yet. Can you say it a different way?";
@@ -374,7 +413,8 @@ async function aiPip({ rule, p, wrong, correct, history, released, probe }) {
   const rules = released
     ? `You are Pip, a 9-year-old kid being taught math by an older kid. You JUST understood why your old way was wrong. You're surprised and a little delighted. Say the right idea in your own words in one or two short sentences, then ask ONE follow-up question about what to do next. Plain kid words, no lecturing, no bullet points. Reply with only Pip's words.`
     : `You are Pip, a 9-year-old kid being taught math by an older kid. Speak like a real 9-year-old: short sentences, plain words, a bit stubborn, curious, never sarcastic. One to three sentences. Reply with only Pip's words.
-You firmly believe this rule: "${rule.kid}" (${rule.name}). For the problem ${E.problemText(p)} you wrote ${wrong} and you are sure it's right.
+You firmly believe this rule: "${rule.kid}" (${rule.name}). For the problem ${E.problemText(p)} you wrote ${wrong} and you are sure it's right. The older kid got this exact problem wrong too on a quiz, so you're a little smug about it.
+If this is your first line: say your rule, say your answer, then ask the older kid how THEY would do it.
 The correct answer is ${correct}. You must NEVER say "${correct}", never hint at it, never agree the older kid is right, never explain the correct method. You don't know it.
 When challenged: restate your rule, apply it again, or ask a real "but why?" question. If they say something vague like "that's wrong" or "just flip it", push back and ask them to explain. If they explain a real principle you may say "hm" and ask a follow-up, but you still get the answer wrong.${probe ? `\nA good question to ask next, if it fits: "${probe}"` : ''}`;
   const turns = [{ role: 'user', content: rules }];
@@ -490,9 +530,10 @@ const S = { learner: 'Maya', diagnosis: null, queue: [], qi: 0, history: [] };
   { malrule: 'frac_bigger_denom_bigger', firstWrong: d(31), cleared: d(24), quality: 3 }, { malrule: 'frac_sub_across', firstWrong: d(19), cleared: d(11), quality: 2 }]; })();
 
 function go(name) { document.querySelectorAll('.screen').forEach(s => s.classList.toggle('on', s.id === 's-' + name)); document.querySelectorAll('nav .tab').forEach(b => b.classList.toggle('on', b.dataset.go === name)); location.hash = name; window.scrollTo({ top: 0 });
-  if (name === 'drill') startDrill(); if (name === 'teach') startTeach(); if (name === 'brief') renderBrief(); }
+  if (name === 'drill') startDrill(); if (name === 'teach') startTeach(); if (name === 'brief') renderBrief(); if (name === 'compare') renderCompare(); }
 document.addEventListener('click', e => { const b = e.target.closest('[data-go]'); if (b && !b.disabled) { e.preventDefault(); go(b.dataset.go); } });
 function enableTabs() { document.querySelectorAll('nav .tab').forEach(b => { if (b.dataset.go !== 'intake') b.disabled = !S.queue.length; }); }
+function setRound(n) { $('rounds').querySelectorAll('span').forEach((el, i) => { el.className = i + 1 < n ? 'fin' : i + 1 === n ? 'on' : ''; }); }
 
 /* ---- intake ---- */
 const SAMPLE_SVG = `<svg viewBox="0 0 640 400" xmlns="http://www.w3.org/2000/svg" style="background:#fdfcf7;border-radius:8px"><rect width="640" height="400" fill="#fdfcf7"/><text x="48" y="58" font-family="Georgia,serif" font-size="22" font-weight="700" fill="#222">Fractions &amp; decimals — Quiz 4</text><text x="48" y="84" font-family="Georgia,serif" font-size="13" fill="#555">Name: Maya</text><text x="500" y="84" font-family="Georgia,serif" font-size="13" fill="#555">Grade 5 · Sept 4</text><g transform="rotate(-12 560 150)"><ellipse cx="560" cy="150" rx="46" ry="30" fill="none" stroke="#d22" stroke-width="3"/><text x="560" y="160" text-anchor="middle" font-family="Arial" font-size="26" font-weight="700" fill="#d22">1 / 4</text></g><g font-family="Georgia,serif" font-size="24" fill="#222"><text x="60" y="160">1.  1/2 + 1/3 =</text><text x="60" y="215">2.  3/4 − 1/2 =</text><text x="60" y="270">3.  1/4 + 1/2 =</text><text x="60" y="325">4.  Which is bigger: 0.7 or 0.45?</text></g><g font-family="'Shantell Sans','Comic Sans MS',cursive" font-size="26" fill="#2b3a8f"><text x="248" y="160" transform="rotate(-2 248 160)">2/5</text><text x="248" y="215" transform="rotate(1 248 215)">1/4</text><text x="248" y="270" transform="rotate(-1.5 248 270)">2/4</text><text x="455" y="325" transform="rotate(1 455 325)">0.45</text></g><g font-family="Arial" font-size="32" font-weight="700"><text x="420" y="162" fill="#d22" transform="rotate(8 420 162)">✗</text><text x="420" y="217" fill="#2a8a3a" transform="rotate(-6 420 217)">✓</text><text x="420" y="272" fill="#d22" transform="rotate(8 420 272)">✗</text><text x="560" y="327" fill="#d22" transform="rotate(8 560 327)">✗</text></g><text x="48" y="378" font-family="Arial" font-size="14" fill="#d22" transform="rotate(-1 48 378)">Maya — remember the bottoms have to match! See me.</text></svg>`;
@@ -502,6 +543,7 @@ $('drop').addEventListener('dragover', e => e.preventDefault()); $('drop').addEv
 $('go').addEventListener('click', () => runIntake(photoFile));
 $('sampleBtn').addEventListener('click', () => { photoFile = null; $('preview').innerHTML = SAMPLE_SVG; $('preview').hidden = false; $('drop').classList.add('has'); $('dropText').textContent = 'Sample worksheet · Quiz 4'; runIntake(null); });
 async function runIntake(file) {
+  S.t0 = performance.now(); S.gameStart = null;
   S.learner = $('learner').value.trim() || 'Maya'; $('go').disabled = $('sampleBtn').disabled = true;
   let d;
   if (file && live() && AI.images) { $('status').innerHTML = '<span class="spin"></span> Reading the photo with Claude… 10 to 40 seconds.'; try { d = await aiIntake(file); } catch (e) { aiFail(e, 'photo reading'); d = null; } }
@@ -517,7 +559,7 @@ function renderResults() {
   const d = S.diagnosis; $('results').hidden = false; $('modeNote').textContent = d.mode === 'live' ? 'read by Claude, verified in code' : 'pre-read sample';
   $('list').innerHTML = d.problems.map((p, i) => { const qi = S.queue.findIndex(q => q.malrule === p.malrule); let chip, meta = '', actions = '';
     if (p.status === 'correct') chip = '<span class="chip ok">Correct</span>';
-    else if (p.status === 'verified') { chip = '<span class="chip hot">Wrong · verified</span>'; meta = `<span class="mono small">${esc(p.malrule)}</span><span class="small dim">${esc(p.name)}</span>`; actions = `<button class="btn ghost" data-q="${qi}" data-go2="drill">Warm up</button><button class="btn" data-q="${qi}" data-go2="teach">Teach Pip</button>`; }
+    else if (p.status === 'verified') { chip = '<span class="chip hot">Wrong · verified</span>'; meta = `<span class="mono small">${esc(p.malrule)}</span><span class="small dim">${esc(p.name)}</span>`; actions = `<button class="btn ghost" data-q="${qi}" data-go2="drill">Warm up</button><button class="btn" data-q="${qi}" data-go2="teach">Turn it into a game</button>`; }
     else if (p.status === 'unverified') { chip = '<span class="chip warn">Wrong · unverified</span>'; meta = `<span class="small dim">${esc(p.note || '')}</span><form class="row" data-i="${i}"><input type="text" placeholder="What did they write? e.g. 2/5" style="width:190px"><button class="btn ghost" type="submit">Confirm</button></form>`; }
     else if (p.status === 'ambiguous') { chip = '<span class="chip warn">Wrong · two rules fit</span>'; meta = `<span class="small dim">Could be ${p.options.join(' or ')}.</span>`; }
     else chip = '<span class="chip mute">Could not read</span>';
@@ -561,11 +603,11 @@ const MAX_TURNS = 4;
     for (let x = 0; x <= w; x += 3) { const env = Math.sin((x / w) * Math.PI); const n = Math.sin(x * .055 + phase) * .6 + Math.sin(x * .021 - phase * 1.4) * .4; const y = mid + n * amp * env * (h * .36); x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
     ctx.stroke(); ctx.globalAlpha = 1; phase += T.listening ? .26 : .05; amp += ((T.listening ? 1 : .06) - amp) * .12; } requestAnimationFrame(draw); })(); })();
 function addTurn(who, text, fl) { const d = document.createElement('div'); d.className = 'turn ' + who; d.innerHTML = `<div class="who">${who === 'pip' ? 'Pip' : 'You'}</div><div><div class="utt">${esc(text)}</div>${fl ? `<div class="fl">${fl.onsetS}s onset · ${fl.fillers} fillers · ${fl.hedges} hedges · ${fl.longPauses} pauses · ${fl.verdict}</div>` : ''}</div>`; $('transcript').appendChild(d); return d; }
-function setCrit(met) { $('crit').innerHTML = T.rule.rubric.map((c, i) => `<li><span class="t ${met.includes(i + 1) ? 'y' : ''}">${met.includes(i + 1) ? '✓' : '○'}</span><span>${esc(c)}</span></li>`).join(''); }
+function setCrit(met) { $('meter').querySelectorAll('i').forEach((el, i) => el.classList.toggle('on', met.includes(i + 1))); $('crit').innerHTML = T.rule.rubric.map((c, i) => `<li><span class="t ${met.includes(i + 1) ? 'y' : ''}">${met.includes(i + 1) ? '✓' : '○'}</span><span>${esc(c)}</span></li>`).join(''); }
 function setMetric(id, v, hot) { const el = $(id); el.querySelector('.v').textContent = v; el.classList.toggle('hot', !!hot); }
 async function pipSays(text, expr, after) { T.busy = true; $('bubble').classList.remove('thinking'); $('bubble').textContent = text; addTurn('pip', text); if (expr) pip.set(expr);
   await speak(text, { onStart: () => pip.talking(true), onEnd: () => pip.talking(false) }); if (after) pip.set(after); T.pipEndedAt = performance.now(); T.busy = false; if (!T.over) { $('ptt').disabled = !SR; $('typedBtn').disabled = false; } }
-async function startTeach() { const q = S.queue[S.qi]; if (!q) { go('intake'); return; } const rule = E.byId[q.malrule]; const r = E.rng((Date.now() & 0xffff) + 17); let p = rule.generate(r); while (JSON.stringify(p) === JSON.stringify(q.source)) p = rule.generate(r);
+async function startTeach() { const q = S.queue[S.qi]; if (!q) { go('intake'); return; } const rule = E.byId[q.malrule]; const p = q.source; setRound(1); $('transfer').classList.remove('on'); $('meter').querySelectorAll('i').forEach(i => i.className = ''); X.active = false;
   Object.assign(T, { rule, p, wrong: E.answerStr(p, rule.execute(p)), correct: E.answerStr(p, E.correctAnswer(p)), history: [], learnerTurns: 0, released: false, over: false, busy: true, pipEndedAt: null }); q.teach = T;
   $('transcript').innerHTML = ''; $('ptext').innerHTML = math(E.problemText(p)); $('wrong').innerHTML = math(T.wrong); $('stamp').textContent = fmt(new Date().toISOString()); $('ruleId').textContent = rule.id; $('ruleEn').textContent = rule.name + '. Executable, so he can\'t be argued out of it by pushback.'; $('tEyebrow').textContent = 'Teach Pip · ' + rule.id;
   $('beliefChip').textContent = 'Held'; $('beliefChip').className = 'chip hot'; $('fluChip').textContent = 'Waiting'; $('fluChip').className = 'chip neu'; ['m-onset', 'm-fill', 'm-hedge', 'm-pause'].forEach(id => setMetric(id, '–', false)); $('quad').textContent = '';
@@ -573,7 +615,7 @@ async function startTeach() { const q = S.queue[S.qi]; if (!q) { go('intake'); r
   $('bubble').classList.add('thinking'); $('bubble').textContent = live() ? 'Pip is thinking…' : '…'; $('ptt').disabled = true; $('typedBtn').disabled = true;
   let opening; if (live()) { try { opening = await aiPip({ rule, p, wrong: T.wrong, correct: T.correct, history: [], released: false }); } catch (e) { aiFail(e, "Pip's opening"); } }
   if (!opening) opening = scriptedPip({ rule, p, wrong: T.wrong, history: [], released: false });
-  T.history.push({ who: 'pip', text: opening }); await pipSays(opening, 'proud'); $('hint').textContent = SR ? 'Hold the button and tell him why that\'s wrong, or type it.' : 'No speech recognition in this browser (Chrome has it). Type what you\'d say.'; }
+  T.history.push({ who: 'pip', text: opening }); if (!S.gameStart) S.gameStart = performance.now(); await pipSays(opening, 'proud'); setRound(2); $('hint').textContent = SR ? 'Round 2: hold the button and explain YOUR way, or type it.' : 'Round 2: no speech recognition in this browser (Chrome has it). Type your way.'; }
 async function learnerTurn({ transcript, onsetMs, gapsMs, durationMs, asrConfidence }) {
   if (T.busy || T.over) return; T.busy = true; $('ptt').disabled = true; $('typedBtn').disabled = true; $('liveTx').textContent = transcript || '';
   if (!transcript.trim() || asrConfidence < 0.45) { const line = ["Wait, say that again? I didn't catch it.", 'Huh? Say that one more time.', "I didn't get that. Can you say it again?"][Math.floor(Math.random() * 3)]; T.history.push({ who: 'pip', text: line }); await pipSays(line, 'huh', 'listen'); $('hint').textContent = 'The recognizer missed that. A confused 9-year-old asking again stays in character.'; return; }
@@ -587,14 +629,80 @@ async function learnerTurn({ transcript, onsetMs, gapsMs, durationMs, asrConfide
   if (v.released) { T.released = T.over = true; q.status = 'cleared'; q.cleared = new Date().toISOString(); q.quality = v.quality; q.quadrant = FL.quadrant(true, fl.verdict); q.reason = v.reason;
     $('beliefChip').textContent = 'Released'; $('beliefChip').className = 'chip ok'; $('ruleEn').textContent = 'Pin released by the judge, not by pushback.'; $('note2').textContent = T.rule.notes.released; $('note2').classList.add('on'); $('strike').classList.add('on'); $('ans').classList.add('struck'); $('tag').textContent = 'Pip got it'; $('tag').className = 'chip ok tag'; $('quad').textContent = `${q.quadrant.label}: ${q.quadrant.action}`;
     if (live()) { try { line = await aiPip({ rule: T.rule, p: T.p, wrong: T.wrong, correct: T.correct, history: T.history, released: true }); } catch (e) { aiFail(e, 'Pip'); } } if (!line) line = scriptedPip({ rule: T.rule, p: T.p, wrong: T.wrong, history: T.history, released: true });
-    T.history.push({ who: 'pip', text: line }); await pipSays(line, 'dawn', 'got'); $('hint').textContent = `He's dropped that rule for good. Explanation quality ${v.quality}/3.`; $('ptt').disabled = true; $('typedBtn').disabled = true; $('done').classList.add('on'); return; }
+    T.history.push({ who: 'pip', text: line }); await pipSays(line, 'dawn', 'got'); $('hint').textContent = `He's dropped that rule for good. Explanation quality ${v.quality}/3.`; $('ptt').disabled = true; $('typedBtn').disabled = true; startTransfer(); return; }
   if (v.criteria_met.length) { $('note1').textContent = T.rule.notes.partial; $('note1').classList.add('on'); $('tag').textContent = 'Pip is thinking'; }
   if (T.learnerTurns >= MAX_TURNS) { T.over = true; q.status = 'stuck'; q.quadrant = FL.quadrant(false, fl.verdict); q.reason = v.reason; $('tag').textContent = 'Still stuck'; $('tag').className = 'chip warn tag'; $('quad').textContent = `${q.quadrant.label}: ${q.quadrant.action}`;
-    line = "I still don't get it. That's okay. Can we ask your tutor on Thursday?"; T.history.push({ who: 'pip', text: line }); await pipSays(line, 'sad', 'sad'); $('hint').textContent = 'No fake win. This goes to the tutor as a flag.'; $('ptt').disabled = true; $('typedBtn').disabled = true; $('done').classList.add('on'); return; }
+    line = "I still don't get it. That's okay. Can we ask your tutor on Thursday?"; T.history.push({ who: 'pip', text: line }); await pipSays(line, 'sad', 'sad'); $('hint').textContent = 'No fake win. This goes to the tutor as a flag.'; $('ptt').disabled = true; $('typedBtn').disabled = true; startTransfer(); return; }
   if (live()) { try { line = await aiPip({ rule: T.rule, p: T.p, wrong: T.wrong, correct: T.correct, history: T.history, released: false, probe: v.next_probe }); } catch (e) { aiFail(e, 'Pip'); } } if (!line) line = scriptedPip({ rule: T.rule, p: T.p, wrong: T.wrong, history: T.history, released: false, probe: v.next_probe });
   T.history.push({ who: 'pip', text: line }); await pipSays(line, 'doubt', 'listen'); $('hint').textContent = `Not convinced yet (${T.learnerTurns} of ${MAX_TURNS}). Give him the reason, not just the rule.`; }
 bindPTT($('ptt'), $('pttLabel'), { anchor: () => T.pipEndedAt || performance.now(), onStart: Object.assign(() => { T.listening = true; pip.set('listen'); $('liveTx').textContent = ''; }, { interim: t => { $('liveTx').textContent = t; } }), onStop: r => { T.listening = false; learnerTurn({ transcript: r.transcript, onsetMs: Math.min(r.onsetMs, 8000), gapsMs: r.gapsMs, durationMs: r.durationMs, asrConfidence: r.confidence }); } });
 $('typed').addEventListener('submit', e => { e.preventDefault(); const t = $('typedText').value.trim(); if (!t || T.busy || T.over) return; $('typedText').value = ''; const onset = T.pipEndedAt ? performance.now() - T.pipEndedAt : 1000; learnerTurn({ transcript: t, onsetMs: Math.min(onset, 8000), gapsMs: [], durationMs: t.length * 60, asrConfidence: 1 }); });
+
+/* ---- round 3: transfer check, fresh problem, hints counted ---- */
+const X = { active: false, p: null, correct: '', trap: '', hints: 0, attempts: 0, done: false };
+function hintsFor(rule, p) { const h1 = rule.notes.partial.replace(/^↑\s*/, ''); let h2;
+  switch (rule.id) { case 'frac_add_across': case 'frac_sub_across': case 'frac_add_keep_larger_denom': h2 = `Rewrite both with the same bottom first. ${p.b} and ${p.d} both go into ${p.b * p.d / gcd2(p.b, p.d)}.`; break;
+    case 'frac_mul_cross': h2 = 'Top times top, bottom times bottom.'; break; case 'frac_div_straight': h2 = 'Flip the second one, then multiply straight across.'; break;
+    case 'frac_bigger_denom_bigger': h2 = 'Picture one pizza cut into each. Which slice is bigger?'; break; default: h2 = 'Line them up: add a zero so both have two digits after the point.'; }
+  return [h1, h2]; }
+function gcd2(a, b) { while (b) [a, b] = [b, a % b]; return a; }
+async function startTransfer() { const q = S.queue[S.qi], rule = T.rule; const r = E.rng((Date.now() & 0xffff) + 31); let p = rule.generate(r); while (JSON.stringify(p) === JSON.stringify(q.source)) p = rule.generate(r);
+  Object.assign(X, { active: true, p, correct: E.answerStr(p, E.correctAnswer(p)), trap: E.answerStr(p, rule.execute(p)), hints: 0, attempts: 0, done: false, hintList: hintsFor(rule, p) });
+  setRound(3); $('xText').innerHTML = math(E.problemText(p)); $('xHeard').textContent = '…'; $('xHintText').textContent = ''; $('xFb').textContent = ''; $('xHintBtn').disabled = false; $('xHintBtn').textContent = 'Need a hint?'; $('xPtt').disabled = !SR; $('transfer').classList.add('on');
+  const line = q.status === 'cleared' ? "Okay, your turn. Try this one on your own. I won't help." : "Okay, try this one anyway. I'll keep quiet."; T.history.push({ who: 'pip', text: line }); await pipSays(line, 'listen', 'listen'); $('ptt').disabled = true; $('typedBtn').disabled = true; $('transfer').scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+$('xHintBtn').addEventListener('click', () => { if (!X.active || X.done) return; if (X.hints < X.hintList.length) { X.hints++; $('xHintText').textContent = `Hint ${X.hints}: ${X.hintList[X.hints - 1]}`; $('xHintBtn').textContent = X.hints < X.hintList.length ? 'Another hint?' : 'No more hints'; if (X.hints >= X.hintList.length) $('xHintBtn').disabled = true; } });
+function transferAnswer(spoken) { if (!X.active || X.done) return; const heard = spokenToAnswer(spoken || '', X.p); $('xHeard').textContent = spoken || '…';
+  if (heard == null) { $('xFb').innerHTML = '<span class="chip warn">Didn\'t catch a number</span> <span class="dim">try "five sixths" or "5 over 6"</span>'; return; }
+  X.attempts++; const q = S.queue[S.qi]; const correct = sameAnswer(X.p, heard, X.correct), trap = sameAnswer(X.p, heard, X.trap);
+  if (correct) { X.done = true; $('xFb').innerHTML = `<span class="chip ok">Right</span> <span class="dim">${X.hints} hint${X.hints === 1 ? '' : 's'}, ${X.attempts} attempt${X.attempts === 1 ? '' : 's'}</span>`; }
+  else if (X.attempts >= 2) { X.done = true; $('xFb').innerHTML = `<span class="chip ${trap ? 'hot' : 'warn'}">${trap ? 'The old rule again' : 'Not yet'}</span> <span class="dim">answer is ${math(X.correct)}</span>`; }
+  else { $('xFb').innerHTML = `<span class="chip ${trap ? 'hot' : 'warn'}">${trap ? 'That\'s the old rule' : 'Not quite'}</span> <span class="dim">one more try. A hint is allowed, it just gets counted.</span>`; return; }
+  q.transfer = { problem: E.problemText(X.p), heard, correct, trap, hints: X.hints, attempts: X.attempts }; X.active = false; $('xPtt').disabled = true; $('xHintBtn').disabled = true;
+  $('xHint').textContent = correct ? (X.hints === 0 ? 'Unaided. That\'s the number that matters.' : 'Got there with help. Counted.') : 'Goes to the tutor as a flag.';
+  const line = correct ? (X.hints === 0 ? "You didn't even need a hint. Show-off." : 'You got it. I still need help with those.') : "Hm. Same thing I do. Let's ask your tutor."; T.history.push({ who: 'pip', text: line }); pipSays(line, correct ? 'got' : 'sad', correct ? 'proud' : 'sad').then(() => { $('ptt').disabled = true; $('typedBtn').disabled = true; $('done').classList.add('on'); }); }
+bindPTT($('xPtt'), $('xPttLabel'), { onStart: Object.assign(() => {}, { interim: t => { $('xHeard').textContent = t; } }), onStop: r => transferAnswer(r.transcript) });
+$('xTyped').addEventListener('submit', e => { e.preventDefault(); const t = $('xTypedText').value.trim(); if (t) { $('xTypedText').value = ''; transferAnswer(t); } });
+
+/* ---- compare: a practice plan vs this session ---- */
+const SCRIPTED_PLAN = `Here's a one-week practice plan for Maya based on the quiz.
+
+What went wrong
+Maya is adding fractions by adding the numerators and the denominators (1/2 + 1/3 = 2/5). She also kept the larger denominator on 1/4 + 1/2, and compared decimals by length. All three point to the same gap: understanding what the denominator means.
+
+Day 1 (15 min): Review with Maya that the denominator tells how many equal parts the whole is cut into. Draw two identical rectangles, shade 1/2 of one and 1/3 of the other. Ask which is bigger and why.
+Day 2 (15 min): Explain common denominators. Show that 1/2 = 3/6 and 1/3 = 2/6, so 1/2 + 1/3 = 5/6. Practice: 1/2 + 1/4, 1/3 + 1/6, 2/5 + 1/10.
+Day 3 (15 min): Unlike denominators. Practice: 1/3 + 1/4, 2/3 + 1/5, 3/4 - 1/3, 5/6 - 1/2. Check each answer together.
+Day 4 (10 min): Decimals. Line up 0.7 and 0.45 by writing 0.70 and 0.45. Practice comparing: 0.5 vs 0.35, 0.9 vs 0.81, 0.3 vs 0.27.
+Day 5 (15 min): Mixed review of 8 problems. Aim for 6 of 8 correct.
+
+Tips for parents
+- Ask Maya to explain her steps before you say whether the answer is right.
+- Use pizza or chocolate bars as concrete models.
+- Keep sessions short and stop on a success.
+- If she reverts to adding denominators, go back to the drawing from Day 1.
+
+Answer key
+Day 2: 3/4, 1/2, 1/2. Day 3: 7/12, 13/15, 5/12, 1/3. Day 4: 0.5, 0.9, 0.3.`;
+let planCache = null;
+async function renderCompare() {
+  const q = S.queue.find(x => x.teach) || S.queue[S.qi] || S.queue[0]; const rule = q ? E.byId[q.malrule] : null;
+  $('planText').textContent = planCache || (live() ? 'Asking Claude for a practice plan, the way a parent would…' : SCRIPTED_PLAN);
+  if (!planCache && live()) { try { const wrongs = (S.diagnosis?.problems || []).filter(x => x.status === 'verified').map(x => `${x.problem_text} (student wrote ${x.written_answer})`).join('; ');
+      const { text } = await AI.sample(`A parent uploaded their 5th grader's graded fractions quiz. Marked wrong: ${wrongs || '1/2 + 1/3 (student wrote 2/5)'}. Write a practical one-week practice plan the parent can run at home: what went wrong, a short daily routine with specific practice problems, tips for the parent, and an answer key. Plain text, about 350 words.`, { cache: true }); planCache = text; $('planText').textContent = text; $('planChip').textContent = 'generated by Claude just now'; }
+    catch (e) { planCache = SCRIPTED_PLAN; $('planText').textContent = SCRIPTED_PLAN; $('planChip').textContent = 'typical example'; } }
+  else if (!live()) $('planChip').textContent = 'typical example';
+  const plan = $('planText').textContent, planWords = plan.trim().split(/\s+/).length, readMin = Math.ceil(planWords / 200), runMin = 5 * 14;
+  $('planNote').textContent = `${planWords} words to read, then five sessions the parent runs and grades themselves. Nothing in it hears the child.`;
+  const t = q?.teach, lt = t ? t.history.filter(h => h.who === 'learner') : [], pt = t ? t.history.filter(h => h.who === 'pip') : [];
+  const childWords = lt.reduce((n, h) => n + h.text.trim().split(/\s+/).length, 0), pipWords = pt.reduce((n, h) => n + h.text.trim().split(/\s+/).length, 0);
+  const prepS = S.gameStart && S.t0 ? Math.round((S.gameStart - S.t0) / 1000) : null; const xr = q?.transfer;
+  const rows = [
+    ['Parent preparation', `<b class="n">~${readMin + runMin} min</b>read ${readMin} min, then run and grade 5 sessions (est.)`, `<b class="n">${prepS != null ? prepS + ' s' : '—'}</b>photograph, hand over the phone. Measured this session.`],
+    ['Child-led reasoning', `<b class="n">0 words</b>the child reads the explanation and writes answers. Nothing to explain to.`, `<b class="n">${childWords} words</b>spoken by the child in ${lt.length} explanation turn${lt.length === 1 ? '' : 's'} vs ${pipWords} by Pip${q?.quality != null ? `. Explanation quality ${q.quality}/3` : ''}.`],
+    ['Fresh problem, less help', `<b class="n">not measured</b>nobody hears the reasoning; a right answer can be copied from the key.`, xr ? `<b class="n">${xr.correct ? 'correct' : 'not yet'}</b>${xr.hints} hint${xr.hints === 1 ? '' : 's'}, ${xr.attempts} attempt${xr.attempts === 1 ? '' : 's'}, on ${xr.problem}${xr.trap ? '. Fell back to the old rule.' : ''}` : `<b class="n">—</b>finish Round 3 to measure it.`],
+  ];
+  $('score').innerHTML = `<div class="h"></div><div class="h">Practice plan</div><div class="h">Understudy</div>` + rows.map(r => `<div class="k">${r[0]}</div><div>${r[1]}</div><div class="us">${r[2]}</div>`).join('');
+}
 
 /* ---- brief ---- */
 function renderBrief() { const q = S.queue.find(x => x.teach) || S.queue[S.qi] || S.queue[0]; if (!q) { $('parentCard').textContent = 'Nothing taught yet.'; $('tutorCard').textContent = ''; return; }
@@ -607,7 +715,8 @@ function renderBrief() { const q = S.queue.find(x => x.teach) || S.queue[S.qi] |
     <div class="kv"><div><span class="k">First got it wrong</span><span class="v">${fmt(q.firstWrong)}</span></div><div><span class="k">Taught it back</span><span class="v">${q.cleared ? fmt(q.cleared) : '—'}</span></div><div><span class="k">Rule</span><span class="v">${esc(q.malrule)}</span></div></div>`;
   const b1 = q.status === 'cleared' ? `${S.learner} taught ${q.malrule} successfully on ${fmt(q.cleared)}. Explanation quality ${q.quality}/3. ${q.reason || ''}` : q.status === 'stuck' ? `${S.learner} could not explain ${q.malrule} after ${MAX_TURNS} attempts. Pip flagged it. Start here.` : `${S.learner} has ${q.malrule} open from the ${fmt(q.firstWrong)} worksheet. Not yet taught back.`;
   const b2 = hes.length ? `Delivery hesitant on ${hes.length} of ${lt.length} attempts: ${hes.map(h => `${h.fluency.onsetS}s onset, ${h.fluency.hedges} hedge${h.fluency.hedges === 1 ? '' : 's'}`).join('; ')}. ${q.status === 'cleared' ? 'Got there, and it cost tries. Treat as recent, not solid.' : ''}` : lt.length ? `Delivery fluent throughout (${lt.map(h => h.fluency.onsetS + 's').join(', ')} onset). Reads as solid.` : 'No spoken attempts yet.';
-  $('tutorCard').innerHTML = `<h3>For the tutor, before Thursday</h3><ul class="bullets"><li>${esc(b1)}</li><li>${hes.length ? '<mark>' + esc(b2) + '</mark>' : esc(b2)}</li><li>Suggested opener: ${esc(rule.opener)}</li></ul>${q.quadrant ? `<div class="quadbox"><b>${esc(q.quadrant.label)}</b> · ${esc(q.quadrant.action)}</div>` : ''}<p class="xs dim">This is the handoff. Synthesis, Khanmigo and Amira have nobody to hand it to. Nerdy has 40,000+ tutors.</p>`;
+  const xr = q.transfer; const b3 = xr ? `Fresh problem (${xr.problem}), on their own: ${xr.correct ? 'correct' : 'wrong'} with ${xr.hints} hint${xr.hints === 1 ? '' : 's'} in ${xr.attempts} attempt${xr.attempts === 1 ? '' : 's'}${xr.trap ? ', and fell back to the old rule' : ''}.` : 'Fresh problem not attempted yet.';
+  $('tutorCard').innerHTML = `<h3>For the tutor, before Thursday</h3><ul class="bullets"><li>${esc(b1)}</li><li>${hes.length ? '<mark>' + esc(b2) + '</mark>' : esc(b2)}</li><li>${esc(b3)}</li><li>Suggested opener: ${esc(rule.opener)}</li></ul>${q.quadrant ? `<div class="quadbox"><b>${esc(q.quadrant.label)}</b> · ${esc(q.quadrant.action)}</div>` : ''}<p class="xs dim">This is the handoff. Synthesis, Khanmigo and Amira have nobody to hand it to. Nerdy has 40,000+ tutors.</p>`;
   $('rows').innerHTML = S.history.map(h => `<tr><td class="mono">${esc(h.malrule)}</td><td>${fmt(h.firstWrong)}</td><td>${fmt(h.cleared)}</td><td>${h.quality}/3</td><td><span class="chip ok">cleared</span></td></tr>`).join('') +
     S.queue.map(x => `<tr><td class="mono">${esc(x.malrule)}</td><td>${fmt(x.firstWrong)}</td><td>${x.cleared ? fmt(x.cleared) : '—'}</td><td>${x.quality != null ? x.quality + '/3' : '—'}</td><td><span class="chip ${x.status === 'cleared' ? 'ok' : x.status === 'stuck' ? 'warn' : 'neu'}">${x.status}</span></td></tr>`).join(''); }
 

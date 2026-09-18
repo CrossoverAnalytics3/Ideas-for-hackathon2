@@ -1,6 +1,8 @@
 # Understudy (app)
 
-**Two ways to run it.** `hosted.html` is the whole product in one file with no server: open it
+**Two ways to run it.** The game has three rounds: Pip's way on the worksheet problem, your way (explain your strategy until he's convinced), then a fresh problem alone with hints counted. A Compare screen scores the session against an LLM-generated practice plan on parent prep, child-led reasoning and the fresh-problem result.
+
+ `hosted.html` is the whole product in one file with no server: open it
 anywhere, or publish it as a claude.ai artifact where Pip and the judge run on the viewer's own
 Claude through the `sample` capability. `server.js` + `public/` is the Node version that calls
 the API directly with your key. Same engine in both.

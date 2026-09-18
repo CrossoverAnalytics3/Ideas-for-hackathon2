@@ -22,8 +22,15 @@ const { chromium } = require('playwright');
   console.log('fluency:', await page.locator('#fluChip').innerText());
   await say('Half a pizza plus a third is more than half but your answer is smaller than a half so it cant be right');
   console.log('belief:', await page.locator('#beliefChip').innerText());
+  await page.waitForSelector('#transfer.on'); console.log('round 3 shown, problem:', await page.locator('#xText').innerText());
+  await page.click('#xHintBtn'); console.log('hint 1:', (await page.locator('#xHintText').innerText()).slice(0, 50));
+  const ans = await page.evaluate(() => X.correct); await page.fill('#xTypedText', ans); await page.click('#xTyped button');
+  await page.waitForSelector('#done.on'); console.log('transfer fb:', await page.locator('#xFb').innerText());
   await page.screenshot({ path: '/tmp/shots/h2.png', fullPage: true });
-  await page.click('#done button[data-go="brief"]'); await page.waitForSelector('#s-brief.on');
+  await page.click('#done button[data-go="compare"]'); await page.waitForSelector('#s-compare.on'); await page.waitForTimeout(300);
+  console.log('score cells:', await page.locator('#score > div').count(), '| plan words:', (await page.locator('#planText').innerText()).split(/\s+/).length);
+  await page.screenshot({ path: '/tmp/shots/h4.png', fullPage: true });
+  await page.click('nav .tab[data-go="brief"]'); await page.waitForSelector('#s-brief.on');
   console.log('brief quote:', (await page.locator('.quote').innerText()).slice(0, 60));
   await page.screenshot({ path: '/tmp/shots/h3.png', fullPage: true });
   // nav back to Photo and re-run sample to ensure state resets
