@@ -1,5 +1,10 @@
 # Understudy (app)
 
+**Two ways to run it.** `hosted.html` is the whole product in one file with no server: open it
+anywhere, or publish it as a claude.ai artifact where Pip and the judge run on the viewer's own
+Claude through the `sample` capability. `server.js` + `public/` is the Node version that calls
+the API directly with your key. Same engine in both.
+
 A parent photographs the graded worksheet. Understudy reads the wrong *rule* behind each
 wrong answer, then gives the kid an AI understudy, Pip, who's stuck on exactly that rule.
 The kid talks him out of it, out loud. Pip stays wrong until the explanation is actually right.

@@ -1,0 +1,617 @@
+<title>Understudy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&family=Shantell+Sans:wght@400;600&display=swap">
+<style>
+:root{
+  --desk:#DDE4E1; --desk-2:#CFD8D4; --paper:#FBFAF5; --paper-line:#E2E0D6;
+  --ink:#242A2C; --ink-2:#5A6467; --muted:#828C8E; --pencil:#6A7073; --pencil-light:#A9AFB1;
+  --pip:#F0A25C; --pip-dark:#D4823B; --pip-shade:#E08F48;
+  --teal:#2A6B68; --teal-soft:#D3E4E1; --good:#3B8659; --good-soft:#D8EADE;
+  --hot:#C0573C; --hot-soft:#F6DED7; --warn:#96580A; --warn-soft:#F8EEDA;
+  --btn-text:#FBFAF5;
+  --shadow:0 2px 4px rgba(36,42,44,.06), 0 16px 34px -18px rgba(36,42,44,.35);
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --desk:#121A1A; --desk-2:#0C1213; --paper:#1E2527; --paper-line:#2A3336;
+  --ink:#E7ECEA; --ink-2:#A9B5B4; --muted:#7C8988; --pencil:#B6BFC0; --pencil-light:#6D7879;
+  --pip-dark:#C27A36; --pip-shade:#D98F4B; --teal:#66B5AE; --teal-soft:#15302F;
+  --good:#5FBC87; --good-soft:#14301F; --hot:#E08065; --hot-soft:#3A2420; --warn:#DCA455; --warn-soft:#2F2617;
+  --btn-text:#0F1218; --shadow:0 2px 4px rgba(0,0,0,.4), 0 16px 34px -18px rgba(0,0,0,.8);
+}}
+:root[data-theme="dark"]{
+  --desk:#121A1A; --desk-2:#0C1213; --paper:#1E2527; --paper-line:#2A3336;
+  --ink:#E7ECEA; --ink-2:#A9B5B4; --muted:#7C8988; --pencil:#B6BFC0; --pencil-light:#6D7879;
+  --pip-dark:#C27A36; --pip-shade:#D98F4B; --teal:#66B5AE; --teal-soft:#15302F;
+  --good:#5FBC87; --good-soft:#14301F; --hot:#E08065; --hot-soft:#3A2420; --warn:#DCA455; --warn-soft:#2F2617;
+  --btn-text:#0F1218; --shadow:0 2px 4px rgba(0,0,0,.4), 0 16px 34px -18px rgba(0,0,0,.8);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--desk);color:var(--ink);font-family:Figtree,"Helvetica Neue",Arial,sans-serif;font-size:15px;line-height:1.5;padding-inline:16px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:920px;margin:0 auto;padding-block:20px 48px;display:flex;flex-direction:column;gap:20px}
+h1,h2,h3{margin:0;font-family:"Bricolage Grotesque",Georgia,serif;font-weight:700;letter-spacing:-.02em;text-wrap:balance}
+h1{font-size:clamp(26px,5vw,38px);line-height:1.05} h2{font-size:clamp(19px,3vw,24px);line-height:1.2} h3{font-size:16px}
+p{margin:0} a{color:var(--teal)}
+.eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.dim{color:var(--ink-2)} .small{font-size:13.5px} .xs{font-size:12px}
+.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
+nav{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+nav .brand{font-family:"Bricolage Grotesque",serif;font-weight:700;font-size:18px;letter-spacing:-.02em;color:var(--ink);text-decoration:none;margin-right:10px}
+nav button.tab{background:transparent;border:none;font:inherit;font-size:13.5px;color:var(--ink-2);padding:6px 10px;border-radius:20px;cursor:pointer}
+nav button.tab.on{background:var(--paper);color:var(--ink);font-weight:600}
+nav button.tab:disabled{opacity:.4;cursor:default}
+nav .mode{margin-left:auto;font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;padding:4px 9px;border-radius:20px;background:var(--teal-soft);color:var(--teal);cursor:pointer;border:none;font-family:inherit}
+nav .mode.mock{background:var(--warn-soft);color:var(--warn)}
+.card{background:var(--paper);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;border:none;border-radius:40px;padding:12px 22px;background:var(--teal);color:var(--btn-text);font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;text-decoration:none;box-shadow:0 4px 0 color-mix(in srgb,var(--teal) 70%,#000);transition:transform .12s,box-shadow .2s}
+.btn:active{transform:translateY(2px);box-shadow:0 2px 0 color-mix(in srgb,var(--teal) 70%,#000)}
+.btn:focus-visible{outline:3px solid var(--pip);outline-offset:3px}
+.btn.ghost{background:transparent;color:var(--teal);box-shadow:inset 0 0 0 2px var(--teal)}
+.btn.ghost:active{box-shadow:inset 0 0 0 2px var(--teal)}
+.btn:disabled{opacity:.45;cursor:default;box-shadow:none;transform:none}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;padding:4px 9px;border-radius:20px;white-space:nowrap}
+.chip.ok{background:var(--good-soft);color:var(--good)} .chip.hot{background:var(--hot-soft);color:var(--hot)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)} .chip.neu{background:var(--teal-soft);color:var(--teal)}
+.chip.mute{background:color-mix(in srgb,var(--ink) 8%,transparent);color:var(--ink-2)}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1;margin:0 2px;font-size:.78em}
+.frac>span:first-child{border-bottom:2px solid currentColor;padding:0 3px 1px} .frac>span:last-child{padding:1px 3px 0}
+.work{font-family:"Shantell Sans",cursive;color:var(--pencil)}
+.hint{font-size:12.5px;color:var(--muted)}
+input[type=text]{font:inherit;padding:10px 12px;border-radius:8px;border:1px solid color-mix(in srgb,var(--ink) 18%,transparent);background:var(--paper);color:var(--ink);min-width:0}
+input[type=text]:focus-visible{outline:2px solid var(--teal);outline-offset:1px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px} @media(max-width:700px){.grid2{grid-template-columns:1fr}}
+.screen{display:none;flex-direction:column;gap:20px} .screen.on{display:flex}
+/* intake */
+.loop{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;text-align:center} @media(max-width:600px){.loop{grid-template-columns:repeat(2,1fr)}}
+.loop div{background:var(--paper);border-radius:10px;padding:10px 6px} .loop b{display:block;font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.1em;color:var(--teal)} .loop span{font-size:12px;color:var(--ink-2)}
+.drop{border:2px dashed color-mix(in srgb,var(--teal) 45%,transparent);border-radius:12px;padding:20px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;background:color-mix(in srgb,var(--teal) 5%,transparent);cursor:pointer}
+.drop.has{border-style:solid} .drop img,.drop svg{max-height:230px;max-width:100%;border-radius:8px;box-shadow:var(--shadow)} .drop input{display:none}
+.result{display:grid;grid-template-columns:1fr auto;gap:10px 14px;align-items:center;padding:12px 0;border-top:1px solid color-mix(in srgb,var(--ink) 10%,transparent)} .result:first-child{border-top:none}
+.result .prob{font-size:20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap} .result .wrote{font-family:"Shantell Sans",cursive;font-size:22px;color:var(--pencil)}
+.result .meta{grid-column:1/-1;display:flex;gap:8px;align-items:center;flex-wrap:wrap} .result .actions{display:flex;gap:8px;flex-wrap:wrap}
+.spin{width:16px;height:16px;border:2.5px solid color-mix(in srgb,var(--teal) 30%,transparent);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;display:inline-block;vertical-align:-3px} @keyframes spin{to{transform:rotate(360deg)}}
+/* teach */
+.app{background:var(--desk-2);border-radius:18px;padding:18px;box-shadow:var(--shadow);display:grid;grid-template-columns:230px 1fr;gap:18px} @media(max-width:700px){.app{grid-template-columns:1fr;padding:14px;gap:14px}}
+.pipside{display:flex;flex-direction:column;align-items:center;gap:10px;padding-top:6px} @media(max-width:700px){.pipside{flex-direction:row;align-items:flex-start}}
+.piprig{width:150px;height:160px;flex:none} @media(max-width:700px){.piprig{width:92px;height:100px}}
+.pipname{font-size:12px;color:var(--muted);text-align:center} .pipname b{display:block;font-family:"Bricolage Grotesque",serif;font-size:15px;color:var(--ink)}
+.bubble{background:var(--paper);border-radius:14px 14px 14px 4px;padding:12px 14px;font-size:15.5px;line-height:1.45;min-height:56px;display:flex;align-items:center;box-shadow:0 1px 2px rgba(0,0,0,.07)} @media(max-width:700px){.bubble{flex:1}}
+.bubble.thinking{color:var(--muted);font-style:italic}
+.paper{background:var(--paper);border-radius:12px;padding:20px 22px;position:relative;min-height:220px;display:flex;flex-direction:column;gap:6px;background-image:repeating-linear-gradient(var(--paper) 0 30px,var(--paper-line) 30px 31px)}
+.paperhead{display:flex;justify-content:space-between;gap:10px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--pencil-light);font-weight:600}
+.sum{font-size:clamp(26px,5vw,36px);display:flex;align-items:center;gap:12px;flex-wrap:wrap;line-height:1.9}
+.ans{position:relative;display:inline-block;transition:color .4s} .ans.struck{color:var(--pencil-light)}
+.strike{position:absolute;left:-6%;top:50%;width:0;height:3px;background:var(--hot);border-radius:2px;transform:rotate(-7deg);transition:width .5s ease-out} .strike.on{width:112%}
+.note{font-size:16px;color:var(--pencil-light);opacity:0;transform:translateY(-4px);transition:opacity .5s,transform .5s;padding-left:4px} .note.on{opacity:1;transform:none}
+.tag{position:absolute;right:14px;bottom:12px}
+.strips{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:12px} @media(max-width:700px){.strips{grid-template-columns:1fr}}
+.strip{background:var(--paper);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.striphead{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.striplabel{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.crit{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px} .crit li{display:flex;gap:7px;font-size:12.5px;color:var(--ink-2);line-height:1.35}
+.crit .t{font-family:"IBM Plex Mono",monospace;font-weight:600;width:12px;flex:none;color:var(--muted)} .crit .t.y{color:var(--good)}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px} .metric .v{font-family:"IBM Plex Mono",monospace;font-size:16px;font-weight:600;display:block;line-height:1.1} .metric .k{font-size:10px;color:var(--muted);letter-spacing:.04em} .metric.hot .v{color:var(--warn)}
+.voicebar{grid-column:1/-1;display:flex;flex-direction:column;gap:10px;padding-top:4px}
+.voicerow{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.ptt{flex:none;display:flex;align-items:center;gap:10px;border:none;border-radius:40px;padding:14px 26px;background:var(--teal);color:var(--btn-text);font:inherit;font-size:16px;font-weight:600;cursor:pointer;box-shadow:0 4px 0 color-mix(in srgb,var(--teal) 70%,#000);touch-action:none;user-select:none;-webkit-user-select:none;transition:transform .12s,background .2s}
+.ptt.live{background:var(--hot);box-shadow:0 2px 0 color-mix(in srgb,var(--hot) 70%,#000);transform:translateY(2px)}
+.ptt:disabled{opacity:.45;cursor:default;box-shadow:none;transform:none} .ptt:focus-visible{outline:3px solid var(--pip);outline-offset:3px}
+canvas.vline{flex:1;min-width:140px;height:44px}
+.typed{display:flex;gap:8px;align-items:center} .typed input{flex:1}
+.live-tx{font-family:"Shantell Sans",cursive;font-size:17px;color:var(--ink);min-height:24px}
+.transcript{display:flex;flex-direction:column;gap:8px}
+.turn{display:grid;grid-template-columns:58px 1fr;gap:10px;font-size:14px}
+.turn .who{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);padding-top:3px}
+.turn.pip .who{color:var(--hot)} .turn.learner .who{color:var(--teal)} .turn.learner .utt{font-family:"Shantell Sans",cursive;font-size:16px}
+.fl{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);margin-top:2px}
+.done{display:none;align-items:center;gap:12px;flex-wrap:wrap} .done.on{display:flex}
+/* drill */
+.q{font-size:clamp(30px,6vw,44px);display:flex;align-items:center;gap:14px;line-height:1.9} .heard{font-family:"Shantell Sans",cursive;font-size:22px;color:var(--pencil);min-height:30px}
+.dots{display:flex;gap:8px} .dots i{width:12px;height:12px;border-radius:50%;background:color-mix(in srgb,var(--ink) 15%,transparent)} .dots i.ok{background:var(--good)} .dots i.no{background:var(--hot)} .dots i.cur{outline:2px solid var(--teal);outline-offset:2px}
+/* brief */
+.quote{font-family:"Shantell Sans",cursive;font-size:19px;line-height:1.4;border-left:3px solid var(--pip);padding-left:14px}
+.kv{display:flex;flex-direction:column;gap:7px} .kv div{display:flex;justify-content:space-between;gap:14px;font-size:13.5px;border-bottom:1px dotted color-mix(in srgb,var(--ink) 18%,transparent);padding-bottom:6px} .kv .k{color:var(--muted)} .kv .v{font-family:"IBM Plex Mono",monospace;font-weight:600}
+.bullets{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:9px} .bullets li{font-size:14px;line-height:1.5;color:var(--ink-2)} .bullets li:first-child{color:var(--ink)}
+mark{background:var(--warn-soft);color:var(--warn);padding:0 3px;border-radius:2px}
+.big{display:flex;gap:18px} .big div{display:flex;flex-direction:column} .big b{font-family:"Bricolage Grotesque",serif;font-size:32px;line-height:1} .big span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:13.5px} td,th{text-align:left;padding:8px 6px;border-bottom:1px solid color-mix(in srgb,var(--ink) 10%,transparent)} th{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.tablewrap{overflow-x:auto}
+.quadbox{background:var(--teal-soft);border-radius:10px;padding:12px 14px;font-size:13.5px} .quadbox b{font-family:"IBM Plex Mono",monospace;letter-spacing:.06em;text-transform:uppercase;font-size:12px}
+/* pip rig */
+.pipsvg{width:100%;height:100%;overflow:visible;display:block} .pipsvg .pipbody{transform-origin:75px 150px;animation:pipbob 3.4s ease-in-out infinite}
+@keyframes pipbob{0%,100%{transform:translateY(0) scaleY(1)}50%{transform:translateY(-4px) scaleY(1.012)}}
+.pipsvg .brow,.pipsvg .pupil,.pipsvg .lid,.pipsvg .mouth,.pipsvg .oh{transition:all .42s cubic-bezier(.34,1.3,.5,1)}
+.pipsvg.talking .mouth{animation:piptalk .28s ease-in-out infinite alternate} @keyframes piptalk{from{transform:scaleY(1)}to{transform:scaleY(1.6) translateY(-2px)}} .pipsvg .mouth{transform-origin:75px 118px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01ms!important}}
+</style>
+
+<div class="wrap">
+  <nav>
+    <a class="brand" href="#intake">Understudy</a>
+    <button class="tab on" data-go="intake">Photo</button>
+    <button class="tab" data-go="drill" disabled>Warm up</button>
+    <button class="tab" data-go="teach" disabled>Teach</button>
+    <button class="tab" data-go="brief" disabled>Brief</button>
+    <button class="mode mock" id="modeChip" title="Click to switch between Claude and scripted mode">scripted</button>
+  </nav>
+
+  <!-- ================= INTAKE ================= -->
+  <section class="screen on" id="s-intake">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <span class="eyebrow">Start here</span>
+      <h1>Photograph the graded worksheet.</h1>
+      <p class="dim">The red pen is already on it. Understudy reads the rule behind each mistake, then gives your kid an AI understudy, Pip, who's stuck on exactly that rule. They teach him out of it, out loud.</p>
+    </div>
+    <div class="loop">
+      <div><b>PHOTO</b><span>graded work</span></div><div><b>DIAGNOSE</b><span>which malrule?</span></div><div><b>DRILL</b><span>while it's fresh</span></div><div><b>TEACH</b><span>talk Pip out of it</span></div><div><b>BRIEF</b><span>parent + tutor</span></div>
+    </div>
+    <div class="card">
+      <div class="row"><label for="learner" class="small dim">Learner's first name</label><input type="text" id="learner" value="Maya" style="width:160px"></div>
+      <label class="drop" id="drop">
+        <input type="file" id="photo" accept="image/*" capture="environment">
+        <span id="dropText"><b>Tap to photograph</b> or drop an image here</span>
+        <div id="preview" hidden></div>
+      </label>
+      <div class="row">
+        <button class="btn" id="go">Read the worksheet</button>
+        <button class="btn ghost" id="sampleBtn">Use the sample worksheet</button>
+        <span class="hint" id="status"></span>
+      </div>
+      <p class="xs dim" id="photoNote">Names and teacher comments are ignored. The photo is read once to find the mistakes and isn't kept.</p>
+    </div>
+    <div class="card" id="results" hidden>
+      <div class="row" style="justify-content:space-between"><h2>What the page says</h2><span class="chip mute" id="modeNote"></span></div>
+      <div id="list"></div>
+      <p class="xs dim"><b>Verified</b> means a known misconception produces exactly the digits written, and the code confirmed it. <b>Unverified</b> means no rule produces those digits, which usually means the reading auto-corrected the mistake, so we ask instead of guessing.</p>
+    </div>
+  </section>
+
+  <!-- ================= DRILL ================= -->
+  <section class="screen" id="s-drill">
+    <div><span class="eyebrow" id="drillEyebrow">Warm up</span><h1>Three quick ones. Say the answer.</h1><p class="dim small">Same rule, fresh numbers, while the correction is still warm. Teaching Pip comes after, from memory.</p></div>
+    <div class="paper" style="gap:14px">
+      <div class="row" style="justify-content:space-between"><div class="dots" id="dots"><i></i><i></i><i></i></div><span class="hint" id="drillHint"></span></div>
+      <div class="q"><span id="dText"></span><span>=</span><span class="heard" id="dHeard">…</span></div>
+      <div class="voicerow">
+        <button class="ptt" id="dPtt"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="2" width="6" height="11" rx="3" fill="currentColor" stroke="none"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg><span id="dPttLabel">Hold to answer</span></button>
+        <form class="typed" id="dTyped" style="flex:1;min-width:220px"><input type="text" id="dText2" placeholder="or type it: 5/6, five sixths"><button class="btn ghost" type="submit">Answer</button></form>
+      </div>
+      <div class="row"><span id="dFb" class="small"></span></div>
+      <div class="done" id="dDone"><button class="btn" data-go="teach">Now teach Pip</button></div>
+    </div>
+  </section>
+
+  <!-- ================= TEACH ================= -->
+  <section class="screen" id="s-teach">
+    <div><span class="eyebrow" id="tEyebrow">Teach Pip</span><h1>Pip got one wrong. Talk him out of it.</h1><p class="dim small">Hold the button and say why, or type it. He stays wrong until the explanation is actually right.</p></div>
+    <div class="app">
+      <div class="pipside"><div class="piprig" id="pip"></div><div class="pipname"><b>Pip</b>age 9 · your understudy</div></div>
+      <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+        <div class="bubble" id="bubble">…</div>
+        <div class="paper">
+          <div class="paperhead"><span>Pip's working</span><span id="stamp"></span></div>
+          <div class="work">
+            <div class="sum"><span id="ptext"></span><span>=</span><span class="ans" id="ans"><span id="wrong"></span><i class="strike" id="strike"></i></span></div>
+            <div class="note" id="note1"></div><div class="note" id="note2"></div>
+          </div>
+          <span class="chip hot tag" id="tag">Pip is sure</span>
+        </div>
+      </div>
+      <div class="strips">
+        <div class="strip">
+          <div class="striphead"><span class="striplabel">Belief state · Pip</span><span class="chip hot" id="beliefChip">Held</span></div>
+          <div class="mono" id="ruleId" style="font-size:14px;font-weight:600"></div><div class="xs dim" id="ruleEn"></div>
+          <ul class="crit" id="crit"></ul>
+        </div>
+        <div class="strip">
+          <div class="striphead"><span class="striplabel">Fluency · learner</span><span class="chip neu" id="fluChip">Waiting</span></div>
+          <div class="metrics">
+            <div class="metric" id="m-onset"><span class="v">–</span><span class="k">onset s</span></div>
+            <div class="metric" id="m-fill"><span class="v">–</span><span class="k">fillers</span></div>
+            <div class="metric" id="m-hedge"><span class="v">–</span><span class="k">hedges</span></div>
+            <div class="metric" id="m-pause"><span class="v">–</span><span class="k">pauses</span></div>
+          </div>
+          <div class="xs dim" id="quad"></div>
+        </div>
+      </div>
+      <div class="voicebar">
+        <div class="voicerow">
+          <button class="ptt" id="ptt" disabled><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="2" width="6" height="11" rx="3" fill="currentColor" stroke="none"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg><span id="pttLabel">Hold to talk</span></button>
+          <canvas class="vline" id="vline"></canvas>
+          <span class="hint" id="hint">Pip is about to explain his answer.</span>
+        </div>
+        <form class="typed" id="typed"><input type="text" id="typedText" placeholder="or type what you'd say to him"><button class="btn ghost" type="submit" id="typedBtn">Say it</button></form>
+        <div class="live-tx" id="liveTx"></div>
+        <div class="done" id="done"><button class="btn" data-go="brief">See what the parent and tutor get</button><button class="btn ghost" data-go="intake">Another worksheet</button></div>
+      </div>
+    </div>
+    <div class="card"><span class="eyebrow">Transcript</span><div class="transcript" id="transcript"></div></div>
+  </section>
+
+  <!-- ================= BRIEF ================= -->
+  <section class="screen" id="s-brief">
+    <div><span class="eyebrow">After the session</span><h1>One session. Two readers.</h1><p class="dim small">The parent gets proof. The tutor gets a briefing nobody else can give them.</p></div>
+    <div class="grid2"><div class="card" id="parentCard"></div><div class="card" id="tutorCard"></div></div>
+    <div class="card"><div class="row" style="justify-content:space-between"><h2>Misconceptions, over time</h2><span class="hint">The progression is Pip. No points.</span></div>
+      <div class="tablewrap"><table><thead><tr><th>Rule</th><th>First wrong</th><th>Taught back</th><th>Quality</th><th>Status</th></tr></thead><tbody id="rows"></tbody></table></div></div>
+    <div class="row"><button class="btn ghost" data-go="intake">Start another worksheet</button></div>
+  </section>
+
+  <p class="xs dim">Understudy · concept and code at github.com/CrossoverAnalytics3/Ideas-for-hackathon2. Pip and the judge run on your own Claude when you allow it; otherwise everything is scripted.</p>
+</div>
+
+<script>
+/* ========================================================================
+   ENGINE: executable misconceptions. The model never computes any of this.
+   ======================================================================== */
+const E = (() => {
+  const gcd = (x, y) => { x = Math.abs(x); y = Math.abs(y); while (y) [x, y] = [y, x % y]; return x || 1; };
+  const reduce = (n, d) => { const g = gcd(n, d); return { n: n / g, d: d / g }; };
+  const frac = (n, d) => ({ n, d });
+  const fracEq = (p, q) => { const a = reduce(p.n, p.d), b = reduce(q.n, q.d); return a.n === b.n && a.d === b.d; };
+  const fracStr = f => `${f.n}/${f.d}`;
+  const rng = seed => { let s = seed >>> 0 || 1; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; };
+  const pick = (r, a) => a[Math.floor(r() * a.length)];
+  const OPS = { add: '+', sub: '−', mul: '×', div: '÷' };
+  const problemText = p => p.op === 'compare' ? `Which is bigger: ${p.x} or ${p.y}?` : `${p.a}/${p.b} ${OPS[p.op]} ${p.c}/${p.d}`;
+  const fracVal = s => { const [n, d] = s.split('/').map(Number); return n / d; };
+  function correctAnswer(p) { const { a, b, c, d } = p; switch (p.op) {
+    case 'add': return reduce(a * d + c * b, b * d); case 'sub': return reduce(a * d - c * b, b * d);
+    case 'mul': return reduce(a * c, b * d); case 'div': return reduce(a * d, b * c);
+    case 'compare': return p.kind === 'decimal' ? (parseFloat(p.x) > parseFloat(p.y) ? p.x : p.y) : (fracVal(p.x) > fracVal(p.y) ? p.x : p.y); } }
+  function genFrac(r, op) { const dens = [2, 3, 4, 5, 6, 8, 10, 12]; let b = pick(r, dens), d = pick(r, dens); while (d === b) d = pick(r, dens);
+    let a = 1 + Math.floor(r() * (b - 1)), c = 1 + Math.floor(r() * (d - 1)); if (op === 'sub' && a / b < c / d) [a, b, c, d] = [c, d, a, b]; return { op, a, b, c, d }; }
+  const MALRULES = [
+    { id: 'frac_add_across', name: 'Adds numerators and denominators separately', kid: 'You add the tops and you add the bottoms.',
+      notes: { partial: '↑ bottom = how big the pieces are', released: "wait… that's smaller than what I started with" },
+      applies: p => p.op === 'add', execute: p => frac(p.a + p.c, p.b + p.d),
+      defense: p => `But ${p.a} plus ${p.c} is ${p.a + p.c}, and ${p.b} plus ${p.d} is ${p.b + p.d}. I did the tops and I did the bottoms. That's how adding works.`,
+      rubric: ['states that the denominator tells you the size of each piece', 'explains that pieces must be the same size before you can combine them', 'OR gives a valid magnitude argument (for example: the answer is smaller than one of the parts, so it cannot be right)'],
+      generate: r => genFrac(r, 'add'), opener: 'ask them to draw 1/2 and 1/3 on the same bar, then ask why the pieces have to match.' },
+    { id: 'frac_sub_across', name: 'Subtracts numerators and denominators separately', kid: 'You take the top from the top and the bottom from the bottom.',
+      notes: { partial: '↑ bottom = how big the pieces are', released: "wait… the pieces aren't the same size" },
+      applies: p => p.op === 'sub' && p.b !== p.d, execute: p => frac(p.a - p.c, Math.abs(p.b - p.d) || 1),
+      defense: p => `Top minus top is ${p.a - p.c}. Bottom minus bottom is ${Math.abs(p.b - p.d)}. Subtracting is just adding but backwards.`,
+      rubric: ['states that the denominator tells you the size of each piece', 'explains that you need same-size pieces before taking one amount away from another', 'OR gives a valid magnitude argument'],
+      generate: r => genFrac(r, 'sub'), opener: 'same bar drawing as addition, then take one away.' },
+    { id: 'frac_add_keep_larger_denom', name: 'Adds numerators and keeps the larger denominator', kid: 'You add the tops and keep the biggest bottom number.',
+      notes: { partial: "↑ can't just keep one bottom", released: 'wait… BOTH have to change to the same bottom' },
+      applies: p => p.op === 'add' && p.b !== p.d, execute: p => frac(p.a + p.c, Math.max(p.b, p.d)),
+      defense: p => `You keep the bigger bottom because it's, like, the main one. So it's ${p.a + p.c} over ${Math.max(p.b, p.d)}.`,
+      rubric: ['explains that you cannot just keep one of the denominators, both fractions have to be rewritten with the same one', 'names what a common denominator is or how to find one', 'OR shows that the answer is wrong by checking it against the size of the parts'],
+      generate: r => genFrac(r, 'add'), opener: "ask why you can't just keep one denominator. Push for what a common denominator is." },
+    { id: 'frac_mul_cross', name: 'Multiplies by cross-multiplying', kid: 'You go top-left times bottom-right, and top-right times bottom-left.',
+      notes: { partial: '↑ cross-multiply is for something else', released: 'wait… times is straight across' },
+      applies: p => p.op === 'mul', execute: p => frac(p.a * p.d, p.b * p.c),
+      defense: p => `Cross-multiply. ${p.a} times ${p.d} on top, ${p.b} times ${p.c} on the bottom. My teacher said cross-multiply is a thing.`,
+      rubric: ['states that multiplying fractions is straight across, top times top and bottom times bottom', 'explains what cross-multiplying is actually for, or that it is a different procedure', 'OR gives a valid reason the crossed answer is wrong'],
+      generate: r => genFrac(r, 'mul'), opener: 'ask what "half of a third" means and have them shade it.' },
+    { id: 'frac_div_straight', name: 'Divides fractions by multiplying straight across', kid: 'Dividing is the same as multiplying, so you just go straight across.',
+      notes: { partial: '↑ dividing = how many fit inside', released: 'wait… flip the second one, THEN times' },
+      applies: p => p.op === 'div', execute: p => frac(p.a * p.c, p.b * p.d),
+      defense: p => `${p.a} times ${p.c} is ${p.a * p.c}. ${p.b} times ${p.d} is ${p.b * p.d}. Dividing is basically multiplying anyway.`,
+      rubric: ['explains that dividing by a fraction means asking how many of that piece fit into the first amount', 'says you flip the second fraction and then multiply, and gives a reason why that works', 'OR shows the straight-across answer is wrong using a concrete example'],
+      generate: r => genFrac(r, 'div'), opener: 'ask how many quarters fit in a half, and let them count.' },
+    { id: 'frac_bigger_denom_bigger', name: 'Thinks a bigger denominator means a bigger fraction', kid: 'Eight is more than four, so eighths are more than fourths.',
+      notes: { partial: '↑ more pieces = smaller pieces', released: 'wait… 1/8 is a smaller slice than 1/4' },
+      applies: p => p.op === 'compare' && p.kind === 'fraction', execute: p => Number(p.x.split('/')[1]) > Number(p.y.split('/')[1]) ? p.x : p.y,
+      defense: p => `${p.x.split('/')[1]} is a bigger number than ${p.y.split('/')[1]}. Bigger number, bigger fraction. That's obvious.`,
+      rubric: ['explains that the denominator is how many pieces the whole is cut into', 'explains that cutting into more pieces makes each piece smaller', 'OR uses a concrete example (pizza, chocolate bar) to show that 1/8 is smaller than 1/4'],
+      generate: r => { const d1 = pick(r, [3, 4, 5, 6]); return { op: 'compare', kind: 'fraction', x: `1/${d1}`, y: `1/${d1 * 2}` }; }, opener: 'cut a paper strip into 4, then another into 8. Compare one piece of each.' },
+    { id: 'decimal_longer_is_bigger', name: 'Thinks a decimal with more digits is bigger', kid: '0.45 has more numbers in it than 0.7, so it must be bigger.',
+      notes: { partial: '↑ tenths come first', released: "wait… 0.7 is 0.70, that's more than 0.45" },
+      applies: p => p.op === 'compare' && p.kind === 'decimal', execute: p => (p.x.length > p.y.length ? p.x : p.y),
+      defense: p => `${p.x.length > p.y.length ? p.x : p.y} is longer. Forty-five is way more than seven.`,
+      rubric: ['explains that the digit right after the decimal point is tenths and it matters most', 'lines the decimals up by place value or adds a zero to compare them', 'OR uses money or a concrete measure to show which is actually bigger'],
+      generate: r => ({ op: 'compare', kind: 'decimal', x: `0.${pick(r, [5, 6, 7, 8, 9])}`, y: `0.${pick(r, [12, 25, 35, 45])}` }), opener: 'use money: 70 cents versus 45 cents.' },
+  ];
+  const byId = Object.fromEntries(MALRULES.map(m => [m.id, m]));
+  const answerStr = (p, a) => p.op === 'compare' ? String(a) : fracStr(a);
+  function candidates(p) { const right = correctAnswer(p); return MALRULES.filter(m => m.applies(p)).map(m => { const out = m.execute(p); return { id: m.id, name: m.name, wrong: answerStr(p, out), raw: out }; }).filter(c => p.op === 'compare' ? c.wrong !== right : !fracEq(c.raw, right)); }
+  function normalizeWritten(s) { if (s == null) return null; const t = String(s).replace(/\s+/g, '').replace(/[⁄∕]/g, '/'); let m = t.match(/^(-?\d+)\/(\d+)$/); if (m) return { kind: 'frac', n: +m[1], d: +m[2] }; if (/^-?\d*\.\d+$/.test(t) || /^-?\d+$/.test(t)) return { kind: 'num', v: t }; return { kind: 'text', v: t }; }
+  function matchWritten(p, written) { const w = normalizeWritten(written); if (!w) return []; return candidates(p).filter(c => { if (p.op === 'compare') return w.kind !== 'frac' ? String(c.wrong) === w.v : fracStr(w) === c.wrong; if (w.kind !== 'frac') return false; return (c.raw.n === w.n && c.raw.d === w.d) || fracEq(c.raw, w); }); }
+  function parseProblem(text) { const t = String(text).replace(/[×x*]/g, '×').replace(/[−–]/g, '-').trim();
+    let m = t.match(/(\d+)\s*\/\s*(\d+)\s*([+\-×÷])\s*(\d+)\s*\/\s*(\d+)/); if (m) return { op: { '+': 'add', '-': 'sub', '×': 'mul', '÷': 'div' }[m[3]], a: +m[1], b: +m[2], c: +m[4], d: +m[5] };
+    m = t.match(/(\d+\/\d+)\D+(\d+\/\d+)/); if (m && /bigger|larger|greater|compare|>/i.test(t)) return { op: 'compare', kind: 'fraction', x: m[1], y: m[2] };
+    m = t.match(/(\d*\.\d+)\D+(\d*\.\d+)/); if (m) return { op: 'compare', kind: 'decimal', x: m[1], y: m[2] }; return null; }
+  return { MALRULES, byId, rng, candidates, matchWritten, parseProblem, problemText, correctAnswer, answerStr, reduce, normalizeWritten };
+})();
+
+/* fluency */
+const FL = (() => {
+  const FILLERS = ['um', 'uh', 'er', 'erm', 'hmm', 'like'], HEDGES = ['i think', 'maybe', 'kinda', 'kind of', 'sort of', 'i guess', 'probably', 'i dunno', "i don't know", 'or something'];
+  const count = (t, ps) => { const s = ' ' + t.toLowerCase().replace(/[^a-z' ]+/g, ' ').replace(/\s+/g, ' ') + ' '; return ps.reduce((n, p) => n + (s.split(' ' + p + ' ').length - 1), 0); };
+  function analyse({ transcript = '', onsetMs = 0, gapsMs = [], durationMs = 0 }) {
+    const words = transcript.trim() ? transcript.trim().split(/\s+/).length : 0, fillers = count(transcript, FILLERS), hedges = count(transcript, HEDGES), longPauses = gapsMs.filter(g => g > 800).length;
+    const restarts = (transcript.match(/\b(\w+)\s+\1\b/gi) || []).length + (transcript.match(/\b(no wait|i mean|actually)\b/gi) || []).length, uptalk = /\?\s*$/.test(transcript.trim());
+    let score = 0; if (onsetMs > 2000) score++; if (onsetMs > 3500) score++; if (words >= 4 && fillers / words > 0.06) score++; if (hedges > 0) score++; if (longPauses > 0) score++; if (restarts > 0) score += .5; if (uptalk) score += .5;
+    return { words, fillers, hedges, longPauses, restarts, uptalk, onsetS: +(onsetMs / 1000).toFixed(1), score, verdict: score >= 2 ? 'hesitant' : 'fluent' }; }
+  const quadrant = (c, v) => c && v === 'fluent' ? { key: 'mastered', label: 'Mastered', action: 'Space it far out.' } : c ? { key: 'fragile', label: 'Fragile', action: 'Looks like mastery on a quiz. Re-queue in 2 days.' } : v === 'fluent' ? { key: 'confidently_wrong', label: 'Confidently wrong', action: 'Entrenched malrule. Flag the tutor now.' } : { key: 'stuck', label: 'Honestly stuck', action: 'Normal. Just teach it.' };
+  return { analyse, quadrant };
+})();
+
+/* keyword judge (scripted mode + safety net) */
+function keywordJudge(rule, learnerTurns) {
+  const all = learnerTurns.join(' ').toLowerCase(), met = [];
+  const principle = /(size|big|small)\b.*\b(piece|part|slice)|(piece|part|slice)s?\b.*\b(size|big|small)|how many (pieces|parts)|cut into|tenths|place value|first digit|digit after/;
+  const sameSize = /same size|same kind|equal (pieces|parts)|common denominator.*because|match(ing)? (pieces|bottoms)|both.*same bottom|line (them )?up|add a zero/;
+  const magnitude = /(more|bigger|less|smaller) than (a )?half|smaller than (what|the one) (i|you) started|can'?t be (right|smaller)|should be (bigger|more)|less than (one|1) of|cents|money|(bigger|smaller) slice|fit inside|how many .* fit/;
+  if (principle.test(all)) met.push(1); if (sameSize.test(all)) met.push(2); if (magnitude.test(all)) met.push(3);
+  const proceduralOnly = /common denominator|flip|cross|straight across/.test(all) && met.length === 0;
+  const released = met.includes(3) || (met.includes(1) && met.includes(2));
+  return { criteria_met: met, released, quality: released ? (met.includes(3) ? 3 : 2) : (met.length ? 1 : 0),
+    next_probe: released ? '' : proceduralOnly ? "But why do the bottoms have to be the same? What's the bottom number even for?" : met.includes(1) ? "Okay so the bottom is the piece size. So why can't I just add them?" : 'But why is it wrong? I did what the rule says.',
+    reason: released ? 'Explanation named the principle.' : proceduralOnly ? 'Procedural only, no principle stated.' : met.length ? 'Partial: piece size named, no completion.' : 'No explanation yet.' };
+}
+function scriptedPip({ rule, p, wrong, history, released, probe }) {
+  const k = history.filter(h => h.who === 'learner').length;
+  if (released) return "…oh. Oh, that's weird. So my way gives the wrong size. Okay so how do I make the pieces the same size?";
+  if (k === 0) return `${rule.kid} So I got ${wrong}.`;
+  if (k === 1) return rule.defense(p);
+  if (probe) return probe;
+  return "Hm. I don't get it yet. Can you say it a different way?";
+}
+
+/* ========================================================================
+   CLAUDE (optional): Pip's voice, the judge, and photo reading.
+   ======================================================================== */
+const AI = { sample: null, images: false, wanted: true, ready: false };
+(async () => {
+  try {
+    if (!window.claude?.use) return;
+    AI.sample = await claude.use('sample');
+    if (AI.sample) { const lim = await AI.sample.limits().catch(() => null); AI.images = !!lim?.images; if (lim?.images) { $('photo').accept = lim.images.mediaTypes.join(','); } }
+  } catch (e) { AI.sample = null; }
+  finally { AI.ready = true; refreshMode(); }
+})();
+function live() { return AI.wanted && !!AI.sample; }
+function refreshMode() { const c = $('modeChip'); const on = live(); c.textContent = on ? 'live · asks Claude' : (AI.sample ? 'scripted (click for live)' : 'scripted'); c.classList.toggle('mock', !on);
+  $('photoNote').textContent = on && AI.images ? 'Your photo is sent once to Claude to find the mistakes, then discarded. Names and comments are ignored.' : on ? 'This viewer can\'t send images to Claude, so photo reading uses the sample. Pip and the judge are live.' : 'Scripted mode: the sample worksheet is pre-read and Pip follows a script. Click the chip to use your own Claude.'; }
+$('modeChip').addEventListener('click', () => { if (!AI.sample) { toast('Claude isn\'t available in this view, so everything stays scripted.'); return; } AI.wanted = !AI.wanted; refreshMode(); });
+function aiFail(e, what) { const code = e?.code || 'error'; if (code === 'not_granted' || code === 'sampling_disabled') { AI.wanted = false; refreshMode(); toast(`Claude wasn't allowed for this page, so ${what} falls back to the script.`); } else if (code !== 'cancelled') toast(`Claude ${code} on ${what}; using the script for this step.`); }
+
+async function aiPip({ rule, p, wrong, correct, history, released, probe }) {
+  const rules = released
+    ? `You are Pip, a 9-year-old kid being taught math by an older kid. You JUST understood why your old way was wrong. You're surprised and a little delighted. Say the right idea in your own words in one or two short sentences, then ask ONE follow-up question about what to do next. Plain kid words, no lecturing, no bullet points. Reply with only Pip's words.`
+    : `You are Pip, a 9-year-old kid being taught math by an older kid. Speak like a real 9-year-old: short sentences, plain words, a bit stubborn, curious, never sarcastic. One to three sentences. Reply with only Pip's words.
+You firmly believe this rule: "${rule.kid}" (${rule.name}). For the problem ${E.problemText(p)} you wrote ${wrong} and you are sure it's right.
+The correct answer is ${correct}. You must NEVER say "${correct}", never hint at it, never agree the older kid is right, never explain the correct method. You don't know it.
+When challenged: restate your rule, apply it again, or ask a real "but why?" question. If they say something vague like "that's wrong" or "just flip it", push back and ask them to explain. If they explain a real principle you may say "hm" and ask a follow-up, but you still get the answer wrong.${probe ? `\nA good question to ask next, if it fits: "${probe}"` : ''}`;
+  const turns = [{ role: 'user', content: rules }];
+  const hist = history.length ? history : [{ who: 'learner', text: `Show me what you got for ${E.problemText(p)}.` }];
+  for (const h of hist) turns.push({ role: h.who === 'pip' ? 'assistant' : 'user', content: h.text });
+  if (turns.at(-1).role !== 'user') turns.push({ role: 'user', content: '(waits for you to say something)' });
+  for (let i = 0; i < 2; i++) {
+    const { text } = await AI.sample(turns, { modelTier: 'quick', cache: false });
+    const clean = text.replace(/^["“]|["”]$/g, '').trim();
+    if (released || !leaks(clean, correct, p)) return clean;
+  }
+  return rule.defense(p);
+}
+function leaks(text, correct, p) { const t = text.replace(/\s+/g, ''); if (t.includes(correct)) return true; if (p.op !== 'compare') { const [n, d] = correct.split('/'); if (new RegExp(`\\b${n}\\s*(over|/)\\s*${d}\\b`, 'i').test(text)) return true; } return false; }
+async function aiJudge({ rule, learnerTurns }) {
+  const prompt = `You are a strict but fair judge of a child's spoken explanation of a math idea. Procedural instructions alone ("just find a common denominator", "flip the second one") do NOT count as understanding and must not release. Saying the answer is wrong does not count. Be generous with imperfect kid language and strict about substance. Ignore filler words.
+Misconception the child is correcting: ${rule.name} ("${rule.kid}").
+Rubric (any one fully met with substance can release; procedural-only never does):
+${rule.rubric.map((r, i) => `${i + 1}. ${r}`).join('\n')}
+Everything the child has said so far, in order:
+${learnerTurns.map((t, i) => `Turn ${i + 1}: "${t}"`).join('\n')}
+Judge the cumulative explanation. Reply with only a JSON object: {"criteria_met":[1-based indices met],"released":true|false,"quality":0-3,"next_probe":"if not released, the single most useful question Pip (age 9) should ask next, in a kid's words; else empty","reason":"one sentence for the tutor"}`;
+  const j = await AI.sample.json(prompt, { modelTier: 'quick', cache: false });
+  if (typeof j?.released !== 'boolean') throw { code: 'invalid_json', message: 'bad judge shape' };
+  j.criteria_met = Array.isArray(j.criteria_met) ? j.criteria_met.map(Number) : []; j.quality = Number(j.quality) || 0; return j;
+}
+async function aiIntake(file) {
+  const raw = await AI.sample.json(`This is a photo of a child's graded math worksheet. Transcribe FAITHFULLY. Critical rule: NEVER correct the student's answer. If the student wrote 2/5, return "2/5" even though it's wrong. Copy the digits on the page. Ignore names, comments and anything that isn't a problem plus its written answer.
+Reply with only JSON: {"problems":[{"problem_text":"the printed problem exactly, e.g. 1/2 + 1/3 or Which is bigger: 0.7 or 0.45?","written_answer":"what the student wrote, exactly","marked_wrong":true|false,"reading_confidence":0-1}]}`, { images: [file], modelTier: 'default' });
+  const items = Array.isArray(raw?.problems) ? raw.problems : [];
+  // Closed question per marked-wrong item, then code verification.
+  const out = [];
+  for (const it of items) {
+    const p = E.parseProblem(it.problem_text); if (!p) { out.push({ ...it, status: 'unparsed' }); continue; }
+    const cands = E.candidates(p); let modelPick = null;
+    if (it.marked_wrong && cands.length) {
+      try { const q = await AI.sample.json(`Look only at the problem "${it.problem_text}" in this photo. Candidate wrong answers a student holding a known misconception would write: ${cands.map(c => `${c.id} => ${c.wrong}`).join('; ')}. Which candidate id matches the digits the student ACTUALLY wrote (do not correct them)? Reply with only JSON: {"id":"candidate id or null"}`, { images: [file], modelTier: 'quick' }); modelPick = q?.id && q.id !== 'null' ? q.id : null; } catch (e) {}
+    }
+    out.push(verify({ item: it, p, cands, codeMatch: E.matchWritten(p, it.written_answer), modelPick }));
+  }
+  return { problems: out, mode: 'live' };
+}
+function verify({ item, p, cands, codeMatch, modelPick }) {
+  const base = { problem_text: E.problemText(p), problem: p, written_answer: item.written_answer, marked_wrong: !!item.marked_wrong, correct: E.answerStr(p, E.correctAnswer(p)), candidates: cands };
+  if (!item.marked_wrong) return { ...base, status: 'correct' };
+  if (codeMatch.length === 1) return { ...base, status: 'verified', malrule: codeMatch[0].id, name: E.byId[codeMatch[0].id].name, note: modelPick && modelPick !== codeMatch[0].id ? `model picked ${modelPick}, code matched ${codeMatch[0].id}` : '' };
+  if (codeMatch.length > 1) return { ...base, status: 'ambiguous', options: codeMatch.map(c => c.id) };
+  return { ...base, status: 'unverified', modelPick, note: 'No malrule produces the written digits. The reading may have auto-corrected the mistake. Please confirm what was written.' };
+}
+function mockDiagnosis() {
+  return { mode: 'mock', problems: [
+    { problem_text: '1/2 + 1/3', written_answer: '2/5', marked_wrong: true }, { problem_text: '3/4 - 1/2', written_answer: '1/4', marked_wrong: false },
+    { problem_text: '1/4 + 1/2', written_answer: '2/4', marked_wrong: true }, { problem_text: 'Which is bigger: 0.7 or 0.45?', written_answer: '0.45', marked_wrong: true },
+  ].map(item => { const p = E.parseProblem(item.problem_text); if (!p) return { ...item, status: 'unparsed' }; return verify({ item, p, cands: E.candidates(p), codeMatch: E.matchWritten(p, item.written_answer), modelPick: null }); }) };
+}
+
+/* ========================================================================
+   VOICE
+   ======================================================================== */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let voices = []; if (window.speechSynthesis) { voices = speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => { voices = speechSynthesis.getVoices(); }; }
+function speak(text, { onStart, onEnd } = {}) {
+  if (!window.speechSynthesis) { onStart?.(); onEnd?.(); return Promise.resolve(); }
+  speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text);
+  const pref = voices.find(v => /child|kid|junior/i.test(v.name)) || voices.find(v => /^en/i.test(v.lang) && /female|samantha|karen|moira|zira|google uk english female/i.test(v.name)) || voices.find(v => /^en/i.test(v.lang));
+  if (pref) u.voice = pref; u.pitch = 1.5; u.rate = 1.05;
+  return new Promise(res => { let done = false; const fin = () => { if (!done) { done = true; onEnd?.(); res(); } }; u.onstart = () => onStart?.(); u.onend = fin; u.onerror = fin; speechSynthesis.speak(u); setTimeout(fin, 1200 + text.length * 90); });
+}
+function recognizer(onInterim) {
+  if (!SR) return null; let rec, t0, firstAt, lastAt, gaps, final, conf, resolveStop;
+  function start(anchor) { rec = new SR(); rec.continuous = true; rec.interimResults = true; rec.lang = 'en-US'; gaps = []; firstAt = lastAt = null; final = ''; conf = 1; t0 = anchor || performance.now();
+    rec.onresult = ev => { const now = performance.now(); if (firstAt == null) firstAt = now; else if (now - lastAt > 500) gaps.push(Math.round(now - lastAt)); lastAt = now; let interim = '';
+      for (let i = ev.resultIndex; i < ev.results.length; i++) { const r = ev.results[i]; if (r.isFinal) { final += r[0].transcript + ' '; if (typeof r[0].confidence === 'number' && r[0].confidence > 0) conf = Math.min(conf, r[0].confidence); } else interim += r[0].transcript; }
+      onInterim?.((final + interim).trim()); };
+    rec.onend = () => resolveStop && finish(); rec.onerror = () => resolveStop && finish(); try { rec.start(); } catch (e) {} }
+  function finish() { const now = performance.now(); const r = resolveStop; resolveStop = null; r({ transcript: final.trim(), onsetMs: firstAt == null ? Math.round(now - t0) : Math.round(firstAt - t0), gapsMs: gaps, durationMs: firstAt == null ? 0 : Math.round((lastAt || now) - firstAt), confidence: conf }); }
+  function stop() { return new Promise(res => { resolveStop = res; try { rec.stop(); } catch (e) { finish(); } setTimeout(() => resolveStop && finish(), 1500); }); }
+  return { start, stop };
+}
+function bindPTT(btn, label, { onStart, onStop, anchor }) {
+  const rec = recognizer(t => onStart && onStart.interim?.(t)); let listening = false;
+  if (!rec) { btn.disabled = true; btn.title = 'No speech recognition in this browser. Chrome has it. Typing works.'; return; }
+  const down = e => { if (btn.disabled || listening) return; e.preventDefault(); listening = true; btn.classList.add('live'); label.textContent = 'Listening…'; onStart?.(); rec.start(anchor?.()); };
+  const up = async e => { if (!listening) return; e?.preventDefault(); listening = false; btn.classList.remove('live'); label.textContent = btn.dataset.label; const r = await rec.stop(); onStop(r); };
+  btn.dataset.label = label.textContent;
+  btn.addEventListener('mousedown', down); btn.addEventListener('touchstart', down, { passive: false }); window.addEventListener('mouseup', up); window.addEventListener('touchend', up);
+  btn.addEventListener('keydown', e => { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) down(e); }); btn.addEventListener('keyup', e => { if (e.key === ' ' || e.key === 'Enter') up(e); });
+}
+
+/* ========================================================================
+   PIP RIG
+   ======================================================================== */
+const PIP_SVG = `<svg class="pipsvg" viewBox="0 0 150 170" aria-label="Pip"><g class="pipbody"><ellipse cx="75" cy="156" rx="40" ry="6" fill="var(--ink)" opacity=".10"/><path d="M75 22 C112 22 128 50 128 92 C128 130 106 152 75 152 C44 152 22 130 22 92 C22 50 38 22 75 22 Z" fill="var(--pip)"/><path d="M75 22 C112 22 128 50 128 92 C128 112 122 128 111 138 C116 126 118 110 118 94 C118 54 102 28 70 23 Z" fill="var(--pip-shade)" opacity=".5"/><ellipse cx="52" cy="86" rx="15" ry="16.5" fill="#FFFDF8"/><ellipse cx="98" cy="86" rx="15" ry="16.5" fill="#FFFDF8"/><circle class="pupil pupL" cx="52" cy="88" r="7" fill="#2B2018"/><circle class="pupil pupR" cx="98" cy="88" r="7" fill="#2B2018"/><circle cx="49.5" cy="85" r="2.4" fill="#fff" opacity=".9"/><circle cx="95.5" cy="85" r="2.4" fill="#fff" opacity=".9"/><rect class="lid lidL" x="36" y="52" width="32" height="0" rx="4" fill="var(--pip-dark)"/><rect class="lid lidR" x="82" y="52" width="32" height="0" rx="4" fill="var(--pip-dark)"/><rect class="brow browL" x="40" y="62" width="25" height="5.5" rx="2.75" fill="var(--pip-dark)"/><rect class="brow browR" x="85" y="62" width="25" height="5.5" rx="2.75" fill="var(--pip-dark)"/><path class="mouth" d="M60 118 Q67 118 75 118 Q83 118 90 118" stroke="#2B2018" stroke-width="4.5" stroke-linecap="round" fill="none"/><ellipse class="oh" cx="75" cy="120" rx="0" ry="0" fill="#2B2018"/><ellipse cx="34" cy="106" rx="8" ry="5.5" fill="var(--hot)" opacity=".2"/><ellipse cx="116" cy="106" rx="8" ry="5.5" fill="var(--hot)" opacity=".2"/></g></svg>`;
+const EXPR = { proud:{bl:[-6,-3],br:[6,-3],lid:0,pu:[0,0],m:[112,122,112],oh:0,tilt:0}, confused:{bl:[14,-7],br:[-14,-7],lid:0,pu:[0,-2],m:[120,114,120],oh:0,tilt:-4}, defiant:{bl:[-13,2],br:[13,2],lid:5,pu:[0,1],m:[121,116,121],oh:0,tilt:0}, listen:{bl:[-4,-8],br:[4,-8],lid:0,pu:[0,3],m:[117,117,117],oh:0,tilt:3}, think:{bl:[10,-4],br:[-10,-4],lid:0,pu:[-4,-6],m:[119,115,119],oh:0,tilt:-3}, doubt:{bl:[8,-9],br:[-3,-2],lid:3,pu:[3,-3],m:[118,121,114],oh:0,tilt:2}, dawn:{bl:[-2,-14],br:[2,-14],lid:0,pu:[0,-1],m:[118,118,118],oh:9,tilt:0}, got:{bl:[-9,-13],br:[9,-13],lid:0,pu:[0,0],m:[110,126,110],oh:0,tilt:0}, huh:{bl:[6,-10],br:[-6,-2],lid:2,pu:[5,0],m:[119,114,121],oh:0,tilt:5}, sad:{bl:[9,-2],br:[-9,-2],lid:4,pu:[0,2],m:[122,114,122],oh:0,tilt:-2} };
+function mountPip(el) { el.innerHTML = PIP_SVG; const svg = el.querySelector('svg'), q = c => svg.querySelector('.' + c); let cur = 'proud';
+  function set(name) { const e = EXPR[name]; if (!e) return; cur = name; q('browL').setAttribute('transform', `rotate(${e.bl[0]} 52.5 64.75) translate(0 ${e.bl[1]})`); q('browR').setAttribute('transform', `rotate(${e.br[0]} 97.5 64.75) translate(0 ${e.br[1]})`);
+    for (const s of ['lidL', 'lidR']) { q(s).setAttribute('height', e.lid * 2.2); q(s).setAttribute('y', 74 - e.lid * 2.2); } q('pupL').setAttribute('cx', 52 + e.pu[0]); q('pupL').setAttribute('cy', 88 + e.pu[1]); q('pupR').setAttribute('cx', 98 + e.pu[0]); q('pupR').setAttribute('cy', 88 + e.pu[1]);
+    const m = e.m; q('mouth').setAttribute('d', `M60 ${m[0]} Q67 ${m[1]} 75 ${m[1]} Q83 ${m[1]} 90 ${m[2]}`); q('oh').setAttribute('rx', e.oh); q('oh').setAttribute('ry', e.oh * 1.15); q('mouth').style.opacity = e.oh > 0 ? 0 : 1; q('pipbody').style.rotate = e.tilt + 'deg'; }
+  (function loop() { setTimeout(() => { for (const s of ['lidL', 'lidR']) { q(s).setAttribute('height', 36); q(s).setAttribute('y', 40); } setTimeout(() => set(cur), 110); loop(); }, 2600 + Math.random() * 3200); })();
+  set('proud'); return { set, talking: on => svg.classList.toggle('talking', !!on) }; }
+
+/* ========================================================================
+   APP STATE + SCREENS
+   ======================================================================== */
+function $(id) { return document.getElementById(id); }
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const math = t => String(t).replace(/(\d+)\/(\d+)/g, '<span class="frac"><span>$1</span><span>$2</span></span>');
+const fmt = iso => iso ? new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+let toastT; function toast(msg) { $('status').textContent = msg; $('hint').textContent = msg; clearTimeout(toastT); toastT = setTimeout(() => {}, 4000); }
+
+const S = { learner: 'Maya', diagnosis: null, queue: [], qi: 0, history: [] };
+(function seedHistory() { const d = n => new Date(Date.now() - n * 864e5).toISOString(); S.history = [
+  { malrule: 'frac_bigger_denom_bigger', firstWrong: d(31), cleared: d(24), quality: 3 }, { malrule: 'frac_sub_across', firstWrong: d(19), cleared: d(11), quality: 2 }]; })();
+
+function go(name) { document.querySelectorAll('.screen').forEach(s => s.classList.toggle('on', s.id === 's-' + name)); document.querySelectorAll('nav .tab').forEach(b => b.classList.toggle('on', b.dataset.go === name)); location.hash = name; window.scrollTo({ top: 0 });
+  if (name === 'drill') startDrill(); if (name === 'teach') startTeach(); if (name === 'brief') renderBrief(); }
+document.addEventListener('click', e => { const b = e.target.closest('[data-go]'); if (b && !b.disabled) { e.preventDefault(); go(b.dataset.go); } });
+function enableTabs() { document.querySelectorAll('nav .tab').forEach(b => { if (b.dataset.go !== 'intake') b.disabled = !S.queue.length; }); }
+
+/* ---- intake ---- */
+const SAMPLE_SVG = `<svg viewBox="0 0 640 400" xmlns="http://www.w3.org/2000/svg" style="background:#fdfcf7;border-radius:8px"><rect width="640" height="400" fill="#fdfcf7"/><text x="48" y="58" font-family="Georgia,serif" font-size="22" font-weight="700" fill="#222">Fractions &amp; decimals — Quiz 4</text><text x="48" y="84" font-family="Georgia,serif" font-size="13" fill="#555">Name: Maya</text><text x="500" y="84" font-family="Georgia,serif" font-size="13" fill="#555">Grade 5 · Sept 4</text><g transform="rotate(-12 560 150)"><ellipse cx="560" cy="150" rx="46" ry="30" fill="none" stroke="#d22" stroke-width="3"/><text x="560" y="160" text-anchor="middle" font-family="Arial" font-size="26" font-weight="700" fill="#d22">1 / 4</text></g><g font-family="Georgia,serif" font-size="24" fill="#222"><text x="60" y="160">1.  1/2 + 1/3 =</text><text x="60" y="215">2.  3/4 − 1/2 =</text><text x="60" y="270">3.  1/4 + 1/2 =</text><text x="60" y="325">4.  Which is bigger: 0.7 or 0.45?</text></g><g font-family="'Shantell Sans','Comic Sans MS',cursive" font-size="26" fill="#2b3a8f"><text x="248" y="160" transform="rotate(-2 248 160)">2/5</text><text x="248" y="215" transform="rotate(1 248 215)">1/4</text><text x="248" y="270" transform="rotate(-1.5 248 270)">2/4</text><text x="455" y="325" transform="rotate(1 455 325)">0.45</text></g><g font-family="Arial" font-size="32" font-weight="700"><text x="420" y="162" fill="#d22" transform="rotate(8 420 162)">✗</text><text x="420" y="217" fill="#2a8a3a" transform="rotate(-6 420 217)">✓</text><text x="420" y="272" fill="#d22" transform="rotate(8 420 272)">✗</text><text x="560" y="327" fill="#d22" transform="rotate(8 560 327)">✗</text></g><text x="48" y="378" font-family="Arial" font-size="14" fill="#d22" transform="rotate(-1 48 378)">Maya — remember the bottoms have to match! See me.</text></svg>`;
+let photoFile = null;
+$('photo').addEventListener('change', () => { photoFile = $('photo').files[0]; if (!photoFile) return; const u = URL.createObjectURL(photoFile); $('preview').innerHTML = `<img src="${u}" alt="">`; $('preview').hidden = false; $('drop').classList.add('has'); $('dropText').textContent = photoFile.name; });
+$('drop').addEventListener('dragover', e => e.preventDefault()); $('drop').addEventListener('drop', e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) { const dt = new DataTransfer(); dt.items.add(f); $('photo').files = dt.files; $('photo').dispatchEvent(new Event('change')); } });
+$('go').addEventListener('click', () => runIntake(photoFile));
+$('sampleBtn').addEventListener('click', () => { photoFile = null; $('preview').innerHTML = SAMPLE_SVG; $('preview').hidden = false; $('drop').classList.add('has'); $('dropText').textContent = 'Sample worksheet · Quiz 4'; runIntake(null); });
+async function runIntake(file) {
+  S.learner = $('learner').value.trim() || 'Maya'; $('go').disabled = $('sampleBtn').disabled = true;
+  let d;
+  if (file && live() && AI.images) { $('status').innerHTML = '<span class="spin"></span> Reading the photo with Claude… 10 to 40 seconds.'; try { d = await aiIntake(file); } catch (e) { aiFail(e, 'photo reading'); d = null; } }
+  else if (file && live()) { $('status').textContent = 'This viewer can\'t send images to Claude. Showing the sample instead.'; }
+  else if (file) { $('status').textContent = 'Scripted mode can\'t read a photo. Showing the sample instead.'; }
+  if (!d) d = mockDiagnosis();
+  if (d.problems.length === 0) { d = mockDiagnosis(); $('status').textContent = 'Nothing readable came back, showing the sample.'; }
+  S.diagnosis = d; const today = new Date().toISOString();
+  S.queue = d.problems.filter(x => x.status === 'verified').map(x => ({ malrule: x.malrule, source: x.problem, written: x.written_answer, correct: x.correct, firstWrong: today, status: 'open', drill: null, teach: null }));
+  S.qi = 0; renderResults(); enableTabs(); $('go').disabled = $('sampleBtn').disabled = false; if (!$('status').textContent.includes('sample') && !$('status').textContent.includes('fall')) $('status').textContent = 'Done.';
+}
+function renderResults() {
+  const d = S.diagnosis; $('results').hidden = false; $('modeNote').textContent = d.mode === 'live' ? 'read by Claude, verified in code' : 'pre-read sample';
+  $('list').innerHTML = d.problems.map((p, i) => { const qi = S.queue.findIndex(q => q.malrule === p.malrule); let chip, meta = '', actions = '';
+    if (p.status === 'correct') chip = '<span class="chip ok">Correct</span>';
+    else if (p.status === 'verified') { chip = '<span class="chip hot">Wrong · verified</span>'; meta = `<span class="mono small">${esc(p.malrule)}</span><span class="small dim">${esc(p.name)}</span>`; actions = `<button class="btn ghost" data-q="${qi}" data-go2="drill">Warm up</button><button class="btn" data-q="${qi}" data-go2="teach">Teach Pip</button>`; }
+    else if (p.status === 'unverified') { chip = '<span class="chip warn">Wrong · unverified</span>'; meta = `<span class="small dim">${esc(p.note || '')}</span><form class="row" data-i="${i}"><input type="text" placeholder="What did they write? e.g. 2/5" style="width:190px"><button class="btn ghost" type="submit">Confirm</button></form>`; }
+    else if (p.status === 'ambiguous') { chip = '<span class="chip warn">Wrong · two rules fit</span>'; meta = `<span class="small dim">Could be ${p.options.join(' or ')}.</span>`; }
+    else chip = '<span class="chip mute">Could not read</span>';
+    return `<div class="result"><div class="prob">${math(p.problem_text)}<span class="dim">→</span><span class="wrote">${math(p.written_answer || '?')}</span></div><div>${chip}</div><div class="meta">${meta}<span style="flex:1"></span><span class="actions">${actions}</span></div></div>`; }).join('');
+  $('list').querySelectorAll('[data-go2]').forEach(b => b.addEventListener('click', () => { S.qi = Number(b.dataset.q); go(b.dataset.go2); }));
+  $('list').querySelectorAll('form[data-i]').forEach(f => f.addEventListener('submit', e => { e.preventDefault(); const written = f.querySelector('input').value.trim(); if (!written) return; const i = Number(f.dataset.i); const it = d.problems[i]; const p = it.problem;
+    const v = verify({ item: { ...it, written_answer: written }, p, cands: E.candidates(p), codeMatch: E.matchWritten(p, written), modelPick: null }); d.problems[i] = v;
+    if (v.status === 'verified' && !S.queue.some(q => q.malrule === v.malrule)) S.queue.push({ malrule: v.malrule, source: p, written, correct: v.correct, firstWrong: new Date().toISOString(), status: 'open', drill: null, teach: null });
+    renderResults(); enableTabs(); }));
+}
+
+/* ---- drill ---- */
+const ONES = { zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15, sixteen: 16, seventeen: 17, eighteen: 18, nineteen: 19, twenty: 20, a: 1, an: 1 };
+const DENOMS = { half: 2, halves: 2, third: 3, thirds: 3, quarter: 4, quarters: 4, fourth: 4, fourths: 4, fifth: 5, fifths: 5, sixth: 6, sixths: 6, seventh: 7, sevenths: 7, eighth: 8, eighths: 8, ninth: 9, ninths: 9, tenth: 10, tenths: 10, twelfth: 12, twelfths: 12, fifteenth: 15, fifteenths: 15, sixteenth: 16, sixteenths: 16, twentieth: 20, twentieths: 20 };
+function spokenToAnswer(spoken, p) { let s = spoken.toLowerCase().replace(/[,.!?]+$/, '').replace(/-/g, '').trim();
+  if (p.op === 'compare') { for (const o of [p.x, p.y]) { if (s.includes(o) || s.includes(o.replace('/', ' over '))) return o; const [n, d] = o.split('/'); if (d && Object.entries(DENOMS).some(([k, v]) => v === +d && s.includes(k))) return o; } const dec = s.match(/point (\w+)(?: (\w+))?/); if (dec) { const cand = '0.' + [dec[1], dec[2]].filter(Boolean).map(w => ONES[w] ?? w).join(''); if ([p.x, p.y].includes(cand)) return cand; } return null; }
+  let m = s.match(/(\d+)\s*(?:\/|over|out of)\s*(\d+)/); if (m) return `${m[1]}/${m[2]}`; m = s.match(/(\w+)\s+(?:over|out of)\s+(\w+)/); if (m && ONES[m[1]] != null && ONES[m[2]] != null) return `${ONES[m[1]]}/${ONES[m[2]]}`;
+  m = s.match(/(\w+)\s+(\w+)$/); if (m && ONES[m[1]] != null && DENOMS[m[2]] != null) return `${ONES[m[1]]}/${DENOMS[m[2]]}`; m = s.match(/^(\d+)$/); if (m) return `${m[1]}/1`; return null; }
+function sameAnswer(p, heard, target) { if (p.op === 'compare') return heard === target; const a = E.normalizeWritten(heard), b = E.normalizeWritten(target); if (!a || !b || a.kind !== 'frac' || b.kind !== 'frac') return false; const ra = E.reduce(a.n, a.d), rb = E.reduce(b.n, b.d); return ra.n === rb.n && ra.d === rb.d; }
+let D = null;
+function startDrill() { const q = S.queue[S.qi]; if (!q) { go('intake'); return; } const rule = E.byId[q.malrule]; const r = E.rng(Date.now() & 0xffff); const problems = [];
+  while (problems.length < 3) { const p = rule.generate(r); if (JSON.stringify(p) !== JSON.stringify(q.source) && !problems.some(x => JSON.stringify(x.p) === JSON.stringify(p))) problems.push({ p, correct: E.answerStr(p, E.correctAnswer(p)), trap: E.answerStr(p, rule.execute(p)) }); }
+  D = { problems, i: 0 }; q.drill = D; $('drillEyebrow').textContent = 'Warm up · ' + rule.id; $('dDone').classList.remove('on'); $('dPtt').disabled = !SR; $('dots').querySelectorAll('i').forEach(el => el.className = ''); showDrill(); }
+function showDrill() { const pr = D.problems[D.i]; $('dText').innerHTML = math(E.problemText(pr.p)); $('dHeard').textContent = '…'; $('dFb').textContent = ''; $('dots').querySelectorAll('i').forEach((el, k) => el.classList.toggle('cur', k === D.i)); $('drillHint').textContent = `${D.i + 1} of 3`; }
+function drillAnswer(spoken) { const pr = D.problems[D.i]; const heard = spokenToAnswer(spoken || '', pr.p); $('dHeard').textContent = spoken || '…'; const dot = $('dots').querySelectorAll('i')[D.i];
+  if (heard == null) { $('dFb').innerHTML = '<span class="chip warn">Didn\'t catch a number</span> <span class="dim">try "five sixths" or "5 over 6"</span>'; return; }
+  if (sameAnswer(pr.p, heard, pr.correct)) { dot.classList.add('ok'); $('dFb').innerHTML = '<span class="chip ok">Right</span>'; }
+  else if (sameAnswer(pr.p, heard, pr.trap)) { dot.classList.add('no'); $('dFb').innerHTML = `<span class="chip hot">The old rule again</span> <span class="dim">answer is ${math(pr.correct)}</span>`; }
+  else { dot.classList.add('no'); $('dFb').innerHTML = `<span class="chip warn">Not quite</span> <span class="dim">answer is ${math(pr.correct)}</span>`; }
+  D.i++; if (D.i >= 3) { S.queue[S.qi].status = 'drilled'; $('dPtt').disabled = true; $('dDone').classList.add('on'); $('drillHint').textContent = 'Warm-up done.'; return; } setTimeout(showDrill, 1400); }
+bindPTT($('dPtt'), $('dPttLabel'), { onStart: Object.assign(() => {}, { interim: t => { $('dHeard').textContent = t; } }), onStop: r => drillAnswer(r.transcript) });
+$('dTyped').addEventListener('submit', e => { e.preventDefault(); const t = $('dText2').value.trim(); if (t && D && D.i < 3) { $('dText2').value = ''; drillAnswer(t); } });
+
+/* ---- teach ---- */
+const pip = mountPip($('pip'));
+const T = { rule: null, p: null, wrong: '', correct: '', history: [], learnerTurns: 0, released: false, over: false, busy: false, listening: false, pipEndedAt: null };
+const MAX_TURNS = 4;
+(function voiceLine() { const cv = $('vline'), ctx = cv.getContext('2d'); let amp = 0, phase = 0; const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  (function draw() { if (cv.offsetParent) { const r = cv.getBoundingClientRect(), d = devicePixelRatio || 1; cv.width = r.width * d; cv.height = r.height * d; ctx.setTransform(d, 0, 0, d, 0, 0); const w = r.width, h = r.height, mid = h / 2; ctx.clearRect(0, 0, w, h);
+    ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.strokeStyle = T.listening ? css('--hot') : css('--muted'); ctx.globalAlpha = T.listening ? 1 : .35; ctx.beginPath();
+    for (let x = 0; x <= w; x += 3) { const env = Math.sin((x / w) * Math.PI); const n = Math.sin(x * .055 + phase) * .6 + Math.sin(x * .021 - phase * 1.4) * .4; const y = mid + n * amp * env * (h * .36); x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
+    ctx.stroke(); ctx.globalAlpha = 1; phase += T.listening ? .26 : .05; amp += ((T.listening ? 1 : .06) - amp) * .12; } requestAnimationFrame(draw); })(); })();
+function addTurn(who, text, fl) { const d = document.createElement('div'); d.className = 'turn ' + who; d.innerHTML = `<div class="who">${who === 'pip' ? 'Pip' : 'You'}</div><div><div class="utt">${esc(text)}</div>${fl ? `<div class="fl">${fl.onsetS}s onset · ${fl.fillers} fillers · ${fl.hedges} hedges · ${fl.longPauses} pauses · ${fl.verdict}</div>` : ''}</div>`; $('transcript').appendChild(d); return d; }
+function setCrit(met) { $('crit').innerHTML = T.rule.rubric.map((c, i) => `<li><span class="t ${met.includes(i + 1) ? 'y' : ''}">${met.includes(i + 1) ? '✓' : '○'}</span><span>${esc(c)}</span></li>`).join(''); }
+function setMetric(id, v, hot) { const el = $(id); el.querySelector('.v').textContent = v; el.classList.toggle('hot', !!hot); }
+async function pipSays(text, expr, after) { T.busy = true; $('bubble').classList.remove('thinking'); $('bubble').textContent = text; addTurn('pip', text); if (expr) pip.set(expr);
+  await speak(text, { onStart: () => pip.talking(true), onEnd: () => pip.talking(false) }); if (after) pip.set(after); T.pipEndedAt = performance.now(); T.busy = false; if (!T.over) { $('ptt').disabled = !SR; $('typedBtn').disabled = false; } }
+async function startTeach() { const q = S.queue[S.qi]; if (!q) { go('intake'); return; } const rule = E.byId[q.malrule]; const r = E.rng((Date.now() & 0xffff) + 17); let p = rule.generate(r); while (JSON.stringify(p) === JSON.stringify(q.source)) p = rule.generate(r);
+  Object.assign(T, { rule, p, wrong: E.answerStr(p, rule.execute(p)), correct: E.answerStr(p, E.correctAnswer(p)), history: [], learnerTurns: 0, released: false, over: false, busy: true, pipEndedAt: null }); q.teach = T;
+  $('transcript').innerHTML = ''; $('ptext').innerHTML = math(E.problemText(p)); $('wrong').innerHTML = math(T.wrong); $('stamp').textContent = fmt(new Date().toISOString()); $('ruleId').textContent = rule.id; $('ruleEn').textContent = rule.name + '. Executable, so he can\'t be argued out of it by pushback.'; $('tEyebrow').textContent = 'Teach Pip · ' + rule.id;
+  $('beliefChip').textContent = 'Held'; $('beliefChip').className = 'chip hot'; $('fluChip').textContent = 'Waiting'; $('fluChip').className = 'chip neu'; ['m-onset', 'm-fill', 'm-hedge', 'm-pause'].forEach(id => setMetric(id, '–', false)); $('quad').textContent = '';
+  $('note1').className = 'note'; $('note2').className = 'note'; $('strike').className = 'strike'; $('ans').className = 'ans'; $('tag').textContent = 'Pip is sure'; $('tag').className = 'chip hot tag'; $('done').classList.remove('on'); $('liveTx').textContent = ''; setCrit([]);
+  $('bubble').classList.add('thinking'); $('bubble').textContent = live() ? 'Pip is thinking…' : '…'; $('ptt').disabled = true; $('typedBtn').disabled = true;
+  let opening; if (live()) { try { opening = await aiPip({ rule, p, wrong: T.wrong, correct: T.correct, history: [], released: false }); } catch (e) { aiFail(e, "Pip's opening"); } }
+  if (!opening) opening = scriptedPip({ rule, p, wrong: T.wrong, history: [], released: false });
+  T.history.push({ who: 'pip', text: opening }); await pipSays(opening, 'proud'); $('hint').textContent = SR ? 'Hold the button and tell him why that\'s wrong, or type it.' : 'No speech recognition in this browser (Chrome has it). Type what you\'d say.'; }
+async function learnerTurn({ transcript, onsetMs, gapsMs, durationMs, asrConfidence }) {
+  if (T.busy || T.over) return; T.busy = true; $('ptt').disabled = true; $('typedBtn').disabled = true; $('liveTx').textContent = transcript || '';
+  if (!transcript.trim() || asrConfidence < 0.45) { const line = ["Wait, say that again? I didn't catch it.", 'Huh? Say that one more time.', "I didn't get that. Can you say it again?"][Math.floor(Math.random() * 3)]; T.history.push({ who: 'pip', text: line }); await pipSays(line, 'huh', 'listen'); $('hint').textContent = 'The recognizer missed that. A confused 9-year-old asking again stays in character.'; return; }
+  const fl = FL.analyse({ transcript, onsetMs, gapsMs, durationMs }); T.history.push({ who: 'learner', text: transcript, fluency: fl }); T.learnerTurns++; addTurn('learner', transcript, fl);
+  setMetric('m-onset', fl.onsetS.toFixed(1), fl.onsetS > 2); setMetric('m-fill', fl.fillers, fl.fillers > 0); setMetric('m-hedge', fl.hedges, fl.hedges > 0); setMetric('m-pause', fl.longPauses, fl.longPauses > 0); $('fluChip').textContent = fl.verdict === 'fluent' ? 'Fluent' : 'Hesitant'; $('fluChip').className = 'chip ' + (fl.verdict === 'fluent' ? 'ok' : 'warn');
+  $('bubble').classList.add('thinking'); $('bubble').textContent = live() ? 'Judging…' : '…'; pip.set('think'); $('hint').textContent = 'Judging the explanation…';
+  const learnerTurns = T.history.filter(h => h.who === 'learner').map(h => h.text); let v;
+  if (live()) { try { v = await aiJudge({ rule: T.rule, learnerTurns }); } catch (e) { aiFail(e, 'the judge'); } } if (!v) v = keywordJudge(T.rule, learnerTurns);
+  T.history.at(-1).judge = v; setCrit(v.criteria_met);
+  const q = S.queue[S.qi]; let line;
+  if (v.released) { T.released = T.over = true; q.status = 'cleared'; q.cleared = new Date().toISOString(); q.quality = v.quality; q.quadrant = FL.quadrant(true, fl.verdict); q.reason = v.reason;
+    $('beliefChip').textContent = 'Released'; $('beliefChip').className = 'chip ok'; $('ruleEn').textContent = 'Pin released by the judge, not by pushback.'; $('note2').textContent = T.rule.notes.released; $('note2').classList.add('on'); $('strike').classList.add('on'); $('ans').classList.add('struck'); $('tag').textContent = 'Pip got it'; $('tag').className = 'chip ok tag'; $('quad').textContent = `${q.quadrant.label}: ${q.quadrant.action}`;
+    if (live()) { try { line = await aiPip({ rule: T.rule, p: T.p, wrong: T.wrong, correct: T.correct, history: T.history, released: true }); } catch (e) { aiFail(e, 'Pip'); } } if (!line) line = scriptedPip({ rule: T.rule, p: T.p, wrong: T.wrong, history: T.history, released: true });
+    T.history.push({ who: 'pip', text: line }); await pipSays(line, 'dawn', 'got'); $('hint').textContent = `He's dropped that rule for good. Explanation quality ${v.quality}/3.`; $('ptt').disabled = true; $('typedBtn').disabled = true; $('done').classList.add('on'); return; }
+  if (v.criteria_met.length) { $('note1').textContent = T.rule.notes.partial; $('note1').classList.add('on'); $('tag').textContent = 'Pip is thinking'; }
+  if (T.learnerTurns >= MAX_TURNS) { T.over = true; q.status = 'stuck'; q.quadrant = FL.quadrant(false, fl.verdict); q.reason = v.reason; $('tag').textContent = 'Still stuck'; $('tag').className = 'chip warn tag'; $('quad').textContent = `${q.quadrant.label}: ${q.quadrant.action}`;
+    line = "I still don't get it. That's okay. Can we ask your tutor on Thursday?"; T.history.push({ who: 'pip', text: line }); await pipSays(line, 'sad', 'sad'); $('hint').textContent = 'No fake win. This goes to the tutor as a flag.'; $('ptt').disabled = true; $('typedBtn').disabled = true; $('done').classList.add('on'); return; }
+  if (live()) { try { line = await aiPip({ rule: T.rule, p: T.p, wrong: T.wrong, correct: T.correct, history: T.history, released: false, probe: v.next_probe }); } catch (e) { aiFail(e, 'Pip'); } } if (!line) line = scriptedPip({ rule: T.rule, p: T.p, wrong: T.wrong, history: T.history, released: false, probe: v.next_probe });
+  T.history.push({ who: 'pip', text: line }); await pipSays(line, 'doubt', 'listen'); $('hint').textContent = `Not convinced yet (${T.learnerTurns} of ${MAX_TURNS}). Give him the reason, not just the rule.`; }
+bindPTT($('ptt'), $('pttLabel'), { anchor: () => T.pipEndedAt || performance.now(), onStart: Object.assign(() => { T.listening = true; pip.set('listen'); $('liveTx').textContent = ''; }, { interim: t => { $('liveTx').textContent = t; } }), onStop: r => { T.listening = false; learnerTurn({ transcript: r.transcript, onsetMs: Math.min(r.onsetMs, 8000), gapsMs: r.gapsMs, durationMs: r.durationMs, asrConfidence: r.confidence }); } });
+$('typed').addEventListener('submit', e => { e.preventDefault(); const t = $('typedText').value.trim(); if (!t || T.busy || T.over) return; $('typedText').value = ''; const onset = T.pipEndedAt ? performance.now() - T.pipEndedAt : 1000; learnerTurn({ transcript: t, onsetMs: Math.min(onset, 8000), gapsMs: [], durationMs: t.length * 60, asrConfidence: 1 }); });
+
+/* ---- brief ---- */
+function renderBrief() { const q = S.queue.find(x => x.teach) || S.queue[S.qi] || S.queue[0]; if (!q) { $('parentCard').textContent = 'Nothing taught yet.'; $('tutorCard').textContent = ''; return; }
+  const rule = E.byId[q.malrule], t = q.teach, lt = t ? t.history.filter(h => h.who === 'learner') : [], best = lt.find(h => h.judge?.released) || lt.at(-1), hes = lt.filter(h => h.fluency?.verdict === 'hesitant');
+  const cleared = S.history.length + S.queue.filter(x => x.status === 'cleared').length, open = S.queue.filter(x => x.status !== 'cleared').length;
+  $('parentCard').innerHTML = `<div class="row" style="justify-content:space-between"><h3>For you, ${esc(S.learner)}'s parent</h3><span class="chip ${q.status === 'cleared' ? 'ok' : q.status === 'stuck' ? 'warn' : 'neu'}">${q.status === 'cleared' ? 'Taught it back' : q.status === 'stuck' ? 'Still stuck' : 'Open'}</span></div>
+    <p class="small dim">${esc(S.learner)} used to think: <b>"${esc(rule.kid)}"</b></p>
+    ${best ? `<div class="quote">"${esc(best.text)}"</div><p class="xs dim">That's ${esc(S.learner)}, explaining it to Pip. In the product this is a 40-second audio clip you can play and forward.</p>` : '<p class="small dim">No explanation yet. Teach Pip first.</p>'}
+    <div class="big"><div><b>${cleared}</b><span>cleared</span></div><div><b>${open}</b><span>open</span></div>${q.quality != null ? `<div><b>${q.quality}/3</b><span>explanation</span></div>` : ''}</div>
+    <div class="kv"><div><span class="k">First got it wrong</span><span class="v">${fmt(q.firstWrong)}</span></div><div><span class="k">Taught it back</span><span class="v">${q.cleared ? fmt(q.cleared) : '—'}</span></div><div><span class="k">Rule</span><span class="v">${esc(q.malrule)}</span></div></div>`;
+  const b1 = q.status === 'cleared' ? `${S.learner} taught ${q.malrule} successfully on ${fmt(q.cleared)}. Explanation quality ${q.quality}/3. ${q.reason || ''}` : q.status === 'stuck' ? `${S.learner} could not explain ${q.malrule} after ${MAX_TURNS} attempts. Pip flagged it. Start here.` : `${S.learner} has ${q.malrule} open from the ${fmt(q.firstWrong)} worksheet. Not yet taught back.`;
+  const b2 = hes.length ? `Delivery hesitant on ${hes.length} of ${lt.length} attempts: ${hes.map(h => `${h.fluency.onsetS}s onset, ${h.fluency.hedges} hedge${h.fluency.hedges === 1 ? '' : 's'}`).join('; ')}. ${q.status === 'cleared' ? 'Got there, and it cost tries. Treat as recent, not solid.' : ''}` : lt.length ? `Delivery fluent throughout (${lt.map(h => h.fluency.onsetS + 's').join(', ')} onset). Reads as solid.` : 'No spoken attempts yet.';
+  $('tutorCard').innerHTML = `<h3>For the tutor, before Thursday</h3><ul class="bullets"><li>${esc(b1)}</li><li>${hes.length ? '<mark>' + esc(b2) + '</mark>' : esc(b2)}</li><li>Suggested opener: ${esc(rule.opener)}</li></ul>${q.quadrant ? `<div class="quadbox"><b>${esc(q.quadrant.label)}</b> · ${esc(q.quadrant.action)}</div>` : ''}<p class="xs dim">This is the handoff. Synthesis, Khanmigo and Amira have nobody to hand it to. Nerdy has 40,000+ tutors.</p>`;
+  $('rows').innerHTML = S.history.map(h => `<tr><td class="mono">${esc(h.malrule)}</td><td>${fmt(h.firstWrong)}</td><td>${fmt(h.cleared)}</td><td>${h.quality}/3</td><td><span class="chip ok">cleared</span></td></tr>`).join('') +
+    S.queue.map(x => `<tr><td class="mono">${esc(x.malrule)}</td><td>${fmt(x.firstWrong)}</td><td>${x.cleared ? fmt(x.cleared) : '—'}</td><td>${x.quality != null ? x.quality + '/3' : '—'}</td><td><span class="chip ${x.status === 'cleared' ? 'ok' : x.status === 'stuck' ? 'warn' : 'neu'}">${x.status}</span></td></tr>`).join(''); }
+
+/* boot */
+refreshMode(); enableTabs();
+if (location.hash && location.hash !== '#intake') history.replaceState(null, '', '#intake');
+</script>
