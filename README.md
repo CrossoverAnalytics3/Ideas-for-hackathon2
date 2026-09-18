@@ -289,7 +289,11 @@ Nothing here needs schools, which matters, since Nerdy just exited that business
 
 ## Status
 
-Idea and spec.
+**Built.** The working app is in [`app/`](app/): `cd app && npm install && npm run dev` runs
+the whole loop with zero keys (scripted Pip); add `ANTHROPIC_API_KEY` for the live model.
+Engine unit tests and a headless end-to-end smoke test pass.
+
+Concept and spec:
 
 - [`docs/intake.md`](docs/intake.md) the photo on-ramp, the over-correction risk, and what already ships
 - [`docs/learner-problems.md`](docs/learner-problems.md) what's actually going wrong for learners, and what it validates or breaks

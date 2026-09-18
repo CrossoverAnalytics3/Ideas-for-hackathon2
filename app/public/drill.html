@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Warm up · Understudy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&family=Shantell+Sans:wght@400;600&display=swap">
+<link rel="stylesheet" href="/app.css">
+<style>
+.paper{background:var(--paper);border-radius:12px;padding:22px;display:flex;flex-direction:column;gap:14px;background-image:repeating-linear-gradient(var(--paper) 0 30px,var(--paper-line) 30px 31px);min-height:200px}
+.q{font-size:clamp(30px,6vw,44px);display:flex;align-items:center;gap:14px;line-height:1.9}
+.heard{font-family:"Shantell Sans",cursive;font-size:22px;color:var(--pencil);min-height:30px}
+.ptt{display:inline-flex;align-items:center;gap:10px;border:none;border-radius:40px;padding:14px 26px;background:var(--teal);color:var(--paper);font:inherit;font-size:16px;font-weight:600;cursor:pointer;box-shadow:0 4px 0 color-mix(in srgb,var(--teal) 70%,#000);touch-action:none;user-select:none;-webkit-user-select:none}
+.ptt.live{background:var(--hot);box-shadow:0 2px 0 color-mix(in srgb,var(--hot) 70%,#000);transform:translateY(2px)}
+.ptt[disabled]{opacity:.45;box-shadow:none}
+.dots{display:flex;gap:8px}.dots i{width:12px;height:12px;border-radius:50%;background:color-mix(in srgb,var(--ink) 15%,transparent)}
+.dots i.ok{background:var(--good)}.dots i.no{background:var(--hot)}.dots i.cur{outline:2px solid var(--teal);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav></nav>
+  <div><span class="eyebrow" id="eyebrow">Warm up</span><h1>Three quick ones. Say the answer.</h1><p class="dim small">Same rule, fresh numbers, while the correction is still warm. Teaching Pip comes later, from memory.</p></div>
+  <div class="paper">
+    <div class="row" style="justify-content:space-between"><div class="dots" id="dots"><i></i><i></i><i></i></div><span class="hint" id="hint"></span></div>
+    <div class="q"><span id="ptext"></span><span>=</span><span class="heard" id="heard">…</span></div>
+    <div class="row"><button class="ptt" id="ptt"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="2" width="6" height="11" rx="3" fill="currentColor" stroke="none"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg><span id="pttLabel">Hold to answer</span></button>
+      <form id="fallback" class="row" style="display:none"><input type="text" id="fbText" placeholder="Type it, e.g. 5/6"><button class="btn ghost" type="submit">Answer</button></form>
+      <span id="fb" class="small"></span></div>
+    <div class="row" id="done" style="display:none"><a class="btn" id="teachLink" href="#">Now teach Pip</a></div>
+  </div>
+</div>
+<script src="/ui.js"></script><script src="/voice.js"></script>
+<script>
+(async function () {
+  UI.nav('drill'); const S = UI.q('s'), Q = Number(UI.q('q') || 0); if (!S) { location.href = '/'; return; }
+  const $ = id => document.getElementById(id);
+  let d; try { d = await UI.api(`/api/session/${S}/drill/start`, { method: 'POST', body: { queueIndex: Q } }); } catch (e) { $('hint').textContent = e.message; return; }
+  $('eyebrow').textContent = 'Warm up · ' + d.rule.id; $('teachLink').href = `/teach.html?s=${S}&q=${Q}`;
+  let i = 0, listening = false;
+  function show() { $('ptext').innerHTML = UI.math(d.problems[i].text); $('heard').textContent = '…'; $('fb').textContent = ''; $('dots').querySelectorAll('i').forEach((el, k) => el.classList.toggle('cur', k === i)); $('hint').textContent = `${i + 1} of ${d.problems.length}`; }
+  show();
+  async function answer(spoken) {
+    $('heard').textContent = spoken || '…';
+    const r = await UI.api(`/api/session/${S}/drill/answer`, { method: 'POST', body: { queueIndex: Q, index: i, spoken } });
+    const dot = $('dots').querySelectorAll('i')[i];
+    if (r.correct) { dot.classList.add('ok'); $('fb').innerHTML = '<span class="chip ok">Right</span>'; }
+    else if (r.trap) { dot.classList.add('no'); $('fb').innerHTML = `<span class="chip hot">The old rule again</span> <span class="dim">answer is ${UI.math(r.answer)}</span>`; }
+    else if (r.heard == null) { $('fb').innerHTML = '<span class="chip warn">Didn\'t catch a number</span> <span class="dim">try "five sixths" or "5 over 6"</span>'; return; }
+    else { dot.classList.add('no'); $('fb').innerHTML = `<span class="chip warn">Not quite</span> <span class="dim">answer is ${UI.math(r.answer)}</span>`; }
+    i++;
+    if (i >= d.problems.length) { $('ptt').disabled = true; $('done').style.display = 'flex'; $('hint').textContent = 'Warm-up done.'; return; }
+    setTimeout(show, 1400);
+  }
+  const rec = Voice.supported ? Voice.recognizer({ onInterim: t => { $('heard').textContent = t; } }) : null;
+  if (!rec) { $('ptt').style.display = 'none'; $('fallback').style.display = 'flex'; }
+  function down(e) { if (listening || !rec) return; e.preventDefault(); listening = true; $('ptt').classList.add('live'); $('pttLabel').textContent = 'Listening…'; rec.start(); }
+  async function up(e) { if (!listening) return; e && e.preventDefault(); listening = false; $('ptt').classList.remove('live'); $('pttLabel').textContent = 'Hold to answer'; const r = await rec.stop(); answer(r.transcript); }
+  $('ptt').addEventListener('mousedown', down); $('ptt').addEventListener('touchstart', down, { passive: false }); window.addEventListener('mouseup', up); window.addEventListener('touchend', up);
+  $('fallback').addEventListener('submit', e => { e.preventDefault(); const t = $('fbText').value.trim(); if (t) { $('fbText').value = ''; answer(t); } });
+})();
+</script>
+</body>
+</html>

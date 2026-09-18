@@ -1,0 +1,27 @@
+{
+  "name": "understudy",
+  "version": "0.1.0",
+  "description": "A kid teaches an AI understudy out of the kid's own mistake, out loud.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "MOCK=1 node server.js",
+    "test": "node --test test/malrules.test.js",
+    "smoke": "node test/smoke.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.127.0",
+    "express": "^5.2.1",
+    "multer": "^2.4.0"
+  },
+  "devDependencies": {
+    "playwright": "^1.63.0"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  }
+}

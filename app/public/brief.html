@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Brief · Understudy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&family=Shantell+Sans:wght@400;600&display=swap">
+<link rel="stylesheet" href="/app.css">
+<style>
+.quote{font-family:"Shantell Sans",cursive;font-size:19px;line-height:1.4;border-left:3px solid var(--pip);padding-left:14px}
+.kv{display:flex;flex-direction:column;gap:7px}
+.kv div{display:flex;justify-content:space-between;gap:14px;font-size:13.5px;border-bottom:1px dotted color-mix(in srgb,var(--ink) 18%,transparent);padding-bottom:6px}
+.kv .k{color:var(--muted)} .kv .v{font-family:"IBM Plex Mono",monospace;font-weight:600}
+.bullets{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:9px}
+.bullets li{font-size:14px;line-height:1.5;color:var(--ink-2)}
+.bullets li:first-child{color:var(--ink)}
+mark{background:var(--warn-soft);color:var(--warn);padding:0 3px;border-radius:2px}
+.big{display:flex;gap:18px}
+.big div{display:flex;flex-direction:column}
+.big b{font-family:"Bricolage Grotesque",serif;font-size:32px;line-height:1}
+.big span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+td,th{text-align:left;padding:8px 6px;border-bottom:1px solid color-mix(in srgb,var(--ink) 10%,transparent)}
+th{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.quadbox{background:var(--teal-soft);border-radius:10px;padding:12px 14px;font-size:13.5px}
+.quadbox b{font-family:"IBM Plex Mono",monospace;letter-spacing:.06em;text-transform:uppercase;font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav></nav>
+  <div>
+    <span class="eyebrow">After the session</span>
+    <h1>One session. Two readers.</h1>
+    <p class="dim small">The parent gets proof. The tutor gets a briefing nobody else can give them.</p>
+  </div>
+  <div class="grid2">
+    <div class="card" id="parent"><span class="spin"></span></div>
+    <div class="card" id="tutor"></div>
+  </div>
+  <div class="card">
+    <div class="row" style="justify-content:space-between"><h2>Misconceptions, over time</h2><span class="hint">The progression is Pip. No points.</span></div>
+    <table><thead><tr><th>Rule</th><th>First wrong</th><th>Taught back</th><th>Quality</th><th>Status</th></tr></thead><tbody id="rows"></tbody></table>
+  </div>
+</div>
+<script src="/ui.js"></script>
+<script>
+(async function () {
+  UI.nav('brief'); const S = UI.q('s'); if (!S) { location.href = '/'; return; }
+  const $ = id => document.getElementById(id);
+  let b; try { b = await UI.api(`/api/session/${S}/brief`); } catch (e) { $('parent').textContent = e.message; return; }
+  const p = b.parent, t = b.tutor;
+  if (!p) { $('parent').textContent = 'Nothing taught yet.'; return; }
+  $('parent').innerHTML = `
+    <div class="row" style="justify-content:space-between"><h3>For you, ${UI.esc(p.learner)}'s parent</h3><span class="chip ${p.status === 'cleared' ? 'ok' : p.status === 'stuck' ? 'warn' : 'neu'}">${p.status === 'cleared' ? 'Taught it back' : p.status === 'stuck' ? 'Still stuck' : 'Open'}</span></div>
+    <p class="small dim">${UI.esc(p.learner)} used to think: <b>"${UI.esc(p.plain)}"</b></p>
+    ${p.quote ? `<div class="quote">"${UI.esc(p.quote)}"</div><p class="xs dim">That's ${UI.esc(p.learner)}, explaining it to Pip. In the product this is a 40-second audio clip you can play and forward.</p>` : '<p class="small dim">No explanation yet.</p>'}
+    <div class="big"><div><b>${p.cleared}</b><span>cleared</span></div><div><b>${p.open}</b><span>open</span></div>${p.quality != null ? `<div><b>${p.quality}/3</b><span>explanation</span></div>` : ''}</div>
+    <div class="kv"><div><span class="k">First got it wrong</span><span class="v">${p.firstWrong}</span></div><div><span class="k">Taught it back</span><span class="v">${p.taught || '—'}</span></div><div><span class="k">Rule</span><span class="v">${UI.esc(p.malrule)}</span></div></div>`;
+  $('tutor').innerHTML = `
+    <h3>For the tutor, before ${t.session}</h3>
+    <ul class="bullets">${t.bullets.map((x, i) => `<li>${i === 1 && /hesitant/i.test(x) ? '<mark>' + UI.esc(x) + '</mark>' : UI.esc(x)}</li>`).join('')}</ul>
+    ${t.quadrant ? `<div class="quadbox"><b>${UI.esc(t.quadrant.label)}</b> · ${UI.esc(t.quadrant.action)}</div>` : ''}
+    <p class="xs dim">This is the handoff. Synthesis, Khanmigo and Amira have nobody to hand it to. Nerdy has 40,000+ tutors.</p>`;
+  const prior = (t.priorCleared || []).map(h => `<tr><td class="mono">${UI.esc(h.malrule)}</td><td>${h.firstWrong}</td><td>${h.cleared}</td><td>${h.quality}/3</td><td><span class="chip ok">cleared</span></td></tr>`).join('');
+  const now = b.queue.map(q => `<tr><td class="mono">${UI.esc(q.malrule)}</td><td>${q.firstWrong}</td><td>${q.cleared || '—'}</td><td>${q.quality != null ? q.quality + '/3' : '—'}</td><td><span class="chip ${q.status === 'cleared' ? 'ok' : q.status === 'stuck' ? 'warn' : 'neu'}">${q.status}</span></td></tr>`).join('');
+  $('rows').innerHTML = prior + now;
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Understudy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&family=Shantell+Sans:wght@400;600&display=swap">
+<link rel="stylesheet" href="/app.css">
+<style>
+.drop{border:2px dashed color-mix(in srgb,var(--teal) 45%,transparent);border-radius:12px;padding:22px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;background:color-mix(in srgb,var(--teal) 5%,transparent);cursor:pointer}
+.drop.has{border-style:solid}
+.drop img{max-height:220px;border-radius:8px;box-shadow:var(--shadow)}
+.drop input{display:none}
+.result{display:grid;grid-template-columns:1fr auto;gap:10px 14px;align-items:center;padding:12px 0;border-top:1px solid color-mix(in srgb,var(--ink) 10%,transparent)}
+.result:first-child{border-top:none}
+.result .prob{font-size:20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.result .wrote{font-family:"Shantell Sans",cursive;font-size:22px;color:var(--pencil)}
+.result .meta{grid-column:1/-1;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.result .actions{display:flex;gap:8px;flex-wrap:wrap}
+.spin{width:18px;height:18px;border:2.5px solid color-mix(in srgb,var(--teal) 30%,transparent);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loop{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;text-align:center}
+@media(max-width:600px){.loop{grid-template-columns:repeat(2,1fr)}}
+.loop div{background:var(--paper);border-radius:10px;padding:10px 6px}
+.loop b{display:block;font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.1em;color:var(--teal)}
+.loop span{font-size:12px;color:var(--ink-2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav></nav>
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <span class="eyebrow">Start here</span>
+    <h1>Photograph the graded worksheet.</h1>
+    <p class="dim">The red pen is already on it. Understudy reads the rule behind each mistake, not just the mistake, then gives your kid an AI understudy who's stuck on exactly that rule. They teach him out of it, out loud.</p>
+  </div>
+
+  <div class="loop">
+    <div><b>PHOTO</b><span>graded work</span></div>
+    <div><b>DIAGNOSE</b><span>which malrule?</span></div>
+    <div><b>DRILL</b><span>while it's fresh</span></div>
+    <div><b>TEACH</b><span>talk Pip out of it</span></div>
+    <div><b>BRIEF</b><span>parent + tutor</span></div>
+  </div>
+
+  <form class="card" id="form">
+    <div class="row"><label for="learner" class="small dim">Learner's first name</label><input type="text" id="learner" name="learner" value="Maya" style="width:160px"></div>
+    <label class="drop" id="drop">
+      <input type="file" id="photo" name="photo" accept="image/*" capture="environment">
+      <span id="dropText"><b>Tap to photograph</b> or drop an image here</span>
+      <img id="preview" alt="" hidden>
+    </label>
+    <div class="row">
+      <button class="btn" type="submit" id="go">Read the worksheet</button>
+      <button class="btn ghost" type="button" id="sample">Use the sample worksheet</button>
+      <span class="hint" id="status"></span>
+    </div>
+    <p class="xs dim">Names and teacher comments are ignored. The photo is used once to find the mistakes and isn't kept.</p>
+  </form>
+
+  <div class="card" id="results" hidden>
+    <div class="row" style="justify-content:space-between"><h2>What the page says</h2><span class="chip mute" id="modeNote"></span></div>
+    <div id="list"></div>
+    <p class="xs dim">Verified means a known misconception produces exactly the digits written, and the code confirmed it. Unverified means no rule produces those digits, which usually means the reading auto-corrected the mistake, so we ask instead of guessing.</p>
+  </div>
+</div>
+
+<script src="/ui.js"></script>
+<script>
+(function () {
+  UI.nav('intake');
+  const $ = id => document.getElementById(id);
+  let file = null;
+  $('photo').addEventListener('change', () => { file = $('photo').files[0]; if (!file) return; $('preview').src = URL.createObjectURL(file); $('preview').hidden = false; $('drop').classList.add('has'); $('dropText').textContent = file.name; });
+  $('drop').addEventListener('dragover', e => { e.preventDefault(); });
+  $('drop').addEventListener('drop', e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) { const dt = new DataTransfer(); dt.items.add(f); $('photo').files = dt.files; $('photo').dispatchEvent(new Event('change')); } });
+
+  async function run(fd) {
+    $('go').disabled = true; $('sample').disabled = true; $('status').innerHTML = '<span class="spin"></span> Reading… this is a real vision call in live mode.';
+    try {
+      const r = await UI.api('/api/intake', { method: 'POST', body: fd });
+      render(r);
+    } catch (e) { $('status').textContent = 'Error: ' + e.message; }
+    $('go').disabled = false; $('sample').disabled = false;
+  }
+  $('form').addEventListener('submit', e => { e.preventDefault(); const fd = new FormData(); fd.append('learner', $('learner').value || 'Maya'); if (file) fd.append('photo', file); run(fd); });
+  $('sample').addEventListener('click', async () => {
+    $('preview').src = '/sample-worksheet.png'; $('preview').hidden = false; $('drop').classList.add('has'); $('dropText').textContent = 'sample-worksheet.png';
+    const fd = new FormData(); fd.append('learner', $('learner').value || 'Maya');
+    try { const b = await (await fetch('/sample-worksheet.png')).blob(); fd.append('photo', new File([b], 'sample-worksheet.png', { type: 'image/png' })); } catch (e) {}
+    run(fd);
+  });
+
+  function render(r) {
+    $('status').textContent = r.fallback ? 'Vision call failed; showing the pre-read sample.' : 'Done.';
+    $('results').hidden = false;
+    $('modeNote').textContent = r.diagnosis.mode === 'live' ? 'read by the model, verified in code' : 'pre-read sample (mock mode)';
+    const s = r.sessionId;
+    $('list').innerHTML = r.diagnosis.problems.map((p, i) => {
+      const qi = r.queue.findIndex(q => q.malrule === p.malrule);
+      let chip, meta = '', actions = '';
+      if (p.status === 'correct') chip = '<span class="chip ok">Correct</span>';
+      else if (p.status === 'verified') { chip = `<span class="chip hot">Wrong · verified</span>`; meta = `<span class="mono small">${UI.esc(p.malrule)}</span><span class="small dim">${UI.esc(p.name)}</span>`; actions = `<a class="btn ghost" href="/drill.html?s=${s}&q=${qi}">Warm up</a><a class="btn" href="/teach.html?s=${s}&q=${qi}">Teach Pip</a>`; }
+      else if (p.status === 'unverified') { chip = '<span class="chip warn">Wrong · unverified</span>'; meta = `<span class="small dim">${UI.esc(p.note || '')}</span><form class="row" data-i="${i}"><input type="text" placeholder="What did they actually write? e.g. 2/5" style="width:190px"><button class="btn ghost" type="submit">Confirm</button></form>`; }
+      else if (p.status === 'ambiguous') { chip = '<span class="chip warn">Wrong · two rules fit</span>'; meta = `<span class="small dim">Could be: ${p.options.join(' or ')}. Teach the first.</span>`; }
+      else chip = '<span class="chip mute">Could not read</span>';
+      return `<div class="result"><div class="prob">${UI.math(p.problem_text)}<span class="dim">→</span><span class="wrote">${UI.math(p.written_answer || '?')}</span></div><div>${chip}</div><div class="meta">${meta}<span style="flex:1"></span><span class="actions">${actions}</span></div></div>`;
+    }).join('');
+    $('list').querySelectorAll('form[data-i]').forEach(f => f.addEventListener('submit', async e => {
+      e.preventDefault(); const written = f.querySelector('input').value.trim(); if (!written) return;
+      const out = await UI.api(`/api/session/${s}/confirm`, { method: 'POST', body: { index: Number(f.dataset.i), written } });
+      r.diagnosis.problems[Number(f.dataset.i)] = out.item; r.queue = out.queue; render(r);
+    }));
+  }
+})();
+</script>
+</body>
+</html>

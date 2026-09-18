@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Teaching Pip · Understudy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&family=Shantell+Sans:wght@400;600&display=swap">
+<link rel="stylesheet" href="/app.css">
+<style>
+.app{background:var(--desk-2);border-radius:18px;padding:18px;box-shadow:var(--shadow);display:grid;grid-template-columns:230px 1fr;gap:18px}
+@media(max-width:700px){.app{grid-template-columns:1fr;padding:14px;gap:14px}}
+.pipside{display:flex;flex-direction:column;align-items:center;gap:10px;padding-top:6px}
+@media(max-width:700px){.pipside{flex-direction:row;align-items:flex-start}}
+#pip{width:150px;height:160px;flex:none}
+@media(max-width:700px){#pip{width:92px;height:100px}}
+.pipname{font-size:12px;color:var(--muted);text-align:center}
+.pipname b{display:block;font-family:"Bricolage Grotesque",serif;font-size:15px;color:var(--ink)}
+.bubble{background:var(--paper);border-radius:14px 14px 14px 4px;padding:12px 14px;font-size:15.5px;line-height:1.45;min-height:56px;display:flex;align-items:center;box-shadow:0 1px 2px rgba(0,0,0,.07)}
+@media(max-width:700px){.bubble{flex:1}}
+.bubble.thinking{color:var(--muted);font-style:italic}
+.paper{background:var(--paper);border-radius:12px;padding:20px 22px;position:relative;min-height:230px;display:flex;flex-direction:column;gap:6px;background-image:repeating-linear-gradient(var(--paper) 0 30px,var(--paper-line) 30px 31px)}
+.paperhead{display:flex;justify-content:space-between;gap:10px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--pencil-light);font-weight:600}
+.sum{font-size:clamp(26px,5vw,36px);display:flex;align-items:center;gap:12px;flex-wrap:wrap;line-height:1.9}
+.ans{position:relative;display:inline-block;transition:color .4s}
+.ans.struck{color:var(--pencil-light)}
+.strike{position:absolute;left:-6%;top:50%;width:0;height:3px;background:var(--hot);border-radius:2px;transform:rotate(-7deg);transition:width .5s ease-out}
+.strike.on{width:112%}
+.note{font-size:16px;color:var(--pencil-light);opacity:0;transform:translateY(-4px);transition:opacity .5s,transform .5s;padding-left:4px}
+.note.on{opacity:1;transform:none}
+.tag{position:absolute;right:14px;bottom:12px}
+.strips{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:700px){.strips{grid-template-columns:1fr}}
+.strip{background:var(--paper);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.striphead{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.striplabel{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.crit{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px}
+.crit li{display:flex;gap:7px;font-size:12.5px;color:var(--ink-2);line-height:1.35}
+.crit .t{font-family:"IBM Plex Mono",monospace;font-weight:600;width:12px;flex:none;color:var(--muted)}
+.crit .t.y{color:var(--good)}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.metric .v{font-family:"IBM Plex Mono",monospace;font-size:16px;font-weight:600;display:block;line-height:1.1}
+.metric .k{font-size:10px;color:var(--muted);letter-spacing:.04em}
+.metric.hot .v{color:var(--warn)}
+.voicebar{grid-column:1/-1;display:flex;align-items:center;gap:14px;padding-top:4px;flex-wrap:wrap}
+.ptt{flex:none;display:flex;align-items:center;gap:10px;border:none;border-radius:40px;padding:14px 26px;background:var(--teal);color:var(--paper);font:inherit;font-size:16px;font-weight:600;cursor:pointer;box-shadow:0 4px 0 color-mix(in srgb,var(--teal) 70%,#000);touch-action:none;user-select:none;-webkit-user-select:none;transition:transform .12s,background .2s}
+.ptt.live{background:var(--hot);box-shadow:0 2px 0 color-mix(in srgb,var(--hot) 70%,#000);transform:translateY(2px)}
+.ptt[disabled]{opacity:.45;cursor:default;box-shadow:none;transform:none}
+.ptt:focus-visible{outline:3px solid var(--pip);outline-offset:3px}
+#vline{flex:1;min-width:160px;height:44px}
+.live-tx{flex-basis:100%;font-family:"Shantell Sans",cursive;font-size:17px;color:var(--ink);min-height:24px}
+.transcript{display:flex;flex-direction:column;gap:8px}
+.turn{display:grid;grid-template-columns:58px 1fr;gap:10px;font-size:14px}
+.turn .who{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);padding-top:3px}
+.turn.pip .who{color:var(--hot)} .turn.learner .who{color:var(--teal)}
+.turn.learner .utt{font-family:"Shantell Sans",cursive;font-size:16px}
+.fl{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);margin-top:2px}
+.fallback{display:none;gap:8px;flex-basis:100%}
+.fallback input{flex:1}
+.done{display:none;align-items:center;gap:12px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav></nav>
+  <div>
+    <span class="eyebrow" id="eyebrow">Teach Pip</span>
+    <h1 id="title">Pip got one wrong. Talk him out of it.</h1>
+    <p class="dim small" id="sub">Hold the button, say why, let go. He stays wrong until the explanation is actually right.</p>
+  </div>
+
+  <div class="app">
+    <div class="pipside">
+      <div id="pip"></div>
+      <div class="pipname"><b>Pip</b>age 9 · your understudy</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+      <div class="bubble" id="bubble">…</div>
+      <div class="paper">
+        <div class="paperhead"><span>Pip's working</span><span id="stamp"></span></div>
+        <div class="work">
+          <div class="sum"><span id="ptext"></span><span>=</span><span class="ans" id="ans"><span id="wrong"></span><i class="strike" id="strike"></i></span></div>
+          <div class="note" id="note1"></div>
+          <div class="note" id="note2"></div>
+        </div>
+        <span class="chip hot tag" id="tag">Pip is sure</span>
+      </div>
+    </div>
+
+    <div class="strips">
+      <div class="strip">
+        <div class="striphead"><span class="striplabel">Belief state · Pip</span><span class="chip hot" id="beliefChip">Held</span></div>
+        <div class="mono" id="ruleId" style="font-size:14px;font-weight:600"></div>
+        <div class="xs dim" id="ruleEn"></div>
+        <ul class="crit" id="crit"></ul>
+      </div>
+      <div class="strip">
+        <div class="striphead"><span class="striplabel">Fluency · learner</span><span class="chip neu" id="fluChip">Waiting</span></div>
+        <div class="metrics">
+          <div class="metric" id="m-onset"><span class="v">–</span><span class="k">onset s</span></div>
+          <div class="metric" id="m-fill"><span class="v">–</span><span class="k">fillers</span></div>
+          <div class="metric" id="m-hedge"><span class="v">–</span><span class="k">hedges</span></div>
+          <div class="metric" id="m-pause"><span class="v">–</span><span class="k">pauses</span></div>
+        </div>
+        <div class="xs dim" id="quad"></div>
+      </div>
+    </div>
+
+    <div class="voicebar">
+      <button class="ptt" id="ptt" disabled>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="2" width="6" height="11" rx="3" fill="currentColor" stroke="none"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>
+        <span id="pttLabel">Hold to talk</span>
+      </button>
+      <canvas id="vline"></canvas>
+      <span class="hint" id="hint">Pip is about to explain his answer.</span>
+      <div class="live-tx" id="liveTx"></div>
+      <form class="fallback" id="fallback"><input type="text" id="fbText" placeholder="Your browser can't listen. Type it here (Chrome can hear you)."><button class="btn" type="submit">Say it</button></form>
+      <div class="done" id="done"><a class="btn" id="briefLink" href="#">See what the parent and tutor get</a><a class="btn ghost" href="/">Another worksheet</a></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="eyebrow">Transcript</span>
+    <div class="transcript" id="transcript"></div>
+  </div>
+</div>
+
+<script src="/ui.js"></script><script src="/pip.js"></script><script src="/voice.js"></script>
+<script>
+(async function () {
+  const S = UI.q('s'), Q = Number(UI.q('q') || 0);
+  UI.nav('teach');
+  if (!S) { location.href = '/'; return; }
+  const $ = id => document.getElementById(id);
+  const pip = Pip.mount($('pip'));
+  let state = { busy: true, listening: false, pipEndedAt: null, released: false, over: false };
+
+  // ---- voice line ----
+  const cv = $('vline'), ctx = cv.getContext('2d'); let amp = 0, phase = 0;
+  function css(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+  (function draw() {
+    const r = cv.getBoundingClientRect(), d = devicePixelRatio || 1; cv.width = r.width * d; cv.height = r.height * d; ctx.setTransform(d, 0, 0, d, 0, 0);
+    const w = r.width, h = r.height, mid = h / 2; ctx.clearRect(0, 0, w, h);
+    ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.strokeStyle = state.listening ? css('--hot') : css('--muted'); ctx.globalAlpha = state.listening ? 1 : .35;
+    ctx.beginPath();
+    for (let x = 0; x <= w; x += 3) { const env = Math.sin((x / w) * Math.PI); const n = Math.sin(x * .055 + phase) * .6 + Math.sin(x * .021 - phase * 1.4) * .4; const y = mid + n * amp * env * (h * .36); x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
+    ctx.stroke(); ctx.globalAlpha = 1; phase += state.listening ? .26 : .05; amp += ((state.listening ? 1 : .06) - amp) * .12;
+    requestAnimationFrame(draw);
+  })();
+
+  // ---- helpers ----
+  function addTurn(who, text, fl) {
+    const d = document.createElement('div'); d.className = 'turn ' + who;
+    d.innerHTML = `<div class="who">${who === 'pip' ? 'Pip' : 'You'}</div><div><div class="utt">${UI.esc(text)}</div>${fl ? `<div class="fl">${fl.onsetS}s onset · ${fl.fillers} fillers · ${fl.hedges} hedges · ${fl.longPauses} pauses · ${fl.verdict}</div>` : ''}</div>`;
+    $('transcript').appendChild(d);
+  }
+  function setCrit(rubric, met) {
+    $('crit').innerHTML = rubric.map((c, i) => `<li><span class="t ${met.includes(i + 1) ? 'y' : ''}">${met.includes(i + 1) ? '✓' : '○'}</span><span>${UI.esc(c)}</span></li>`).join('');
+  }
+  function setMetric(id, v, hot) { const el = $(id); el.querySelector('.v').textContent = v; el.classList.toggle('hot', !!hot); }
+  async function pipSays(text, expr, exprAfter) {
+    state.busy = true; $('bubble').classList.remove('thinking'); $('bubble').textContent = text; addTurn('pip', text);
+    if (expr) pip.set(expr);
+    await Voice.speak(text, { onStart: () => pip.talking(true), onEnd: () => pip.talking(false) });
+    if (exprAfter) pip.set(exprAfter);
+    state.pipEndedAt = performance.now(); state.busy = false;
+    if (!state.over) { $('ptt').disabled = false; }
+  }
+
+  // ---- start ----
+  let start;
+  try { start = await UI.api(`/api/session/${S}/teach/start`, { method: 'POST', body: { queueIndex: Q } }); }
+  catch (e) { $('bubble').textContent = 'Could not start: ' + e.message; return; }
+  const rubric = start.rule.rubric;
+  $('ptext').innerHTML = UI.math(start.problem.text); $('wrong').innerHTML = UI.math(start.wrong);
+  $('stamp').textContent = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  $('ruleId').textContent = start.rule.id; $('ruleEn').textContent = start.rule.name + '. Executable, so he can\'t be argued out of it by pushback.';
+  $('eyebrow').textContent = 'Teach Pip · ' + start.rule.id;
+  setCrit(rubric, []);
+  $('briefLink').href = `/brief.html?s=${S}`;
+  await pipSays(start.pip, 'proud');
+  $('hint').textContent = 'Hold the button and tell him why that\'s wrong.';
+  if (!Voice.supported) { $('fallback').style.display = 'flex'; $('ptt').disabled = true; $('hint').textContent = 'No speech recognition in this browser. Chrome has it. Typing works for now.'; }
+
+  // ---- a learner turn ----
+  async function submit(payload) {
+    state.busy = true; $('ptt').disabled = true;
+    $('liveTx').textContent = payload.transcript || '';
+    $('bubble').classList.add('thinking'); $('bubble').textContent = '…'; pip.set('think');
+    $('hint').textContent = payload.transcript ? 'Judging the explanation…' : 'Didn\'t catch that…';
+    if (payload.transcript) addTurn('learner', payload.transcript);
+    let r;
+    try { r = await UI.api(`/api/session/${S}/teach/turn`, { method: 'POST', body: { queueIndex: Q, ...payload } }); }
+    catch (e) { $('hint').textContent = 'Error: ' + e.message; state.busy = false; $('ptt').disabled = false; return; }
+    if (r.fluency) {
+      const f = r.fluency; const last = $('transcript').lastElementChild.lastElementChild;
+      last.insertAdjacentHTML('beforeend', `<div class="fl">${f.onsetS}s onset · ${f.fillers} fillers · ${f.hedges} hedges · ${f.longPauses} pauses · ${f.verdict}</div>`);
+      setMetric('m-onset', f.onsetS.toFixed(1), f.onsetS > 2); setMetric('m-fill', f.fillers, f.fillers > 0); setMetric('m-hedge', f.hedges, f.hedges > 0); setMetric('m-pause', f.longPauses, f.longPauses > 0);
+      const c = $('fluChip'); c.textContent = f.verdict === 'fluent' ? 'Fluent' : 'Hesitant'; c.className = 'chip ' + (f.verdict === 'fluent' ? 'ok' : 'warn');
+    }
+    if (r.criteria_met) setCrit(rubric, r.criteria_met);
+    if (r.asrRecovery) { await pipSays(r.pip, 'huh', 'listen'); $('hint').textContent = 'That was the recognizer failing. A confused 9-year-old asking again stays in character.'; return; }
+    if (r.criteria_met && r.criteria_met.length && !r.released) { $('note1').textContent = start.notes.partial; $('note1').classList.add('on'); $('tag').textContent = 'Pip is thinking'; }
+    if (r.released) {
+      state.released = true; state.over = true;
+      $('beliefChip').textContent = 'Released'; $('beliefChip').className = 'chip ok';
+      $('ruleEn').textContent = 'Pin released by the judge, not by pushback.';
+      $('note2').textContent = start.notes.released; $('note2').classList.add('on');
+      $('strike').classList.add('on'); $('ans').classList.add('struck'); $('tag').textContent = 'Pip got it'; $('tag').className = 'chip ok tag';
+      if (r.quadrant) $('quad').textContent = `${r.quadrant.label}: ${r.quadrant.action}`;
+      await pipSays(r.pip, 'dawn', 'got');
+      $('hint').textContent = `He's dropped that rule for good. Explanation quality ${r.quality}/3.`;
+      $('ptt').disabled = true; $('done').style.display = 'flex'; return;
+    }
+    if (r.gaveUp) {
+      state.over = true;
+      $('tag').textContent = 'Still stuck'; $('tag').className = 'chip warn tag';
+      if (r.quadrant) $('quad').textContent = `${r.quadrant.label}: ${r.quadrant.action}`;
+      await pipSays(r.pip, 'sad', 'sad');
+      $('hint').textContent = 'No fake win. This goes to the tutor as a flag.'; $('ptt').disabled = true; $('done').style.display = 'flex'; return;
+    }
+    await pipSays(r.pip, 'doubt', 'listen');
+    $('hint').textContent = `Not convinced yet (${r.turn} of ${r.maxTurns}). Give him the reason, not just the rule.`;
+  }
+
+  // ---- push to talk ----
+  let rec = Voice.supported ? Voice.recognizer({ onInterim: t => { $('liveTx').textContent = t; } }) : null;
+  function down(e) { if (state.busy || state.over || !rec) return; e.preventDefault(); state.listening = true; $('ptt').classList.add('live'); $('pttLabel').textContent = 'Listening…'; pip.set('listen'); $('liveTx').textContent = ''; rec.start(state.pipEndedAt || performance.now()); }
+  async function up(e) { if (!state.listening) return; e && e.preventDefault(); state.listening = false; $('ptt').classList.remove('live'); $('pttLabel').textContent = 'Hold to talk'; const r = await rec.stop(); submit({ transcript: r.transcript, onsetMs: Math.min(r.onsetMs, 8000), gapsMs: r.gapsMs, durationMs: r.durationMs, asrConfidence: r.confidence }); }
+  $('ptt').addEventListener('mousedown', down); $('ptt').addEventListener('touchstart', down, { passive: false });
+  window.addEventListener('mouseup', up); window.addEventListener('touchend', up);
+  $('ptt').addEventListener('keydown', e => { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) down(e); });
+  $('ptt').addEventListener('keyup', e => { if (e.key === ' ' || e.key === 'Enter') up(e); });
+  $('fallback').addEventListener('submit', e => { e.preventDefault(); const t = $('fbText').value.trim(); if (!t || state.busy || state.over) return; $('fbText').value = ''; const onset = state.pipEndedAt ? performance.now() - state.pipEndedAt : 1000; submit({ transcript: t, onsetMs: Math.min(onset, 8000), gapsMs: [], durationMs: t.length * 60, asrConfidence: 1 }); });
+})();
+</script>
+</body>
+</html>
